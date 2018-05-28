@@ -1,0 +1,244 @@
+body {
+  background: #333;
+  color: #fff; }
+
+.navbar {
+  border-bottom: #16a844 3px solid;
+  opacity: 0.8; }
+
+#home-section {
+  background: url("../img/home.jpg") no-repeat;
+  min-height: 700px;
+  background-size: cover;
+  background-attachment: fixed; }
+  #home-section .dark-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 700px; }
+  #home-section .home-inner {
+    padding-top: 100px; }
+  #home-section .form .message {
+    margin: 15px 0 0;
+    color: aliceblue;
+    font-size: 15px; }
+  #home-section .form .message a {
+    color: #940707;
+    text-decoration: none; }
+  #home-section .form .login-form {
+    display: none; }
+  #home-section .card-form {
+    opacity: 0.8; }
+
+.button {
+  background-color: #333;
+  /* Green */
+  border: #16a844 1px solid;
+  color: white;
+  padding: 15px 12px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 10px; }
+
+.button:hover {
+  background-color: #3e8e41; }
+
+.button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px); }
+
+#business-registration-section .container {
+  padding-top: 100px; }
+
+#business-registration-section .reg-button {
+  width: 40%; }
+
+#business-profile-section .container {
+  padding-top: 100px;
+  border: #16a844 1px solid;
+  border-radius: 20px; }
+  #business-profile-section .container .col-border {
+    border-left: #897b72 1px solid; }
+
+.text-center {
+  text-align: center; }
+
+.center-block {
+  margin-left: auto;
+  margin-right: auto;
+  display: block; }
+
+.company-logo {
+  width: 250px;
+  height: 300px;
+  border-radius: 10px; }
+
+.title {
+  font-weight: bold; }
+
+.sub-title {
+  border-bottom: #897b72 1px solid; }
+
+#review-section textarea {
+  width: 55%;
+  height: 65px; }
+
+#review-section .reviews img {
+  width: 50px;
+  height: 50px;
+  border-radius: 30px; }
+
+#review-section .reviews .container {
+  max-width: 60%;
+  max-height: 40%;
+  border: #16a844 1px solid;
+  border-radius: 10px;
+  margin-top: 50px; }
+
+#business-catalog-section .container {
+  padding-top: 100px; }
+
+#business-catalog-section ul, #business-catalog-section ol {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
+#navigation {
+  background-color: #30323A; }
+
+#navigation .container {
+  position: relative; }
+
+/*----------------------------*  	Category nav
+  \*----------------------------*/
+.category-nav {
+  float: left;
+  width: 270px; }
+
+.category-nav .category-header {
+  padding: 15px;
+  display: block;
+  text-transform: uppercase;
+  background: #F8694A;
+  color: #FFF;
+  font-weight: 700; }
+
+.category-nav .category-header > i {
+  float: right;
+  line-height: 20px; }
+
+.category-nav .category-list {
+  position: absolute;
+  width: 270px;
+  background-color: #FFF;
+  border-left: 1px solid #DADADA;
+  border-right: 1px solid #DADADA;
+  border-bottom: 1px solid #DADADA;
+  z-index: 50;
+  -webkit-transition: 0.3s all;
+  transition: 0.3s all; }
+
+.category-nav .category-list > li + li {
+  border-top: 1px solid #DADADA; }
+
+.category-nav .category-list > li > a {
+  display: block;
+  padding: 15px;
+  text-transform: uppercase;
+  color: #4A4E5A; }
+
+.category-nav .category-list > li > a:hover, .category-nav .category-list > li > a:focus, .category-nav .category-list > li.dropdown.open > a {
+  color: #F8694A; }
+
+/*----------------------------*	Menu nav
+\*----------------------------*/
+.menu-nav .menu-header {
+  display: none;
+  padding: 15px;
+  text-transform: uppercase;
+  background: #30323A;
+  color: #FFF;
+  font-weight: 700; }
+
+.menu-nav .menu-header > i {
+  float: right;
+  line-height: 20px; }
+
+.menu-nav .menu-list {
+  background: #262a36; }
+
+.menu-nav .menu-list > li {
+  display: inline-block; }
+
+.menu-nav .menu-list > li > a {
+  display: block;
+  padding: 15px;
+  color: #FFF;
+  text-transform: uppercase; }
+
+.menu-nav .menu-list > li > a:hover, .menu-nav .menu-list > li > a:focus, .menu-nav .menu-list > li.dropdown.open > a {
+  color: #F8694A; }
+
+/*----------------------------*	Sections
+\*----------------------------*/
+/*=========================================================
+	05 -> HOME SLIDER
+===========================================================*/
+#home .home-wrap {
+  margin-left: 270px;
+  min-height: 500px; }
+
+#home-slick .banner {
+  margin: 0px; }
+
+.banner {
+  display: block;
+  position: relative;
+  margin-top: 15px;
+  margin-bottom: 15px; }
+
+.banner > img {
+  width: 100%;
+  height: 120px;
+  border-radius: 5px; }
+
+.banner.banner-1 .banner-caption {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); }
+
+#home #home-slick .row {
+  padding-top: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #262a36; }
+
+#home #home-slick .row a {
+  color: #fff; }
+
+.dropdown > .dropdown-menu {
+  border-top: 2px solid #F8694A;
+  left: 50%;
+  min-width: 200px;
+  -webkit-transform: translateX(-50%) translateY(15px);
+  -ms-transform: translateX(-50%) translateY(15px);
+  transform: translateX(-50%) translateY(15px); }
+
+.dropdown > .dropdown-menu > li {
+  border-left: 1px solid #DADADA;
+  border-right: 1px solid #DADADA;
+  border-bottom: 1px solid #DADADA; }
+
+.dropdown > .dropdown-menu > li > a > a:hover {
+  display: block;
+  padding: 10px 0px;
+  text-transform: uppercase;
+  font-size: 15px;
+  color: #4A4E5A; }
