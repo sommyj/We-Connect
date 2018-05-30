@@ -1,0 +1,18 @@
+language: node_js
+  node_js:
+  -"stable"
+
+  # before_install:
+  # - sudo apt-get update
+  # - npm i -g npm@3.10.10
+  #
+  install: npm install
+  #
+  script: npm test
+  #
+  # env:
+  #   - NODE_ENV=test
+  #
+  cache:
+  directories:
+    - "node_modules"
