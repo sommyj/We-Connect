@@ -1,4 +1,4 @@
-# We-Connect
+# We-Connect  [![Build Status](https://travis-ci.org/sommyj/We-Connect.svg?branch=developer-branch)](https://travis-ci.org/sommyj/We-Connect)
 WeConnect is a demo that provides a platform that brings businesses and individuals together. This platform creates awareness for businesses and gives the users the ability to write reviews about the businesses they have interacted with.
 
 ## Getting Started
