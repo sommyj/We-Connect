@@ -1,9 +1,9 @@
-const User = require('../server/models/user');
-
 // Require the dev-dependencies
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const app = require('../app');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+
+import Users from '../server/models/user';
+import app from '../app';
 
 chai.should();
 chai.use(chaiHttp);
@@ -11,7 +11,7 @@ chai.use(chaiHttp);
 
 describe('Users', () => {
   beforeEach((done) => { // Before each test we empty the database
-    User.splice(0, User.length);
+    Users.splice(0, Users.length);
     done();
   });
 
@@ -21,8 +21,8 @@ describe('Users', () => {
         .get('/api/users')
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.user.should.be.a('array');
-          res.body.user.length.should.be.eql(0);
+          res.body.Users.should.be.a('array');
+          res.body.Users.length.should.be.eql(0);
           res.body.error.should.be.eql(false);
           done();
         });
@@ -65,15 +65,15 @@ describe('Users', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
-          res.body.should.have.property('user');
-          res.body.user.should.be.a('array');
-          res.body.user.should.have.keys('0');
-          res.body.user.should.have.property('0');
-          res.body.user.should.have.deep.property('0', user).property('id');
-          res.body.user.should.have.deep.property('0', user).property('name');
-          res.body.user.should.have.deep.property('0', user).property('username');
-          res.body.user.should.have.deep.property('0', user).property('email');
-          res.body.user.should.have.deep.property('0', user).property('password');
+          res.body.should.have.property('Users');
+          res.body.Users.should.be.a('array');
+          res.body.Users.should.have.keys('0');
+          res.body.Users.should.have.property('0');
+          res.body.Users.should.have.deep.property('0', user).property('id');
+          res.body.Users.should.have.deep.property('0', user).property('name');
+          res.body.Users.should.have.deep.property('0', user).property('username');
+          res.body.Users.should.have.deep.property('0', user).property('email');
+          res.body.Users.should.have.deep.property('0', user).property('password');
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
           done();
@@ -87,17 +87,17 @@ describe('Users', () => {
         password: 'abc',
       };
 
-      User.push(user);
+      Users.push(user);
       chai.request(app)
         .post('/auth/login')
         .send({ username: 'justman', password: 'abc' })
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
-          res.body.user.should.have.property('id');
-          res.body.user.should.have.property('name');
-          res.body.user.should.have.property('username').eql('justman');
-          res.body.user.should.have.property('password').eql('abc');
+          res.body.Users.should.have.property('id');
+          res.body.Users.should.have.property('name');
+          res.body.Users.should.have.property('username').eql('justman');
+          res.body.Users.should.have.property('password').eql('abc');
           res.body.should.have.property('message').eql('Success');
           res.body.error.should.be.eql(false);
           done();
@@ -119,17 +119,17 @@ describe('Users', () => {
       };
 
       // Passing user to user model
-      User.push(user);
+      Users.push(user);
       chai.request(app)
         .get(`/api/users/${user.id}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
-          res.body.user.should.have.property('name');
-          res.body.user.should.have.property('username');
-          res.body.user.should.have.property('email');
-          res.body.user.should.have.property('password');
-          res.body.user.should.have.property('id').eql(user.id);
+          res.body.Users.should.have.property('name');
+          res.body.Users.should.have.property('username');
+          res.body.Users.should.have.property('email');
+          res.body.Users.should.have.property('password');
+          res.body.Users.should.have.property('id').eql(user.id);
           done();
         });
     });
@@ -149,7 +149,7 @@ describe('Users', () => {
       };
 
       // Passing user to user model
-      User.push(user);
+      Users.push(user);
 
       chai.request(app)
         .put(`/api/users/${user.id}`)
@@ -164,7 +164,7 @@ describe('Users', () => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('message').eql('User updated!');
-          res.body.user.should.have.property('password').eql('abcd');
+          res.body.Users.should.have.property('password').eql('abcd');
           done();
         });
     });
@@ -184,7 +184,7 @@ describe('Users', () => {
       };
 
       // Passing user to user model
-      User.push(user);
+      Users.push(user);
       chai.request(app)
         .delete(`/api/users/${user.id}`)
         .end((err, res) => {

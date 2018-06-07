@@ -1,7 +1,6 @@
-const usersController = require('../controllers/users');
-const businessesController = require('../controllers/businesses');
+import { usersController, businessesController } from '../controllers/index';
 
-module.exports = (app) => {
+const routes = (app) => {
   app.get('/api', (req, res) => res.status(200).send({
     message: 'Welcome to the User API!'
   }));
@@ -19,3 +18,5 @@ module.exports = (app) => {
   app.get('/businesses/:businessId', businessesController.retrieve);
   app.get('/businesses/', businessesController.list);
 };
+
+export default routes;
