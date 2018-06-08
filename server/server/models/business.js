@@ -1,4 +1,4 @@
-const business = [
+const Businesses = [
   {
     businessId: '1',
     businessName: 'Sommyj IceCream',
@@ -24,4 +24,4 @@ const business = [
     category: 'security',
   },
 ];
-module.exports = business;
+export default Businesses;

@@ -1,6 +1,6 @@
-const business = require('../models/business');
+import Businesses from '../models/business';
 
-module.exports = {
+const businessesController = {
   create(req, res) {
     if (!req.body.businessName || !req.body.reviews || !req.body.location || !req.body.category) {
       return res.status(206).json({
@@ -8,24 +8,24 @@ module.exports = {
         error: true
       });
     }
-    business.push(req.body);
+    Businesses.push(req.body);
     return res.json({
-      business,
+      Businesses,
       message: 'Success',
       error: false
     });
   },
   update(req, res) {
-    for (let i = 0; i < business.length; i += 1) {
-      if (business[i].businessId === req.params.businessId) {
-        business[i].businessName = req.body.businessName;
-        business[i].userId = req.body.userId;
-        business[i].reviews = req.body.reviews;
-        business[i].location = req.body.location;
-        business[i].category = req.body.category;
+    for(const Business of Businesses)  {
+      if (Business.businessId === req.params.businessId) {
+        Business.businessName = req.body.businessName;
+        Business.userId = req.body.userId;
+        Business.reviews = req.body.reviews;
+        Business.location = req.body.location;
+        Business.category = req.body.category;
 
         return res.json({
-          business: business[i],
+          Businesses: Business,
           message: 'Bussiness updated!',
           error: false
         });
@@ -37,16 +37,18 @@ module.exports = {
     });
   },
   destroy(req, res) {
-    for (let i = 0; i < business.length; i += 1) {
-      if (business[i].businessId === req.params.businessId) {
-        business.splice(i, 1);
+    for(const Business of Businesses){
+      let i = 0;
+      if (Business.businessId === req.params.businessId) {
+        Businesses.splice(i, 1);
 
         return res.status(404).json({
-          business,
+          Businesses,
           message: 'Business successfully deleted!',
           error: false
         });
       }
+      i++;
     }
 
     return res.status(404).json({
@@ -55,10 +57,10 @@ module.exports = {
     });
   },
   retrieve(req, res) {
-    for (let i = 0; i < business.length; i += 1) {
-      if (business[i].businessId === req.params.businessId) {
+    for(const Business of Businesses){
+      if (Business.businessId === req.params.businessId) {
         return res.json({
-          business: business[i],
+          Businesses: Business,
           error: false
         });
       }
@@ -72,49 +74,49 @@ module.exports = {
   list(req, res) {
     if (!req.query.location && !req.query.category) {
       return res.json({
-        business,
+        Businesses,
         error: false
       });
     }
     if (req.query.location && !req.query.category) {
       const array = [];
-      for (let i = 0; i < business.length; i += 1) {
-        if (business[i].location === req.query.location) {
-          array.push(business[i]);
+      for(const Business of Businesses){
+        if (Business.location === req.query.location) {
+          array.push(Business);
         }
       }
       if (array.length !== 0) {
         return res.json({
-          business: array,
+          Businesses: array,
           error: false
         });
       }
     }
     if (req.query.category && !req.query.location) {
       const array = [];
-      for (let i = 0; i < business.length; i += 1) {
-        if (business[i].category === req.query.category) {
-          array.push(business[i]);
+      for(const Business of Businesses){
+        if (Business.category === req.query.category) {
+          array.push(Business);
         }
       }
       if (array.length !== 0) {
         return res.json({
-          business: array,
+          Businesses: array,
           error: false
         });
       }
     }
     if (req.query.location && req.query.category) {
       const array = [];
-      for (let i = 0; i < business.length; i += 1) {
-        if (business[i].location === req.query.location &&
-         business[i].category === req.query.category) {
-          array.push(business[i]);
+      for(const Business of Businesses){
+        if (Business.location === req.query.location &&
+         Business.category === req.query.category) {
+          array.push(Business);
         }
       }
       if (array.length !== 0) {
         return res.json({
-          business: array,
+          Businesses: array,
           error: false
         });
       }
@@ -125,3 +127,5 @@ module.exports = {
     });
   },
 };
+
+export default businessesController;
