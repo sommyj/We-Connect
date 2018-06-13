@@ -1,12 +1,12 @@
-# We-Connect  [![Build Status](https://travis-ci.org/sommyj/We-Connect.svg?branch=server)](https://travis-ci.org/sommyj/We-Connect) [![Coverage Status](https://coveralls.io/repos/github/sommyj/We-Connect/badge.svg?branch=server)](https://coveralls.io/github/sommyj/We-Connect?branch=server)
+# We-Connect  [![Build Status](https://travis-ci.org/sommyj/We-Connect.svg?branch=server)](https://travis-ci.org/sommyj/We-Connect) [![Coverage Status](https://coveralls.io/repos/github/sommyj/We-Connect/badge.svg?branch=server)](https://coveralls.io/github/sommyj/We-Connect?branch=server) [![Maintainability](https://api.codeclimate.com/v1/badges/baaf95025c4406378619/maintainability)](https://codeclimate.com/github/sommyj/We-Connect/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/baaf95025c4406378619/test_coverage)](https://codeclimate.com/github/sommyj/We-Connect/test_coverage)
 WeConnect is a demo that provides a platform that brings businesses and individuals together. This platform creates awareness for businesses and gives the users the ability to write reviews about the businesses they have interacted with.
 
 ## Getting Started
-You nee to click on the links to view different pages
+You need to click on the links to view different pages
 
 ### Prerequisites
 
-All u need is a web browse which is what you are using right now to access Github pages
+All you need is a web browse which is what you are using right now to access Github pages
 
 ### Pages
 
