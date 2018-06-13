@@ -2,11 +2,11 @@
 WeConnect is a demo that provides a platform that brings businesses and individuals together. This platform creates awareness for businesses and gives the users the ability to write reviews about the businesses they have interacted with.
 
 ## Getting Started
-You nee to click on the links to view different pages
+You need to click on the links to view different pages
 
 ### Prerequisites
 
-All u need is a web browse which is what you are using right now to access Github pages
+All you need is a web browse which is what you are using right now to access Github pages
 
 ### Pages
 
