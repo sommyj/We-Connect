@@ -85,9 +85,53 @@ describe('Businesses', () => {
   });
 
   /*
-  * Test the /GET/:id route
+  * Test the /GET/ route
   */
-  describe('/GET/:id business', () => {
+  describe('/GET/ business', () => {
+
+    it('it should GET all businesses', (done) => {
+      const business = [
+      {
+        businessId: '11',
+        businessName: 'Sommyj',
+        userId: '22',
+        reviews: 'We produce quality products',
+        location: 'lagos',
+        category: 'Production',
+      },
+      {
+        businessId: '12',
+        businessName: 'amsomee',
+        userId: '23',
+        reviews: 'We produce quality service',
+        location: 'owerri',
+        category: 'Importation',
+      },
+    ];
+
+      // Passing business to business model
+      Businesses.push(business[0]);
+      Businesses.push(business[1]);
+      chai.request(app)
+        .get('/businesses')
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.Businesses.should.have.property('0');
+          res.body.Businesses.should.have.property('1');
+          res.body.Businesses.should.have.deep.property('0', business[0]);
+          res.body.Businesses.should.have.deep.property('1', business[1]);
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('businessId').eql('11');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('businessName').eql('Sommyj');
+          res.body.Businesses.should.have.deep.property('1', business[1]).property('businessId').eql('12');
+          res.body.Businesses.should.have.deep.property('1', business[1]).property('businessName').eql('amsomee');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('category').eql('Production');
+          res.body.Businesses.should.have.deep.property('1', business[1]).property('category').eql('Importation');
+          res.body.error.should.be.eql(false);
+          done();
+        });
+    });
+
     it('it should GET a business by the given id', (done) => {
       const business = {
         businessId: '11',
@@ -142,6 +186,49 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.deep.property('0', business).property('reviews');
           res.body.Businesses.should.have.deep.property('0', business).property('location');
           res.body.Businesses.should.have.deep.property('0', business).property('category').eql('Production');
+          res.body.error.should.be.eql(false);
+          done();
+        });
+    });
+
+    it('it should GET a business by the given location', (done) => {
+      const business = [
+      {
+        businessId: '11',
+        businessName: 'Sommyj',
+        userId: '22',
+        reviews: 'We produce quality products',
+        location: 'lagos',
+        category: 'Production',
+      },
+      {
+        businessId: '12',
+        businessName: 'amsomee',
+        userId: '23',
+        reviews: 'We produce quality service',
+        location: 'owerri',
+        category: 'Importation',
+      },
+    ];
+
+      // Passing business to business model
+      Businesses.push(business[0]);
+      Businesses.push(business[1]);
+      chai.request(app)
+        .get('/businesses')
+        .query(`location=${business[0].location}`) // /businesses?location='lagos'
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.Businesses.should.be.a('array');
+          res.body.Businesses.should.have.keys('0');
+          res.body.Businesses.should.have.property('0');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('businessId').eql('11');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('businessName').eql('Sommyj');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('userId');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('reviews');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('location');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('category').eql('Production');
           res.body.error.should.be.eql(false);
           done();
         });

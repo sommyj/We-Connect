@@ -106,9 +106,54 @@ describe('Users', () => {
   });
 
   /*
-  * Test the /GET/:id route
+  * Test the /GET/ route
   */
-  describe('/GET/:id user', () => {
+  describe('/GET/ user', () => {
+
+    it('it should GET all users', (done) => {
+      const user = [{
+        id: 12,
+        name: 'justin',
+        username: 'justman',
+        email: 'justin@gmail.com',
+        password: 'abc',
+      },
+      {
+        id: 13,
+        name: 'somto',
+        username: 'sommy',
+        email: 'somto@gmail.com',
+        password: '123',
+      }
+  ];
+
+      // Passing user to user model
+      Users.push(user[0]);
+      Users.push(user[1]);
+      chai.request(app)
+        .get(`/api/users/`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.Users.should.have.property('0');
+          res.body.Users.should.have.property('1');
+          res.body.Users.should.have.deep.property('0', user[0]);
+          res.body.Users.should.have.deep.property('1', user[1]);
+          res.body.Users.should.have.deep.property('0', user[0]).property('id').eql(user[0].id);
+          res.body.Users.should.have.deep.property('1', user[1]).property('id').eql(user[1].id);
+          res.body.Users.should.have.deep.property('0', user[0]).property('name').eql(user[0].name);
+          res.body.Users.should.have.deep.property('1', user[1]).property('name').eql(user[1].name);
+          res.body.Users.should.have.deep.property('0', user[0]).property('username').eql(user[0].username);
+          res.body.Users.should.have.deep.property('1', user[1]).property('username').eql(user[1].username);
+          res.body.Users.should.have.deep.property('0', user[0]).property('email').eql(user[0].email);
+          res.body.Users.should.have.deep.property('1', user[1]).property('email').eql(user[1].email);
+          res.body.Users.should.have.deep.property('0', user[0]).property('password').eql(user[0].password);
+          res.body.Users.should.have.deep.property('1', user[1]).property('password').eql(user[1].password);
+          res.body.error.should.be.eql(false);
+          done();
+        });
+    });
+
     it('it should GET a user by the given id', (done) => {
       const user = {
         id: 12,
