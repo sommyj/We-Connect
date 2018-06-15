@@ -9,18 +9,18 @@ const usersController = {
     return res.json({ Users, message: 'Success', error: false });
   },
   check(req, res) {
-    Users.forEach((User) => {
+    for (const User of Users) {
       if (User.username === req.body.username && User.password === req.body.password) {
         return res.json({ Users: User, message: 'Success', error: false });
       }
-    });
+    }
     return res.status(404).json({ message: 'User not found', error: true });
   },
   list(req, res) {
     return res.json({ Users, error: false });
   },
   update(req, res) {
-    Users.forEach((User) => {
+    for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {
         User.name = req.body.name;
         User.username = req.body.username;
@@ -28,26 +28,26 @@ const usersController = {
         User.password = req.body.password;
         return res.json({ Users: User, message: 'User updated!', error: false });
       }
-    });
+    }
     return res.status(404).json({ message: 'User not found', error: true });
   },
   destroy(req, res) {
-    Users.forEach((User) => {
+    for (const User of Users) {
       let i = 0;
       if (User.id === parseInt(req.params.userId, 10)) {
         Users.splice(i, 1);
         return res.json({ message: 'User deleted!', error: false });
       }
       i += 1;
-    });
+    }
     return res.status(404).json({ message: 'User not found', error: true });
   },
   retrieve(req, res) {
-    Users.forEach((User) => {
+    for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {
         return res.json({ Users: User, message: 'Success', error: false });
       }
-    });
+    }
     return res.status(404).json({ message: 'User not found', error: true });
   },
 };
