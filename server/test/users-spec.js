@@ -124,15 +124,12 @@ describe('Users', () => {
           done();
         });
     });
-
-
   });
 
   /*
   * Test the /GET/ route
   */
   describe('/GET/ user', () => {
-
     it('it should GET all users', (done) => {
       const user = [{
         id: 12,
@@ -148,13 +145,13 @@ describe('Users', () => {
         email: 'somto@gmail.com',
         password: '123',
       }
-  ];
+      ];
 
       // Passing user to user model
       Users.push(user[0]);
       Users.push(user[1]);
       chai.request(app)
-        .get(`/api/users/`)
+        .get('/api/users/')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -215,7 +212,7 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
       chai.request(app)
-        .get(`/api/users/14`)
+        .get('/api/users/14')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -224,8 +221,6 @@ describe('Users', () => {
           done();
         });
     });
-
-
   });
 
   /*
@@ -275,7 +270,7 @@ describe('Users', () => {
       Users.push(user);
 
       chai.request(app)
-        .put(`/api/users/14`)
+        .put('/api/users/14')
         .send({
           id: 12,
           name: 'justin',
@@ -291,7 +286,6 @@ describe('Users', () => {
           done();
         });
     });
-
   });
 
   /*
@@ -331,7 +325,7 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
       chai.request(app)
-        .delete(`/api/users/15`)
+        .delete('/api/users/15')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -340,6 +334,5 @@ describe('Users', () => {
           done();
         });
     });
-
   });
 });
