@@ -30,7 +30,7 @@ describe('Users', () => {
   });
 
   describe('/POST user', () => {
-    it('it should not POST a user without reviews', (done) => {
+    it('it should not POST a user without email', (done) => {
       const user = {
         id: 12,
         name: 'justin',
@@ -50,7 +50,7 @@ describe('Users', () => {
         });
     });
 
-    it('it should post a business', (done) => {
+    it('it should post a user', (done) => {
       const user = {
         id: 12,
         name: 'justin',
@@ -103,6 +103,29 @@ describe('Users', () => {
           done();
         });
     });
+
+    it('it should not get a particular user if POST a wrong username && password', (done) => {
+      const user = {
+        id: 12,
+        name: 'justin',
+        username: 'justman',
+        password: 'abc',
+      };
+
+      Users.push(user);
+      chai.request(app)
+        .post('/auth/login')
+        .send({ username: 'justin', password: 'abc' })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.message.should.be.eql('User not found');
+          res.body.error.should.be.eql(true);
+          done();
+        });
+    });
+
+
   });
 
   /*
@@ -178,6 +201,31 @@ describe('Users', () => {
           done();
         });
     });
+
+
+    it('it should not GET a user by the given wrong id', (done) => {
+      const user = {
+        id: 12,
+        name: 'justin',
+        username: 'justman',
+        email: 'justin@gmail.com',
+        password: 'abc',
+      };
+
+      // Passing user to user model
+      Users.push(user);
+      chai.request(app)
+        .get(`/api/users/14`)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.message.should.be.eql('User not found');
+          res.body.error.should.be.eql(true);
+          done();
+        });
+    });
+
+
   });
 
   /*
@@ -213,6 +261,37 @@ describe('Users', () => {
           done();
         });
     });
+
+    it('it should not UPDATE a user given the wrong id', (done) => {
+      const user = {
+        id: 12,
+        name: 'justin',
+        username: 'justman',
+        email: 'justin@gmail.com',
+        password: 'abc',
+      };
+
+      // Passing user to user model
+      Users.push(user);
+
+      chai.request(app)
+        .put(`/api/users/14`)
+        .send({
+          id: 12,
+          name: 'justin',
+          username: 'sojust',
+          email: 'justin@gmail.com',
+          password: 'abcd'
+        })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('User not found');
+          res.body.error.should.be.eql(true);
+          done();
+        });
+    });
+
   });
 
   /*
@@ -239,5 +318,28 @@ describe('Users', () => {
           done();
         });
     });
+
+    it('it should not DELETE a user given the wrong id', (done) => {
+      const user = {
+        id: 12,
+        name: 'justin',
+        username: 'justman',
+        email: 'justin@gmail.com',
+        password: 'abc',
+      };
+
+      // Passing user to user model
+      Users.push(user);
+      chai.request(app)
+        .delete(`/api/users/15`)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('User not found');
+          res.body.error.should.be.eql(true);
+          done();
+        });
+    });
+
   });
 });

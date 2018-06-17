@@ -149,12 +149,36 @@ describe('Businesses', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
+          res.body.error.should.be.eql(false);
           res.body.Businesses.should.have.property('businessName');
           res.body.Businesses.should.have.property('userId');
           res.body.Businesses.should.have.property('reviews');
           res.body.Businesses.should.have.property('location');
           res.body.Businesses.should.have.property('category');
           res.body.Businesses.should.have.property('businessId').eql(business.businessId);
+          done();
+        });
+    });
+
+    it('it should not GET a business by the given wrong id', (done) => {
+      const business = {
+        businessId: '11',
+        businessName: 'Sommyj',
+        userId: '22',
+        reviews: 'We produce quality products',
+        location: 'lagos',
+        category: 'Production',
+      };
+
+      // Passing business to business model
+      Businesses.push(business);
+      chai.request(app)
+        .get(`/businesses/13`)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.error.should.be.eql(true);
+          res.body.message.should.be.eql('Business not found');
           done();
         });
     });
@@ -335,7 +359,7 @@ describe('Businesses', () => {
       chai.request(app)
         .put(`/businesses/${business.businessId}`)
         .send({
-          businessId: '11',
+          businessId: '12',
           businessName: 'Sommyj',
           userId: '22',
           reviews: 'We produce quality products',
@@ -345,8 +369,41 @@ describe('Businesses', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
+          res.body.should.have.property('error').eql(false);
           res.body.should.have.property('message').eql('Bussiness updated!');
           res.body.Businesses.should.have.property('location').eql('port-harcourt');
+          done();
+        });
+    });
+
+    it('it should not UPDATE a business given the wrong id', (done) => {
+      const business = {
+        businessId: '11',
+        businessName: 'Sommyj',
+        userId: '22',
+        reviews: 'We produce quality products',
+        location: 'lagos',
+        category: 'Production',
+      };
+
+      // Passing business to business model
+      Businesses.push(business);
+
+      chai.request(app)
+        .put(`/businesses/12`)
+        .send({
+          businessId: '19',
+          businessName: 'Sommyj',
+          userId: '22',
+          reviews: 'We produce quality products',
+          location: 'port-harcourt',
+          category: 'Production',
+        })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.have.property('error').eql(true);
+          res.body.should.have.property('message').eql('Business not found');
           done();
         });
     });
@@ -373,9 +430,37 @@ describe('Businesses', () => {
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
+          res.body.error.should.be.eql(false);
+          res.body.Businesses.should.be.empty;
+          res.body.Businesses.length.should.be.eql(0);
           res.body.should.have.property('message').eql('Business successfully deleted!');
           done();
         });
     });
+
+    it('it should not DELETE a business given the wrong id', (done) => {
+      const business = {
+        businessId: '11',
+        businessName: 'Sommyj',
+        userId: '22',
+        reviews: 'We produce quality products',
+        location: 'lagos',
+        category: 'Production',
+      };
+
+      // Passing business to business model
+      Businesses.push(business);
+      chai.request(app)
+        .delete(`/businesses/13`)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.error.should.be.eql(true);
+          res.body.should.have.property('message').eql('Business not found');
+          done();
+        });
+    });
+
   });
+
 });
