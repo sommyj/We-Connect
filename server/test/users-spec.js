@@ -52,7 +52,7 @@ describe('Users', () => {
 
     it('it should post a user', (done) => {
       const user = {
-        id: 12,
+        id: 1,
         name: 'justin',
         username: 'justman',
         email: 'justin@gmail.com',
@@ -63,7 +63,7 @@ describe('Users', () => {
         .post('/auth/signup')
         .send(user)
         .end((err, res) => {
-          res.should.have.status(200);
+          res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.have.property('Users');
           res.body.Users.should.be.a('array');
@@ -306,9 +306,10 @@ describe('Users', () => {
       chai.request(app)
         .delete(`/api/users/${user.id}`)
         .end((err, res) => {
-          res.should.have.status(200);
+          res.should.have.status(204);
           res.body.should.be.a('object');
-          res.body.should.have.property('message').eql('User deleted!');
+          // res.body.should.have.property('message').eql('User deleted!');
+          // res.body.error.should.be.eql(false);
           done();
         });
     });
