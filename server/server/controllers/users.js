@@ -2,11 +2,21 @@ import Users from '../models/user';
 
 const usersController = {
   create(req, res) {
+    const user = {
+      id: Users.length + 1,
+      name: req.body.name,
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+    };
+
     if (!req.body.name || !req.body.username || !req.body.email || !req.body.password) {
       return res.status(206).json({ message: 'Incomplete field', error: true });
     }
-    Users.push(req.body);
-    return res.json({ Users, message: 'Success', error: false });
+
+    // Users.push(req.body);
+    Users.push(user);
+    return res.status(201).json({ Users, message: 'Success', error: false });
   },
   check(req, res) {
     for (const User of Users) {
@@ -32,11 +42,11 @@ const usersController = {
     return res.status(404).json({ message: 'User not found', error: true });
   },
   destroy(req, res) {
+    let i = 0;
     for (const User of Users) {
-      let i = 0;
       if (User.id === parseInt(req.params.userId, 10)) {
         Users.splice(i, 1);
-        return res.json({ message: 'User deleted!', error: false });
+        return res.status(204).json({ Users, message: 'User deleted!', error: false });
       }
       i += 1;
     }

@@ -1,12 +1,23 @@
 import Businesses from '../models/business';
 
 const businessesController = {
+
   create(req, res) {
-    if (!req.body.businessName || !req.body.reviews || !req.body.location || !req.body.category) {
+    const business = {
+      businessId: `${Businesses.length + 1}`,
+      businessName: req.body.businessName,
+      userId: req.body.userId,
+      reviews: req.body.reviews,
+      location: req.body.location,
+      category: req.body.category,
+    };
+
+    if (!req.body.businessName || !req.body.userId || !req.body.reviews || !req.body.location || !req.body.category) {
       return res.status(206).json({ message: 'Incomplete fields', error: true });
     }
-    Businesses.push(req.body);
-    return res.json({ Businesses, message: 'Success', error: false });
+    Businesses.push(business);
+    // Businesses.push(req.body);
+    return res.status(201).json({ Businesses, message: 'Success', error: false });
   },
   update(req, res) {
     for (const Business of Businesses) {
@@ -23,11 +34,11 @@ const businessesController = {
     return res.status(404).json({ message: 'Business not found', error: true });
   },
   destroy(req, res) {
+    let i = 0;
     for (const Business of Businesses) {
-      let i = 0;
       if (Business.businessId === req.params.businessId) {
         Businesses.splice(i, 1);
-        return res.status(404).json({ Businesses, message: 'Business successfully deleted!', error: false });
+        return res.status(204).json({ Businesses, message: 'Business successfully deleted!', error: false });
       }
       i += 1;
     }
