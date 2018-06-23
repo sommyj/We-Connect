@@ -18,7 +18,7 @@ describe('Reviews', () => {
   describe('/GET review', () => {
     it('it should GET empty reviews', (done) => {
       chai.request(app)
-        .get('/businesses/1/reviews')
+        .get('/v1/businesses/1/reviews')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.Reviews.should.be.a('array');
@@ -46,7 +46,7 @@ describe('Reviews', () => {
       Reviews.push(review[0]);
       Reviews.push(review[1]);
       chai.request(app)
-        .get('/businesses/2/reviews')
+        .get('/v1/businesses/2/reviews')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.Reviews.should.be.a('array');
@@ -81,7 +81,7 @@ describe('Reviews', () => {
       Reviews.push(review[0]);
       Reviews.push(review[1]);
       chai.request(app)
-        .get('/businesses/1/reviews')
+        .get('/v1/businesses/1/reviews')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.Reviews.should.be.a('array');
@@ -106,7 +106,7 @@ describe('Reviews', () => {
       };
 
       chai.request(app)
-        .post('/businesses/2/reviews')
+        .post('/v1/businesses/2/reviews')
         .send(review)
         .end((err, res) => {
           res.should.have.status(206);
@@ -126,7 +126,7 @@ describe('Reviews', () => {
       };
 
       chai.request(app)
-        .post('/businesses/2/reviews')
+        .post('/v1/businesses/2/reviews')
         .send(review)
         .end((err, res) => {
           res.should.have.status(201);

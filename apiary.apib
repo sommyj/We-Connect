@@ -13,7 +13,7 @@ This resource does not have any attributes. Instead it offers the initial API af
 
 Resource related to user in the API.
 
-## User Collection [/api/users]
+## User Collection [/api/v1/users]
 
 ### List All Users [GET]
 
@@ -46,7 +46,7 @@ Resource related to user in the API.
                 "error": false
             }
 
-## Signup [/auth/signup]
+## Signup [/auth/v1/signup]
 
 ### Create a New User [POST]
 
@@ -87,7 +87,7 @@ This example returns a 201 status code, along with HTTP headers and a body.
         "error": false
     }
 
-## Login [/auth/login]
+## Login [/auth/v1/login]
 
 ### Login a User [POST]
 
@@ -129,7 +129,7 @@ This example returns a 200 status code, along with HTTP headers and a body.
 
 Resource related to business in the API.
 
-## Business Collection [/businesses]
+## Business Collection [/v1/businesses]
 
 ### List All Businesses [GET]
 
@@ -207,7 +207,7 @@ This example returns a 201 status code, along with HTTP headers and a body.
                   "error": false
               }
 
-## Business [/businesses/{businessId}]
+## Business [/v1/businesses/{businessId}]
 
 A Business object has the following attributes.
 
@@ -276,7 +276,7 @@ This resource has a delete action. The server will return a 204 response without
 
 + Response 204
 
-## Business [/businesses{?location}]
+## Business [/v1/businesses{?location}]
 
 + Parameters
     + location: "abuja" (optional, string) - The location of businesses to return
@@ -310,7 +310,7 @@ This resource has a delete action. The server will return a 204 response without
                 "error": false
             }
 
-## Business [/businesses{?category}]
+## Business [/v1/businesses{?category}]
 
 + Parameters
     + category: "production" (optional, string) - The category of businesses to return
@@ -344,7 +344,7 @@ This resource has a delete action. The server will return a 204 response without
                 "error": false
             }
 `
-## Reviews [/businesses/{businessId}/reviews]
+## Reviews [/v1/businesses/{businessId}/reviews]
 
 + Parameters
     + businessId: 2 (required, number) - ID of the Business in form of an integer

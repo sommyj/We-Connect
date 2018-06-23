@@ -5,21 +5,21 @@ const routes = (app) => {
     message: 'Welcome to the User API!'
   }));
 
-  app.post('/auth/signup', usersController.create);
-  app.post('/auth/login', usersController.check);
-  app.get('/api/users', usersController.list);
-  app.put('/api/users/:userId', usersController.update);
-  app.get('/api/users/:userId', usersController.retrieve);
-  app.delete('/api/users/:userId', usersController.destroy);
+  app.post('/auth/v1/signup', usersController.create);
+  app.post('/auth/v1/login', usersController.check);
+  app.get('/api/v1/users', usersController.list);
+  app.put('/api/v1/users/:userId', usersController.update);
+  app.get('/api/v1/users/:userId', usersController.retrieve);
+  app.delete('/api/v1/users/:userId', usersController.destroy);
 
-  app.post('/businesses/', businessesController.create);
-  app.put('/businesses/:businessId', businessesController.update);
-  app.delete('/businesses/:businessId', businessesController.destroy);
-  app.get('/businesses/:businessId', businessesController.retrieve);
-  app.get('/businesses/', businessesController.list);
+  app.post('/v1/businesses/', businessesController.create);
+  app.put('/v1/businesses/:businessId', businessesController.update);
+  app.delete('/v1/businesses/:businessId', businessesController.destroy);
+  app.get('/v1/businesses/:businessId', businessesController.retrieve);
+  app.get('/v1/businesses/', businessesController.list);
 
-  app.post('/businesses/:businessId/reviews', reviewsController.create);
-  app.get('/businesses/:businessId/reviews', reviewsController.retrieve);
+  app.post('/v1/businesses/:businessId/reviews', reviewsController.create);
+  app.get('/v1/businesses/:businessId/reviews', reviewsController.retrieve);
 };
 
 export default routes;

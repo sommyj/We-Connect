@@ -18,7 +18,7 @@ describe('Businesses', () => {
   describe('/GET business', () => {
     it('it should GET all the businesses', (done) => {
       chai.request(app)
-        .get('/businesses/')
+        .get('/v1/businesses/')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.Businesses.should.be.a('array');
@@ -40,7 +40,7 @@ describe('Businesses', () => {
       };
 
       chai.request(app)
-        .post('/businesses/')
+        .post('/v1/businesses/')
         .send(business)
         .end((err, res) => {
           res.should.have.status(206);
@@ -62,7 +62,7 @@ describe('Businesses', () => {
       };
 
       chai.request(app)
-        .post('/businesses/')
+        .post('/v1/businesses/')
         .send(business)
         .end((err, res) => {
           res.should.have.status(201);
@@ -109,7 +109,7 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -148,7 +148,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .get(`/businesses/${business.businessId}`)
+        .get(`/v1/businesses/${business.businessId}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -177,7 +177,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .get('/businesses/13')
+        .get('/v1/businesses/13')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -200,7 +200,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query(`category=${business.category}`) // /businesses?category='Production'
         .end((err, res) => {
           res.should.have.status(200);
@@ -234,7 +234,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query('category=Sales') // /businesses?category='Production'
         .end((err, res) => {
           res.should.have.status(404);
@@ -270,7 +270,7 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query(`location=${business[0].location}`) // /businesses?location='lagos'
         .end((err, res) => {
           res.should.have.status(200);
@@ -315,7 +315,7 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query('location=abuja') // /businesses?location='lagos'
         .end((err, res) => {
           res.should.have.status(404);
@@ -352,7 +352,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query({ location: 'lagos', category: 'Production' }) // /businesses?location='lagos'&category='Production'
         .end((err, res) => {
           res.should.have.status(200);
@@ -398,7 +398,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query({ location: 'abuja', category: 'Production' }) // /businesses?location ='lagos'&category='Production'
         .end((err, res) => {
           res.should.have.status(404);
@@ -439,7 +439,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .put(`/businesses/${business[0].businessId}`)
+        .put(`/v1/businesses/${business[0].businessId}`)
         .send({
           businessId: '12',
           businessName: 'Sommyj Enterprise',
@@ -486,7 +486,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .put('/businesses/13')
+        .put('/v1/businesses/13')
         .send({
           businessId: '19',
           businessName: 'Sommyj',
@@ -534,7 +534,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .delete(`/businesses/${business[0].businessId}`)
+        .delete(`/v1/businesses/${business[0].businessId}`)
         .end((err, res) => {
           res.should.have.status(204);
           res.body.should.be.a('object');
@@ -558,7 +558,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .delete('/businesses/13')
+        .delete('/v1/businesses/13')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
