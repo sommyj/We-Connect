@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for lib/server/routes/index.js</title>
+    <title>Code coverage report for lib/server/models/review.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -16,13 +16,13 @@
 <div class='wrapper'>
   <div class='pad1'>
     <h1>
-      <a href="../../../index.html">all files</a> / <a href="index.html">lib/server/routes/</a> index.js
+      <a href="../../../index.html">all files</a> / <a href="index.html">lib/server/models/</a> review.js
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>19/19</span>
+        <span class='fraction'>3/3</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -32,12 +32,12 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>2/2</span>
+        <span class='fraction'>0/0</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>19/19</span>
+        <span class='fraction'>3/3</span>
       </div>
     </div>
   </div>
@@ -64,47 +64,25 @@
 19
 20
 21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+22</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span></td><td class="text"><pre class="prettyprint lang-js">'use strict';
@@ -112,34 +90,23 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-&nbsp;
-var _index = require('../controllers/index');
-&nbsp;
-var routes = function routes(app) {
-  app.get('/api', function (req, res) {
-    return res.status(200).send({
-      message: 'Welcome to the User API!'
-    });
-  });
-&nbsp;
-  app.post('/auth/signup', _index.usersController.create);
-  app.post('/auth/login', _index.usersController.check);
-  app.get('/api/users', _index.usersController.list);
-  app.put('/api/users/:userId', _index.usersController.update);
-  app.get('/api/users/:userId', _index.usersController.retrieve);
-  app.delete('/api/users/:userId', _index.usersController.destroy);
-&nbsp;
-  app.post('/businesses/', _index.businessesController.create);
-  app.put('/businesses/:businessId', _index.businessesController.update);
-  app.delete('/businesses/:businessId', _index.businessesController.destroy);
-  app.get('/businesses/:businessId', _index.businessesController.retrieve);
-  app.get('/businesses/', _index.businessesController.list);
-&nbsp;
-  app.post('/businesses/:businessId/reviews', _index.reviewsController.create);
-  app.get('/businesses/:businessId/reviews', _index.reviewsController.retrieve);
-};
-&nbsp;
-exports.default = routes;</pre></td></tr>
+var Reviews = [{
+  id: 1,
+  response: 'very good.',
+  userId: '3',
+  businessId: '2'
+}, {
+  id: 2,
+  response: 'Excellent',
+  userId: '1',
+  businessId: '2'
+}, {
+  id: 3,
+  response: 'Not really fantastic',
+  userId: '2',
+  businessId: '1'
+}];
+exports.default = Reviews;</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
 </div><!-- /wrapper -->

@@ -66,14 +66,11 @@ describe('Users', () => {
           res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.have.property('Users');
-          res.body.Users.should.be.a('array');
-          res.body.Users.should.have.keys('0');
-          res.body.Users.should.have.property('0');
-          res.body.Users.should.have.deep.property('0', user).property('id');
-          res.body.Users.should.have.deep.property('0', user).property('name');
-          res.body.Users.should.have.deep.property('0', user).property('username');
-          res.body.Users.should.have.deep.property('0', user).property('email');
-          res.body.Users.should.have.deep.property('0', user).property('password');
+          res.body.Users.should.have.property('id').eql(1);
+          res.body.Users.should.have.property('name').eql('justin');
+          res.body.Users.should.have.property('username').eql('justman');
+          res.body.Users.should.have.property('email').eql('justin@gmail.com');
+          res.body.Users.should.have.property('password').eql('abc');
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
           done();
@@ -190,10 +187,10 @@ describe('Users', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
-          res.body.Users.should.have.property('name');
-          res.body.Users.should.have.property('username');
-          res.body.Users.should.have.property('email');
-          res.body.Users.should.have.property('password');
+          res.body.Users.should.have.property('name').eql('justin');
+          res.body.Users.should.have.property('username').eql('justman');
+          res.body.Users.should.have.property('email').eql('justin@gmail.com');
+          res.body.Users.should.have.property('password').eql('abc');
           res.body.Users.should.have.property('id').eql(user.id);
           done();
         });

@@ -1,0 +1,404 @@
+FORMAT: 1A
+HOST: https://we-connect-demo.herokuapp.com/
+
+# WeConnect
+
+WeConnect is a demo that provides a platform that brings businesses and individuals together. This platform creates awareness for businesses and gives the users the ability to write reviews about the businesses they have interacted with.
+
+# WeConnect API Root [/]
+
+This resource does not have any attributes. Instead it offers the initial API affordances in the form of the links in the JSON body.
+
+## Group User
+
+Resource related to user in the API.
+
+## User Collection [/api/users]
+
+### List All Users [GET]
+
++ Response 200 (application/json)
+
+    + Body
+            {
+                "Users": [
+                    {
+                        "id": 1,
+                        "name": "somto",
+                        "username": "sommy",
+                        "email": "sommy@gmail.com",
+                        "password": "123"
+                    },{
+                        "id": 2,
+                        "name": "somto",
+                        "username": "sommyj",
+                        "email": "justin@gmail.com",
+                        "password": "1234"
+                    },{
+                        "id": 3,
+                        "name": "somto",
+                        "username": "sommyjezzy",
+                        "email": "boss@gmail.com",
+                        "password": "12345"
+                    }
+                ],
+                "message": "Success",
+                "error": false
+            }
+
+## Signup [/auth/signup]
+
+### Create a New User [POST]
+
+You may create your own user account using this action. It takes a JSON object
+containing user details.
+
++ name (string) - The name
++ username (string) - The username
++ email (string) - The email address
++ password (string) - The password
+
+This action takes a x-www-form-urlencoded payload as part of the request as follows:
+
++ Request (application/x-www-form-urlencoded)
+
+                {
+                  "name": "somto",
+                  "username": "sommyjezzy",
+                  "email": "boss@gmail.com",
+                  "password": "12345"
+                }
+
+This example returns a 201 status code, along with HTTP headers and a body.
+
++ Response 201 (application/json)
+
+    + Body
+
+    {
+        "Users": {
+            "id": 3,
+            "name": "somto",
+            "username": "sommyjezzy",
+            "email": "boss@gmail.com",
+            "password": "12345"
+        },
+        "message": "Success",
+        "error": false
+    }
+
+## Login [/auth/login]
+
+### Login a User [POST]
+
+    You may Login a user using this action. It takes a JSON object
+    containing user details.
+
+    + username (string) - The username
+    + password (string) - The password
+
+This action takes a x-www-form-urlencoded payload as part of the request as follows:
+
++ Request (application/x-www-form-urlencoded)
+
+                {
+                  "username": "sommyjezzy",
+                  "email": "boss@gmail.com",
+                }
+
+This example returns a 200 status code, along with HTTP headers and a body.
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "Users": {
+                    "id": 3,
+                    "name": "somto",
+                    "username": "sommyjezzy",
+                    "email": "boss@gmail.com",
+                    "password": "12345"
+                },
+                "message": "Success",
+                "error": false
+            }
+
+
+## Group Business
+
+Resource related to business in the API.
+
+## Business Collection [/businesses]
+
+### List All Businesses [GET]
+
++ Response 200 (application/json)
+
+  + Body
+          {
+            "Businesses": [
+                  {
+                    "businessId": "1",
+                    "businessName": "Sommyj IceCream",
+                    "userId": "2",
+                    "reviews": "We sell happiness, do u want to be happy.",
+                    "location": "lagos",
+                    "category": "entertainment"
+                  },
+                  {
+                    "businessId": "2",
+                    "businessName": "Sommyj Farms",
+                    "userId": "3",
+                    "reviews": "We feed the world and you know it,",
+                    "location": "imo",
+                    "category": "farming"
+                  },
+                  {
+                    "businessId": "3",
+                    "businessName": "Sommyj Security",
+                    "userId": "1",
+                    "reviews": "We will protect you no matter what, trust us.",
+                    "location": "abuja",
+                    "category": "security"
+                  }
+            ],
+            "message": "Success",
+            "error": false
+        }
+
+### Create a New Business [POST]
+
+You may create your own Business using this action. It takes a JSON object
+containing Business details.
+
+        + businessName (string) - The businessName
+        + location (string) - The business location
+        + category (string) - The business category
+
+This action takes a x-www-form-urlencoded payload as part of the request as follows:
+
++ Request (application/x-www-form-urlencoded)
+
+            {
+              businessName: 'Sommyj',
+              userId: '22',
+              reviews: 'We produce quality products',
+              location: 'lagos',
+              category: 'Production',
+            }
+
+This example returns a 201 status code, along with HTTP headers and a body.
+
++ Response 201 (application/json)
+
+    + Body
+
+              {
+                  "Businesses": {
+                        "businessId": "4",
+                        "businessName": "Sommyj",
+                        "userId": "22",
+                        "reviews": "We produce quality products",
+                        "location": "lagos",
+                        "category": "Production"
+                  },
+                  "message": "Success",
+                  "error": false
+              }
+
+## Business [/businesses/{businessId}]
+
+A Business object has the following attributes.
+
+- reviews
+
++ Parameters
+    + businessId: 4 (required, number) - ID of the Business in the form of an integer
+
+This resource has an action to retrieve a business detail.
+
+### View a Businesses Detail [GET]
+
++ Response 200 (application/json)
+
+    + Body
+
+              {
+                  "Businesses": {
+                        "businessId": "4",
+                        "businessName": "Sommyj",
+                        "userId": "22",
+                        "reviews": "We produce quality products",
+                        "location": "lagos",
+                        "category": "Production"
+                  },
+                  "message": "Success",
+                  "error": false
+              }
+
+This resource has a update action to edit a business.
+
+### Update a Business Detail [PUT]
+
+This action takes a x-www-form-urlencoded payload as part of the request as follows:
+
++ Request (application/x-www-form-urlencoded)
+
+            {
+              businessName: 'Sommyj',
+              userId: '22',
+              reviews: 'We produce quality products',
+              location: 'lagos',
+              category: 'Production',
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+              {
+                  "Businesses": {
+                        "businessId": "4",
+                        "businessName": "Sommyj",
+                        "userId": "22",
+                        "reviews": "We produce quality products",
+                        "location": "lagos",
+                        "category": "Production"
+                  },
+                  "message": "Bussiness updated!",
+                  "error": false
+              }
+
+This resource has a delete action. The server will return a 204 response without a body.
+
+### Delete a Business [DELETE]
+
++ Response 204
+
+## Business [/businesses{?location}]
+
++ Parameters
+    + location: "abuja" (optional, string) - The location of businesses to return
+
+### List all questions [GET]
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "Businesses": [
+                      {
+                          "businessId": "3",
+                          "businessName": "Sommyj Security",
+                          "userId": "1",
+                          "reviews": "We will protect you no matter what, trust us.",
+                          "location": "abuja",
+                          "category": "security"
+                      },{
+                          "businessId": "6",
+                          "businessName": "jay ltd",
+                          "userId": "12",
+                          "reviews": "We produce quality products",
+                          "location": "abuja",
+                          "category": "production"
+                     }
+
+                ],
+                "message": "Success",
+                "error": false
+            }
+
+## Business [/businesses{?category}]
+
++ Parameters
+    + category: "production" (optional, string) - The category of businesses to return
+
+### List all questions [GET]
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "Businesses": [
+                      {
+                          "businessId": "2",
+                          "businessName": "Sommyj",
+                          "userId": "3",
+                          "reviews": "The best production",
+                          "location": "lagos",
+                          "category": "production"
+                      },{
+                          "businessId": "6",
+                          "businessName": "jay ltd",
+                          "userId": "12",
+                          "reviews": "We produce quality products",
+                          "location": "abuja",
+                          "category": "production"
+                     }
+
+                ],
+                "message": "Success",
+                "error": false
+            }
+`
+## Reviews [/businesses/{businessId}/reviews]
+
++ Parameters
+    + businessId: 2 (required, number) - ID of the Business in form of an integer
+
+This resource has an action to retrieve a business review detail.
+
+### View a Businesses Detail [GET]
+
++ Response 200 (application/json)
+
+        + Body
+
+                {
+                    "Reviews": {
+                          "id": 4,
+                          "response": "confirm move on",
+                          "userId": "3",
+                          "businessId": "2"
+                    },
+                    "message": "Success",
+                    "error": false
+                }
+
+### Reviews on a Business [POST]
+
+This action allows you to write a review about a Business.
+It takes a x-www-form-urlencoded payload as part of the request as follows:
+
++ Request (application/x-www-form-urlencoded)
+
+            {
+              id: 1,
+              userId: '3',
+              businessId: '2',
+            };
+
+
++ Response 201 (application/json)
+
+            {
+                "Reviews": [
+                      {
+                          "id": 1,
+                          "response": "very good.",
+                          "userId": "3",
+                          "businessId": "2"
+                      },
+                      {
+                          "id": 2,
+                          "response": "Excellent",
+                          "userId": "1",
+                          "businessId": "2"
+                      }
+                ],
+                "message": "Success",
+                "error": false
+            }

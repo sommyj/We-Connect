@@ -1,4 +1,4 @@
-import { usersController, businessesController } from '../controllers/index';
+import { usersController, businessesController, reviewsController } from '../controllers/index';
 
 const routes = (app) => {
   app.get('/api', (req, res) => res.status(200).send({
@@ -17,6 +17,9 @@ const routes = (app) => {
   app.delete('/businesses/:businessId', businessesController.destroy);
   app.get('/businesses/:businessId', businessesController.retrieve);
   app.get('/businesses/', businessesController.list);
+
+  app.post('/businesses/:businessId/reviews', reviewsController.create);
+  app.get('/businesses/:businessId/reviews', reviewsController.retrieve);
 };
 
 export default routes;
