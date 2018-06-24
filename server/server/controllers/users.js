@@ -2,7 +2,7 @@ import Users from '../models/user';
 
 const usersController = {
   create(req, res) {
-    const user = {
+    const User = {
       id: Users.length + 1,
       name: req.body.name,
       username: req.body.username,
@@ -15,8 +15,8 @@ const usersController = {
     }
 
     // Users.push(req.body);
-    Users.push(user);
-    return res.status(201).json({ Users, message: 'Success', error: false });
+    Users.push(User);
+    return res.status(201).json({ Users: User, message: 'Success', error: false });
   },
   check(req, res) {
     for (const User of Users) {

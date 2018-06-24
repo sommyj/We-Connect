@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon ./lib/bin/www",
+    "start": "babel-node ./server/bin/www",
     "test": "mocha ./lib/test/",
     "build": "babel server -d lib",
     "cover": "istanbul cover _mocha ./lib/test/",

@@ -18,7 +18,7 @@ describe('Businesses', () => {
   describe('/GET business', () => {
     it('it should GET all the businesses', (done) => {
       chai.request(app)
-        .get('/businesses/')
+        .get('/v1/businesses/')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.Businesses.should.be.a('array');
@@ -40,7 +40,7 @@ describe('Businesses', () => {
       };
 
       chai.request(app)
-        .post('/businesses/')
+        .post('/v1/businesses/')
         .send(business)
         .end((err, res) => {
           res.should.have.status(206);
@@ -62,21 +62,18 @@ describe('Businesses', () => {
       };
 
       chai.request(app)
-        .post('/businesses/')
+        .post('/v1/businesses/')
         .send(business)
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.have.property('Businesses');
-          res.body.Businesses.should.be.a('array');
-          res.body.Businesses.should.have.keys('0');
-          res.body.Businesses.should.have.property('0');
-          res.body.Businesses.should.have.deep.property('0', business).property('businessId').eql('1');
-          res.body.Businesses.should.have.deep.property('0', business).property('businessName').eql('Sommyj');
-          res.body.Businesses.should.have.deep.property('0', business).property('userId').eql('22');
-          res.body.Businesses.should.have.deep.property('0', business).property('reviews').eql('We produce quality products');
-          res.body.Businesses.should.have.deep.property('0', business).property('location').eql('lagos');
-          res.body.Businesses.should.have.deep.property('0', business).property('category').eql('Production');
+          res.body.Businesses.should.have.property('businessId').eql('1');
+          res.body.Businesses.should.have.property('businessName').eql('Sommyj');
+          res.body.Businesses.should.have.property('userId').eql('22');
+          res.body.Businesses.should.have.property('reviews').eql('We produce quality products');
+          res.body.Businesses.should.have.property('location').eql('lagos');
+          res.body.Businesses.should.have.property('category').eql('Production');
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
           done();
@@ -112,7 +109,7 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -132,6 +129,7 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.deep.property('1', business[1]).property('reviews').eql('We produce quality service');
           res.body.Businesses.should.have.deep.property('1', business[1]).property('location').eql('owerri');
           res.body.Businesses.should.have.deep.property('1', business[1]).property('category').eql('Importation');
+          res.body.message.should.be.eql('Success');
           res.body.error.should.be.eql(false);
           done();
         });
@@ -150,10 +148,11 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .get(`/businesses/${business.businessId}`)
+        .get(`/v1/businesses/${business.businessId}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
+          res.body.message.should.be.eql('Success');
           res.body.error.should.be.eql(false);
           res.body.Businesses.should.have.property('businessName').eql(business.businessName);
           res.body.Businesses.should.have.property('userId').eql(business.userId);
@@ -178,7 +177,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .get('/businesses/13')
+        .get('/v1/businesses/13')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -201,7 +200,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query(`category=${business.category}`) // /businesses?category='Production'
         .end((err, res) => {
           res.should.have.status(200);
@@ -216,6 +215,7 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.deep.property('0', business).property('location');
           res.body.Businesses.should.have.deep.property('0', business).property('category').eql('Production');
           res.body.error.should.be.eql(false);
+          res.body.message.should.be.eql('Success');
           done();
         });
     });
@@ -234,7 +234,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query('category=Sales') // /businesses?category='Production'
         .end((err, res) => {
           res.should.have.status(404);
@@ -270,7 +270,7 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query(`location=${business[0].location}`) // /businesses?location='lagos'
         .end((err, res) => {
           res.should.have.status(200);
@@ -284,6 +284,7 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.deep.property('0', business[0]).property('reviews');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('location');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('category').eql('Production');
+          res.body.message.should.be.eql('Success');
           res.body.error.should.be.eql(false);
           done();
         });
@@ -314,7 +315,7 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query('location=abuja') // /businesses?location='lagos'
         .end((err, res) => {
           res.should.have.status(404);
@@ -351,7 +352,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query({ location: 'lagos', category: 'Production' }) // /businesses?location='lagos'&category='Production'
         .end((err, res) => {
           res.should.have.status(200);
@@ -366,6 +367,7 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.deep.property('1', business[1]).property('businessName').eql('Sommy');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('category').eql('Production');
           res.body.Businesses.should.have.deep.property('1', business[1]).property('category').eql('Production');
+          res.body.message.should.be.eql('Success');
           res.body.error.should.be.eql(false);
           done();
         });
@@ -396,7 +398,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .get('/businesses')
+        .get('/v1/businesses')
         .query({ location: 'abuja', category: 'Production' }) // /businesses?location ='lagos'&category='Production'
         .end((err, res) => {
           res.should.have.status(404);
@@ -437,7 +439,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .put(`/businesses/${business[0].businessId}`)
+        .put(`/v1/businesses/${business[0].businessId}`)
         .send({
           businessId: '12',
           businessName: 'Sommyj Enterprise',
@@ -484,7 +486,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .put('/businesses/13')
+        .put('/v1/businesses/13')
         .send({
           businessId: '19',
           businessName: 'Sommyj',
@@ -532,7 +534,7 @@ describe('Businesses', () => {
       Businesses.push(business[1]);
 
       chai.request(app)
-        .delete(`/businesses/${business[0].businessId}`)
+        .delete(`/v1/businesses/${business[0].businessId}`)
         .end((err, res) => {
           res.should.have.status(204);
           res.body.should.be.a('object');
@@ -556,7 +558,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business);
       chai.request(app)
-        .delete('/businesses/13')
+        .delete('/v1/businesses/13')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');

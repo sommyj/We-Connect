@@ -3,7 +3,7 @@ import Businesses from '../models/business';
 const businessesController = {
 
   create(req, res) {
-    const business = {
+    const Business = {
       businessId: `${Businesses.length + 1}`,
       businessName: req.body.businessName,
       userId: req.body.userId,
@@ -15,9 +15,9 @@ const businessesController = {
     if (!req.body.businessName || !req.body.userId || !req.body.reviews || !req.body.location || !req.body.category) {
       return res.status(206).json({ message: 'Incomplete fields', error: true });
     }
-    Businesses.push(business);
+    Businesses.push(Business);
     // Businesses.push(req.body);
-    return res.status(201).json({ Businesses, message: 'Success', error: false });
+    return res.status(201).json({ Businesses: Business, message: 'Success', error: false });
   },
   update(req, res) {
     for (const Business of Businesses) {
@@ -47,28 +47,28 @@ const businessesController = {
   retrieve(req, res) {
     for (const Business of Businesses) {
       if (Business.businessId === req.params.businessId) {
-        return res.json({ Businesses: Business, error: false });
+        return res.json({ Businesses: Business, message: 'Success', error: false });
       }
     }
     return res.status(404).json({ message: 'Business not found', error: true });
   },
   list(req, res) {
     if (!req.query.location && !req.query.category) {
-      return res.json({ Businesses, error: false });
+      return res.json({ Businesses, message: 'Success', error: false });
     }
     if (req.query.location && !req.query.category) {
       const array = [];
       for (const Business of Businesses) {
         if (Business.location === req.query.location) { array.push(Business); }
       }
-      if (array.length !== 0) { return res.json({ Businesses: array, error: false }); }
+      if (array.length !== 0) { return res.json({ Businesses: array, message: 'Success', error: false }); }
     }
     if (req.query.category && !req.query.location) {
       const array = [];
       for (const Business of Businesses) {
         if (Business.category === req.query.category) { array.push(Business); }
       }
-      if (array.length !== 0) { return res.json({ Businesses: array, error: false }); }
+      if (array.length !== 0) { return res.json({ Businesses: array, message: 'Success', error: false }); }
     }
     if (req.query.location && req.query.category) {
       const array = [];
@@ -77,7 +77,7 @@ const businessesController = {
           array.push(Business);
         }
       }
-      if (array.length !== 0) { return res.json({ Businesses: array, error: false }); }
+      if (array.length !== 0) { return res.json({ Businesses: array, message: 'Success', error: false }); }
     }
     return res.status(404).json({ message: 'Business not found', error: true });
   },

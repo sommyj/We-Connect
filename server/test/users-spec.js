@@ -18,7 +18,7 @@ describe('Users', () => {
   describe('/GET user', () => {
     it('it should GET all the users', (done) => {
       chai.request(app)
-        .get('/api/users')
+        .get('/api/v1/users')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.Users.should.be.a('array');
@@ -39,7 +39,7 @@ describe('Users', () => {
       };
 
       chai.request(app)
-        .post('/auth/signup')
+        .post('/auth/v1/signup')
         .send(user)
         .end((err, res) => {
           res.should.have.status(206);
@@ -60,20 +60,17 @@ describe('Users', () => {
       };
 
       chai.request(app)
-        .post('/auth/signup')
+        .post('/auth/v1/signup')
         .send(user)
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.have.property('Users');
-          res.body.Users.should.be.a('array');
-          res.body.Users.should.have.keys('0');
-          res.body.Users.should.have.property('0');
-          res.body.Users.should.have.deep.property('0', user).property('id');
-          res.body.Users.should.have.deep.property('0', user).property('name');
-          res.body.Users.should.have.deep.property('0', user).property('username');
-          res.body.Users.should.have.deep.property('0', user).property('email');
-          res.body.Users.should.have.deep.property('0', user).property('password');
+          res.body.Users.should.have.property('id').eql(1);
+          res.body.Users.should.have.property('name').eql('justin');
+          res.body.Users.should.have.property('username').eql('justman');
+          res.body.Users.should.have.property('email').eql('justin@gmail.com');
+          res.body.Users.should.have.property('password').eql('abc');
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
           done();
@@ -89,7 +86,7 @@ describe('Users', () => {
 
       Users.push(user);
       chai.request(app)
-        .post('/auth/login')
+        .post('/auth/v1/login')
         .send({ username: 'justman', password: 'abc' })
         .end((err, res) => {
           res.should.have.status(200);
@@ -114,7 +111,7 @@ describe('Users', () => {
 
       Users.push(user);
       chai.request(app)
-        .post('/auth/login')
+        .post('/auth/v1/login')
         .send({ username: 'justin', password: 'abc' })
         .end((err, res) => {
           res.should.have.status(404);
@@ -151,7 +148,7 @@ describe('Users', () => {
       Users.push(user[0]);
       Users.push(user[1]);
       chai.request(app)
-        .get('/api/users/')
+        .get('/api/v1/users/')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -186,14 +183,14 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
       chai.request(app)
-        .get(`/api/users/${user.id}`)
+        .get(`/api/v1/users/${user.id}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
-          res.body.Users.should.have.property('name');
-          res.body.Users.should.have.property('username');
-          res.body.Users.should.have.property('email');
-          res.body.Users.should.have.property('password');
+          res.body.Users.should.have.property('name').eql('justin');
+          res.body.Users.should.have.property('username').eql('justman');
+          res.body.Users.should.have.property('email').eql('justin@gmail.com');
+          res.body.Users.should.have.property('password').eql('abc');
           res.body.Users.should.have.property('id').eql(user.id);
           done();
         });
@@ -212,7 +209,7 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
       chai.request(app)
-        .get('/api/users/14')
+        .get('/api/v1/users/14')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -240,7 +237,7 @@ describe('Users', () => {
       Users.push(user);
 
       chai.request(app)
-        .put(`/api/users/${user.id}`)
+        .put(`/api/v1/users/${user.id}`)
         .send({
           id: 12,
           name: 'justin',
@@ -270,7 +267,7 @@ describe('Users', () => {
       Users.push(user);
 
       chai.request(app)
-        .put('/api/users/14')
+        .put('/api/v1/users/14')
         .send({
           id: 12,
           name: 'justin',
@@ -304,7 +301,7 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
       chai.request(app)
-        .delete(`/api/users/${user.id}`)
+        .delete(`/api/v1/users/${user.id}`)
         .end((err, res) => {
           res.should.have.status(204);
           res.body.should.be.a('object');
@@ -326,7 +323,7 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
       chai.request(app)
-        .delete('/api/users/15')
+        .delete('/api/v1/users/15')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
