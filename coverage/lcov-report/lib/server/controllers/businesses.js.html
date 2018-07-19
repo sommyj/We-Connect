@@ -20,28 +20,28 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">81.25% </span>
+        <span class="strong">79.14% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>104/128</span>
+        <span class='fraction'>110/139</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">80.72% </span>
+        <span class="strong">76.92% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>67/83</span>
+        <span class='fraction'>70/91</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">66.67% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>6/6</span>
+        <span class='fraction'>6/9</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">81.1% </span>
+        <span class="strong">78.99% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>103/127</span>
+        <span class='fraction'>109/138</span>
       </div>
     </div>
   </div>
-  <div class='status-line high'></div>
+  <div class='status-line medium'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet">1
 2
@@ -279,7 +279,40 @@
 234
 235
 236
-237</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -294,6 +327,38 @@
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -319,6 +384,7 @@
 <span class="cline-any cline-yes">3×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
@@ -525,20 +591,52 @@ var _business = require('../models/business');
 &nbsp;
 var _business2 = _interopRequireDefault(_business);
 &nbsp;
-function _interopRequireDefault(obj) { return obj &amp;&amp; obj.__esModule ? obj : <span class="branch-1 cbranch-no" title="branch not covered" >{ default: obj };</span> }
+var _multer = require('multer');
+&nbsp;
+var _multer2 = _interopRequireDefault(_multer);
+&nbsp;
+function _interopRequireDefault(obj) { return obj &amp;&amp; obj.__esModule ? obj : { default: obj }; }
+&nbsp;
+var storage = _multer2.default.diskStorage({
+  destination: <span class="fstat-no" title="function not covered" >function destination(req, file, cb) {</span>
+<span class="cstat-no" title="statement not covered" >    cb(null, './businessesUploads/');</span>
+  },
+  filename: <span class="fstat-no" title="function not covered" >function filename(req, file, cb) {</span>
+<span class="cstat-no" title="statement not covered" >    cb(null, new Date().toISOString() + file.originalname);</span>
+  }
+});
+&nbsp;
+var fileFilter = <span class="fstat-no" title="function not covered" >function fileFilter(req, file, cb) {</span>
+  // reject a file
+<span class="cstat-no" title="statement not covered" >  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {</span>
+<span class="cstat-no" title="statement not covered" >    cb(null, true);</span>
+  } else {
+<span class="cstat-no" title="statement not covered" >    cb(new Error('File should be jpeg or png'), false);</span>
+  }
+};
+&nbsp;
+var upload = (0, _multer2.default)({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilter
+});
 &nbsp;
 var businessesController = {
+  upload: upload.single('companyImage'),
   create: function create(req, res) {
     var Business = {
       businessId: '' + (_business2.default.length + 1),
       businessName: req.body.businessName,
       userId: req.body.userId,
-      reviews: req.body.reviews,
+      description: req.body.description,
       location: req.body.location,
-      category: req.body.category
+      category: req.body.category,
+      companyImage: req.file ? <span class="branch-0 cbranch-no" title="branch not covered" >req.file.path </span>: ''
     };
 &nbsp;
-    if (!req.body.businessName || !req.body.userId || !req.body.reviews || !req.body.location || !req.body.category) {
+    if (!req.body.businessName || !req.body.userId || !req.body.description || !req.body.location || !req.body.category) {
       return res.status(206).json({ message: 'Incomplete fields', error: true });
     }
     _business2.default.push(Business);
@@ -557,9 +655,10 @@ var businessesController = {
         if (Business.businessId === req.params.businessId) {
           Business.businessName = req.body.businessName;
           Business.userId = req.body.userId;
-          Business.reviews = req.body.reviews;
+          Business.description = req.body.description;
           Business.location = req.body.location;
           Business.category = req.body.category;
+          Business.companyImage = req.file ? <span class="branch-0 cbranch-no" title="branch not covered" >req.file.path </span>: '';
 &nbsp;
           return res.json({ Businesses: Business, message: 'Bussiness updated!', error: false });
         }
@@ -757,7 +856,7 @@ exports.default = businessesController;</pre></td></tr>
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jun 23 2018 10:42:55 GMT+0100 (West Africa Standard Time)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Jul 19 2018 10:17:30 GMT+0100 (West Africa Standard Time)
 </div>
 </div>
 <script src="../../../prettify.js"></script>

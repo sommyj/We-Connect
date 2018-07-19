@@ -33,9 +33,19 @@ describe('Users', () => {
     it('it should not POST a user without email', (done) => {
       const user = {
         id: 12,
-        name: 'justin',
-        username: 'justman',
-        password: 'abc',
+        title: 'mr',
+        firstname: 'Somto',
+        lastname: 'Ikwuoma',
+        username: 'sommyjezzy',
+        password: '12345',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: "2015-11-04T22:09:36Z",
+        phone: '66976498',
+        userImage: '',
       };
 
       chai.request(app)
@@ -53,10 +63,20 @@ describe('Users', () => {
     it('it should post a user', (done) => {
       const user = {
         id: 1,
-        name: 'justin',
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
         username: 'justman',
-        email: 'justin@gmail.com',
         password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       };
 
       chai.request(app)
@@ -67,10 +87,14 @@ describe('Users', () => {
           res.body.should.be.a('object');
           res.body.should.have.property('Users');
           res.body.Users.should.have.property('id').eql(1);
-          res.body.Users.should.have.property('name').eql('justin');
+          res.body.Users.should.have.property('firstname').eql('justin');
+          res.body.Users.should.have.property('lastname').eql('Ikwuoma');
           res.body.Users.should.have.property('username').eql('justman');
           res.body.Users.should.have.property('email').eql('justin@gmail.com');
           res.body.Users.should.have.property('password').eql('abc');
+          res.body.Users.should.have.property('gender').eql('male');
+          res.body.Users.should.have.property('street').eql('ljan terrasse 346');
+          res.body.Users.should.have.property('userImage').eql('');
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
           done();
@@ -79,9 +103,20 @@ describe('Users', () => {
     it('it should POST username && password and get the particular user ', (done) => {
       const user = {
         id: 12,
-        name: 'justin',
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
         username: 'justman',
         password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       };
 
       Users.push(user);
@@ -92,7 +127,8 @@ describe('Users', () => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.Users.should.have.property('id');
-          res.body.Users.should.have.property('name');
+          res.body.Users.should.have.property('firstname').eql('justin');
+          res.body.Users.should.have.property('lastname').eql('Ikwuoma');
           res.body.Users.should.have.property('username').eql('justman');
           res.body.Users.should.have.property('password').eql('abc');
           res.body.should.have.property('message').eql('Success');
@@ -103,10 +139,21 @@ describe('Users', () => {
 
     it('it should not get a particular user if POST a wrong username && password', (done) => {
       const user = {
-        id: 12,
-        name: 'justin',
+        id: 1,
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
         username: 'justman',
         password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       };
 
       Users.push(user);
@@ -130,17 +177,37 @@ describe('Users', () => {
     it('it should GET all users', (done) => {
       const user = [{
         id: 12,
-        name: 'justin',
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
         username: 'justman',
-        email: 'justin@gmail.com',
         password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       },
       {
         id: 13,
-        name: 'somto',
+        title: 'mr',
+        firstname: 'somto',
+        lastname: 'Ikwuoma',
         username: 'sommy',
-        email: 'somto@gmail.com',
         password: '123',
+        email: 'somto@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       }
       ];
 
@@ -158,14 +225,18 @@ describe('Users', () => {
           res.body.Users.should.have.deep.property('1', user[1]);
           res.body.Users.should.have.deep.property('0', user[0]).property('id').eql(user[0].id);
           res.body.Users.should.have.deep.property('1', user[1]).property('id').eql(user[1].id);
-          res.body.Users.should.have.deep.property('0', user[0]).property('name').eql(user[0].name);
-          res.body.Users.should.have.deep.property('1', user[1]).property('name').eql(user[1].name);
+          res.body.Users.should.have.deep.property('0', user[0]).property('firstname').eql(user[0].firstname);
+          res.body.Users.should.have.deep.property('1', user[1]).property('firstname').eql(user[1].firstname);
+          res.body.Users.should.have.deep.property('0', user[0]).property('lastname').eql(user[0].lastname);
+          res.body.Users.should.have.deep.property('1', user[1]).property('lastname').eql(user[1].lastname);
           res.body.Users.should.have.deep.property('0', user[0]).property('username').eql(user[0].username);
           res.body.Users.should.have.deep.property('1', user[1]).property('username').eql(user[1].username);
           res.body.Users.should.have.deep.property('0', user[0]).property('email').eql(user[0].email);
           res.body.Users.should.have.deep.property('1', user[1]).property('email').eql(user[1].email);
           res.body.Users.should.have.deep.property('0', user[0]).property('password').eql(user[0].password);
           res.body.Users.should.have.deep.property('1', user[1]).property('password').eql(user[1].password);
+          res.body.Users.should.have.deep.property('0', user[0]).property('gender').eql(user[0].gender);
+          res.body.Users.should.have.deep.property('1', user[1]).property('gender').eql(user[1].gender);
           res.body.error.should.be.eql(false);
           done();
         });
@@ -174,10 +245,20 @@ describe('Users', () => {
     it('it should GET a user by the given id', (done) => {
       const user = {
         id: 12,
-        name: 'justin',
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
         username: 'justman',
-        email: 'justin@gmail.com',
         password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       };
 
       // Passing user to user model
@@ -187,7 +268,8 @@ describe('Users', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
-          res.body.Users.should.have.property('name').eql('justin');
+          res.body.Users.should.have.property('firstname').eql('justin');
+          res.body.Users.should.have.property('lastname').eql('Ikwuoma');
           res.body.Users.should.have.property('username').eql('justman');
           res.body.Users.should.have.property('email').eql('justin@gmail.com');
           res.body.Users.should.have.property('password').eql('abc');
@@ -200,10 +282,20 @@ describe('Users', () => {
     it('it should not GET a user by the given wrong id', (done) => {
       const user = {
         id: 12,
-        name: 'justin',
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
         username: 'justman',
-        email: 'justin@gmail.com',
         password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       };
 
       // Passing user to user model
@@ -227,10 +319,20 @@ describe('Users', () => {
     it('it should UPDATE a user given the id', (done) => {
       const user = {
         id: 12,
-        name: 'justin',
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
         username: 'justman',
-        email: 'justin@gmail.com',
         password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       };
 
       // Passing user to user model
@@ -240,16 +342,27 @@ describe('Users', () => {
         .put(`/api/v1/users/${user.id}`)
         .send({
           id: 12,
-          name: 'justin',
+          title: 'mr',
+          firstname: 'justin',
+          lastname: 'Ikwuoma',
           username: 'sojust',
+          password: 'abcd',
           email: 'justin@gmail.com',
-          password: 'abcd'
+          gender: 'male',
+          street: 'ljan terrasse 346',
+          city: 'ikotun',
+          state: 'lagos',
+          dob: '2015-11-04',
+          registered: '2015-11-04T22:09:36Z',
+          phone: '66976498',
+          userImage: '',
         })
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('message').eql('User updated!');
           res.body.Users.should.have.property('password').eql('abcd');
+          res.body.Users.should.have.property('username').eql('sojust');
           done();
         });
     });
@@ -257,10 +370,20 @@ describe('Users', () => {
     it('it should not UPDATE a user given the wrong id', (done) => {
       const user = {
         id: 12,
-        name: 'justin',
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
         username: 'justman',
-        email: 'justin@gmail.com',
         password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       };
 
       // Passing user to user model
@@ -270,10 +393,20 @@ describe('Users', () => {
         .put('/api/v1/users/14')
         .send({
           id: 12,
-          name: 'justin',
+          title: 'mr',
+          firstname: 'justin',
+          lastname: 'Ikwuoma',
           username: 'sojust',
+          password: 'abcd',
           email: 'justin@gmail.com',
-          password: 'abcd'
+          gender: 'male',
+          street: 'ljan terrasse 346',
+          city: 'ikotun',
+          state: 'lagos',
+          dob: '2015-11-04',
+          registered: '2015-11-04T22:09:36Z',
+          phone: '66976498',
+          userImage: '',
         })
         .end((err, res) => {
           res.should.have.status(404);
@@ -292,10 +425,20 @@ describe('Users', () => {
     it('it should DELETE a user given the id', (done) => {
       const user = {
         id: 12,
-        name: 'justin',
-        username: 'justman',
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
+        username: 'sojust',
+        password: 'abcd',
         email: 'justin@gmail.com',
-        password: 'abc',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       };
 
       // Passing user to user model
@@ -314,10 +457,20 @@ describe('Users', () => {
     it('it should not DELETE a user given the wrong id', (done) => {
       const user = {
         id: 12,
-        name: 'justin',
-        username: 'justman',
+        title: 'mr',
+        firstname: 'justin',
+        lastname: 'Ikwuoma',
+        username: 'sojust',
+        password: 'abcd',
         email: 'justin@gmail.com',
-        password: 'abc',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
       };
 
       // Passing user to user model

@@ -30,13 +30,14 @@ describe('Businesses', () => {
   });
 
   describe('/POST business', () => {
-    it('it should not POST a business without reviews', (done) => {
+    it('it should not POST a business without description', (done) => {
       const business = {
         businessId: '11',
         businessName: 'Sommyj',
         userId: '22',
         location: 'lagos',
         category: 'Production',
+        companyImage: '',
       };
 
       chai.request(app)
@@ -56,9 +57,10 @@ describe('Businesses', () => {
         businessId: '1',
         businessName: 'Sommyj',
         userId: '22',
-        reviews: 'We produce quality products',
+        description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        companyImage: '',
       };
 
       chai.request(app)
@@ -71,9 +73,10 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.property('businessId').eql('1');
           res.body.Businesses.should.have.property('businessName').eql('Sommyj');
           res.body.Businesses.should.have.property('userId').eql('22');
-          res.body.Businesses.should.have.property('reviews').eql('We produce quality products');
+          res.body.Businesses.should.have.property('description').eql('We produce quality products');
           res.body.Businesses.should.have.property('location').eql('lagos');
           res.body.Businesses.should.have.property('category').eql('Production');
+          res.body.Businesses.should.have.property('companyImage').eql('');
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
           done();
@@ -91,17 +94,19 @@ describe('Businesses', () => {
           businessId: '11',
           businessName: 'Sommyj',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
         {
           businessId: '12',
           businessName: 'amsomee',
           userId: '23',
-          reviews: 'We produce quality service',
+          description: 'We produce quality service',
           location: 'owerri',
           category: 'Importation',
+          companyImage: '',
         },
       ];
 
@@ -120,15 +125,17 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.deep.property('0', business[0]).property('businessId').eql('11');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('businessName').eql('Sommyj');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('userId').eql('22');
-          res.body.Businesses.should.have.deep.property('0', business[0]).property('reviews').eql('We produce quality products');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('description').eql('We produce quality products');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('location').eql('lagos');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('category').eql('Production');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('companyImage').eql('');
           res.body.Businesses.should.have.deep.property('1', business[1]).property('businessId').eql('12');
           res.body.Businesses.should.have.deep.property('1', business[1]).property('businessName').eql('amsomee');
           res.body.Businesses.should.have.deep.property('1', business[1]).property('userId').eql('23');
-          res.body.Businesses.should.have.deep.property('1', business[1]).property('reviews').eql('We produce quality service');
+          res.body.Businesses.should.have.deep.property('1', business[1]).property('description').eql('We produce quality service');
           res.body.Businesses.should.have.deep.property('1', business[1]).property('location').eql('owerri');
           res.body.Businesses.should.have.deep.property('1', business[1]).property('category').eql('Importation');
+          res.body.Businesses.should.have.deep.property('1', business[1]).property('companyImage').eql('');
           res.body.message.should.be.eql('Success');
           res.body.error.should.be.eql(false);
           done();
@@ -140,9 +147,10 @@ describe('Businesses', () => {
         businessId: '11',
         businessName: 'Sommyj',
         userId: '22',
-        reviews: 'We produce quality products',
+        description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        companyImage: '',
       };
 
       // Passing business to business model
@@ -156,10 +164,11 @@ describe('Businesses', () => {
           res.body.error.should.be.eql(false);
           res.body.Businesses.should.have.property('businessName').eql(business.businessName);
           res.body.Businesses.should.have.property('userId').eql(business.userId);
-          res.body.Businesses.should.have.property('reviews').eql(business.reviews);
+          res.body.Businesses.should.have.property('description').eql(business.description);
           res.body.Businesses.should.have.property('location').eql(business.location);
           res.body.Businesses.should.have.property('category').eql(business.category);
           res.body.Businesses.should.have.property('businessId').eql(business.businessId);
+          res.body.Businesses.should.have.property('companyImage').eql('');
           done();
         });
     });
@@ -169,9 +178,10 @@ describe('Businesses', () => {
         businessId: '11',
         businessName: 'Sommyj',
         userId: '22',
-        reviews: 'We produce quality products',
+        description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        companyImage: '',
       };
 
       // Passing business to business model
@@ -192,9 +202,10 @@ describe('Businesses', () => {
         businessId: '11',
         businessName: 'Sommyj',
         userId: '22',
-        reviews: 'We produce quality products',
+        description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        companyImage: '',
       };
 
       // Passing business to business model
@@ -211,9 +222,10 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.deep.property('0', business).property('businessId').eql('11');
           res.body.Businesses.should.have.deep.property('0', business).property('businessName').eql('Sommyj');
           res.body.Businesses.should.have.deep.property('0', business).property('userId');
-          res.body.Businesses.should.have.deep.property('0', business).property('reviews');
+          res.body.Businesses.should.have.deep.property('0', business).property('description');
           res.body.Businesses.should.have.deep.property('0', business).property('location');
           res.body.Businesses.should.have.deep.property('0', business).property('category').eql('Production');
+          res.body.Businesses.should.have.deep.property('0', business).property('companyImage').eql('');
           res.body.error.should.be.eql(false);
           res.body.message.should.be.eql('Success');
           done();
@@ -226,9 +238,10 @@ describe('Businesses', () => {
         businessId: '11',
         businessName: 'Sommyj',
         userId: '22',
-        reviews: 'We produce quality products',
+        description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        companyImage: '',
       };
 
       // Passing business to business model
@@ -252,17 +265,19 @@ describe('Businesses', () => {
           businessId: '11',
           businessName: 'Sommyj',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
         {
           businessId: '12',
           businessName: 'amsomee',
           userId: '23',
-          reviews: 'We produce quality service',
+          description: 'We produce quality service',
           location: 'owerri',
           category: 'Importation',
+          companyImage: '',
         },
       ];
 
@@ -281,9 +296,10 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.deep.property('0', business[0]).property('businessId').eql('11');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('businessName').eql('Sommyj');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('userId');
-          res.body.Businesses.should.have.deep.property('0', business[0]).property('reviews');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('description');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('location');
           res.body.Businesses.should.have.deep.property('0', business[0]).property('category').eql('Production');
+          res.body.Businesses.should.have.deep.property('0', business[0]).property('companyImage').eql('');
           res.body.message.should.be.eql('Success');
           res.body.error.should.be.eql(false);
           done();
@@ -297,17 +313,19 @@ describe('Businesses', () => {
           businessId: '11',
           businessName: 'Sommyj',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
         {
           businessId: '12',
           businessName: 'amsomee',
           userId: '23',
-          reviews: 'We produce quality service',
+          description: 'We produce quality service',
           location: 'owerri',
           category: 'Importation',
+          companyImage: '',
         },
       ];
 
@@ -333,17 +351,19 @@ describe('Businesses', () => {
           businessId: '11',
           businessName: 'Sommyj',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
         {
           businessId: '12',
           businessName: 'Sommy',
           userId: '23',
-          reviews: 'We produce quality service',
+          description: 'We produce quality service',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
       ];
 
@@ -379,17 +399,19 @@ describe('Businesses', () => {
           businessId: '11',
           businessName: 'Sommyj',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
         {
           businessId: '12',
           businessName: 'Sommy',
           userId: '23',
-          reviews: 'We produce quality service',
+          description: 'We produce quality service',
           location: 'abuja',
           category: 'Services',
+          companyImage: '',
         },
       ];
 
@@ -420,17 +442,19 @@ describe('Businesses', () => {
           businessId: '11',
           businessName: 'Sommyj',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
         {
           businessId: '13',
           businessName: 'Sommy',
           userId: '23',
-          reviews: 'We produce quality service',
+          description: 'We produce quality service',
           location: 'abuja',
           category: 'Services',
+          companyImage: '',
         },
       ];
 
@@ -444,9 +468,10 @@ describe('Businesses', () => {
           businessId: '12',
           businessName: 'Sommyj Enterprise',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'port-harcourt',
           category: 'Sales',
+          companyImage: '',
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -457,6 +482,7 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.property('location').eql('port-harcourt');
           res.body.Businesses.should.have.property('category').eql('Sales');
           res.body.Businesses.should.have.property('businessName').eql('Sommyj Enterprise');
+          res.body.Businesses.should.have.property('companyImage').eql('');
           done();
         });
     });
@@ -467,17 +493,19 @@ describe('Businesses', () => {
           businessId: '11',
           businessName: 'Sommyj',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
         {
           businessId: '12',
           businessName: 'Sommy',
           userId: '23',
-          reviews: 'We produce quality service',
+          description: 'We produce quality service',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
       ];
 
@@ -491,9 +519,10 @@ describe('Businesses', () => {
           businessId: '19',
           businessName: 'Sommyj',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'port-harcourt',
           category: 'Production',
+          companyImage: '',
         })
         .end((err, res) => {
           res.should.have.status(404);
@@ -515,17 +544,19 @@ describe('Businesses', () => {
           businessId: '11',
           businessName: 'Sommyj',
           userId: '22',
-          reviews: 'We produce quality products',
+          description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
         {
           businessId: '12',
           businessName: 'Sommy',
           userId: '23',
-          reviews: 'We produce quality service',
+          description: 'We produce quality service',
           location: 'lagos',
           category: 'Production',
+          companyImage: '',
         },
       ];
 
@@ -550,9 +581,10 @@ describe('Businesses', () => {
         businessId: '11',
         businessName: 'Sommyj',
         userId: '22',
-        reviews: 'We produce quality products',
+        description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        companyImage: '',
       };
 
       // Passing business to business model

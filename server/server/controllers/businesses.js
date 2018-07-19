@@ -1,18 +1,46 @@
 import Businesses from '../models/business';
+import multer from 'multer';
+
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, './businessesUploads/');
+  },
+  filename(req, file, cb) {
+    cb(null, new Date().toISOString() + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // reject a file
+  if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(new Error('File should be jpeg or png'), false);
+  }
+};
+
+const upload = multer({
+  storage,
+  limits: {
+  fileSize: 1024 * 1024 * 5,
+  },
+  fileFilter
+});
 
 const businessesController = {
-
+  upload: upload.single('companyImage'),
   create(req, res) {
     const Business = {
       businessId: `${Businesses.length + 1}`,
       businessName: req.body.businessName,
       userId: req.body.userId,
-      reviews: req.body.reviews,
+      description: req.body.description,
       location: req.body.location,
       category: req.body.category,
+      companyImage: req.file ? req.file.path : '',
     };
 
-    if (!req.body.businessName || !req.body.userId || !req.body.reviews || !req.body.location || !req.body.category) {
+    if (!req.body.businessName || !req.body.userId || !req.body.description || !req.body.location || !req.body.category) {
       return res.status(206).json({ message: 'Incomplete fields', error: true });
     }
     Businesses.push(Business);
@@ -24,9 +52,10 @@ const businessesController = {
       if (Business.businessId === req.params.businessId) {
         Business.businessName = req.body.businessName;
         Business.userId = req.body.userId;
-        Business.reviews = req.body.reviews;
+        Business.description = req.body.description;
         Business.location = req.body.location;
         Business.category = req.body.category;
+        Business.companyImage = req.file ? req.file.path : '';
 
         return res.json({ Businesses: Business, message: 'Bussiness updated!', error: false });
       }

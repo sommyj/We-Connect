@@ -9,6 +9,9 @@ const app = express();
 // Log requests to the console.
 app.use(logger('dev'));
 
+app.use('/usersUploads', express.static('usersUploads'))
+app.use('/businessesUploads', express.static('businessesUploads'))
+
 // Parse incoming requests data (https://github.com/expressjs/body-parser)
 app.use(bodyParser.json());
 // app.use(bodyParser.raw({ type: 'application/*+json' }));
