@@ -1,4 +1,5 @@
 import multer from 'multer';
+import fs from 'file-system';
 import Users from '../models/user';
 
 const storage = multer.diskStorage({
@@ -12,7 +13,7 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
   // reject a file
-  if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     cb(null, true);
   } else {
     cb(new Error('File should be jpeg or png'), false);
@@ -22,15 +23,23 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   limits: {
-  fileSize: 1024 * 1024 * 5,
+    fileSize: 1024 * 1024 * 5,
   },
   fileFilter
 });
 
+const handleError = (err, res) => {
+  res
+    .status(500)
+    .contentType('text/plain')
+    .end('Oops! Something went wrong!');
+};
+
 const usersController = {
+  // image upload
   upload: upload.single('userImage'),
+  // create a user
   create(req, res) {
-    console.log(req.file);
     const User = {
       id: Users.length + 1,
       title: req.body.title,
@@ -49,8 +58,9 @@ const usersController = {
       userImage: req.file ? req.file.path : ''
     };
 
-    if (!req.body.title || !req.body.firstname || !req.body.lastname || !req.body.username || !req.body.password
-      || !req.body.email || !req.body.gender || !req.body.dob || !req.body.phone) {
+    if (!req.body.title || !req.body.firstname || !req.body.lastname ||
+      !req.body.username || !req.body.password || !req.body.email ||
+      !req.body.gender || !req.body.dob || !req.body.phone) {
       return res.status(206).json({ message: 'Incomplete field', error: true });
     }
 
@@ -58,6 +68,7 @@ const usersController = {
     Users.push(User);
     return res.status(201).json({ Users: User, message: 'Success', error: false });
   },
+  // login with username and password
   check(req, res) {
     for (const User of Users) {
       if (User.username === req.body.username && User.password === req.body.password) {
@@ -69,9 +80,13 @@ const usersController = {
   list(req, res) {
     return res.json({ Users, error: false });
   },
+  // update user
   update(req, res) {
     for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {
+      // holds the url of the image before update in other not to loose it
+        const picture = User.userImage;
+
         User.title = req.body.title;
         User.firstname = req.body.first;
         User.lastname = req.body.last;
@@ -83,17 +98,33 @@ const usersController = {
         User.city = req.body.city;
         User.state = req.body.state;
         User.phone = req.body.phone;
-        User.picture = req.file ? req.file.path : '';
+
+        // if file and url is not empty delete img for updation
+        if (req.file) {
+          if (User.userImage.trim()) {
+            fs.unlink(`./${User.userImage}`, (err) => {
+              if (err) return handleError(err, res);
+            });
+          }
+        }
+        User.userImage = req.file ? req.file.path : picture;
 
         return res.json({ Users: User, message: 'User updated!', error: false });
       }
     }
     return res.status(404).json({ message: 'User not found', error: true });
   },
+  // delete user
   destroy(req, res) {
+    // console.log(path.join(__dirname, `./usersUploads/2018-07-20T09:10:45.662ZNIIT Certificate (copy).resized.jpg`));
     let i = 0;
     for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {
+        if (User.userImage.trim()) {
+          fs.unlink(`./${User.userImage}`, (err) => {
+            if (err) return handleError(err, res);
+          });
+        }
         Users.splice(i, 1);
         return res.status(204).json({ Users, message: 'User deleted!', error: false });
       }
@@ -101,6 +132,7 @@ const usersController = {
     }
     return res.status(404).json({ message: 'User not found', error: true });
   },
+  // get a user
   retrieve(req, res) {
     for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {

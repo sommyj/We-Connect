@@ -445,7 +445,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          companyImage: '',
+          companyImage: 'usersUploads/kdknnffnnf.jpg',
         },
         {
           businessId: '13',
@@ -482,7 +482,7 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.property('location').eql('port-harcourt');
           res.body.Businesses.should.have.property('category').eql('Sales');
           res.body.Businesses.should.have.property('businessName').eql('Sommyj Enterprise');
-          res.body.Businesses.should.have.property('companyImage').eql('');
+          res.body.Businesses.should.have.property('companyImage').eql('usersUploads/kdknnffnnf.jpg');
           done();
         });
     });

@@ -23,23 +23,53 @@ Resource related to user in the API.
             {
                 "Users": [
                     {
-                        "id": 1,
-                        "name": "somto",
-                        "username": "sommy",
-                        "email": "sommy@gmail.com",
-                        "password": "123"
+                      "id": 1,
+                      "title": "mr",
+                      "firstname": "Somto",
+                      "lastname": "Ikwuoma",
+                      "username": "sommyjezzy",
+                      "password": "12345",
+                      "email": "sommy@gmail.com",
+                      "gender": "male",
+                      "street": "ljan terrasse 346",
+                      "city": "ikotun",
+                      "state": "lagos",
+                      "dob": "2015-11-04",
+                      "registered": "2015-11-04T22:09:36Z",
+                      "phone": "66976498",
+                      "userImage": "",
                     },{
-                        "id": 2,
-                        "name": "somto",
-                        "username": "sommyj",
-                        "email": "justin@gmail.com",
-                        "password": "1234"
+                      "id": 2,
+                      "title": "mr",
+                      "firstname": "justin",
+                      "lastname": "sommy",
+                      "username": "sommyj",
+                      "password": "1234",
+                      "email": "justin@gmail.com",
+                      "gender": "male",
+                      "street": "ljan terrasse 346",
+                      "city": "ikotun",
+                      "state": "lagos",
+                      "dob": "2015-11-04",
+                      "registered": "2015-11-04T22:09:36Z",
+                      "phone": "66976498",
+                      "userImage": "",
                     },{
-                        "id": 3,
-                        "name": "somto",
-                        "username": "sommyjezzy",
-                        "email": "boss@gmail.com",
-                        "password": "12345"
+                      "id": 3,
+                      "title": "mr",
+                      "firstname": "dumebi",
+                      "lastname": "sonna",
+                      "username": "duboy",
+                      "password": "123",
+                      "email": "boss@gmail.com",
+                      "gender": "male",
+                      "street": "",
+                      "city": "",
+                      "state": "",
+                      "dob": "2015-11-04",
+                      "registered": "2015-11-04T22:09:36Z",
+                      "phone": "66976498",
+                      "userImage": "",
                     }
                 ],
                 "message": "Success",
@@ -53,20 +83,40 @@ Resource related to user in the API.
 You may create your own user account using this action. It takes a JSON object
 containing user details.
 
-+ name (string) - The name
++ title (string) - The title
++ firstname (string) - The firstname
++ lastname (string) - The lastname
 + username (string) - The username
-+ email (string) - The email address
 + password (string) - The password
++ email (string) - The email address
++ gender (string) - The gender
++ street (string) - The street location
++ city (string) - The city location
++ state (string) - The state location
++ dob (string) - The date of birth
++ registered (string) - The user regisration date
++ phone (string) - The phone number
++ userImage (file) - The user image url location
 
-This action takes a x-www-form-urlencoded payload as part of the request as follows:
+This action takes a multipart/form-data enctype of the request as follows:
 
-+ Request (application/x-www-form-urlencoded)
++ Request (multipart/form-data)
 
                 {
-                  "name": "somto",
-                  "username": "sommyjezzy",
-                  "email": "boss@gmail.com",
-                  "password": "12345"
+                  title: 'mr',
+                  firstname: 'Somto',
+                  lastname: 'Ikwuoma',
+                  username: 'sommyjezzy',
+                  password: '12345',
+                  email: 'sommy@gmail.com',
+                  gender: 'male',
+                  street: 'ljan terrasse 346',
+                  city: 'ikotun',
+                  state: 'lagos',
+                  dob: '2015-11-04',
+                  registered: "2015-11-04T22:09:36Z",
+                  phone: '66976498',
+                  userImage: '',
                 }
 
 This example returns a 201 status code, along with HTTP headers and a body.
@@ -77,11 +127,21 @@ This example returns a 201 status code, along with HTTP headers and a body.
 
     {
         "Users": {
-            "id": 3,
-            "name": "somto",
+            "id": 4,
+            "title": "mr",
+            "firstname": "Somto",
+            "lastname": "Ikwuoma",
             "username": "sommyjezzy",
-            "email": "boss@gmail.com",
-            "password": "12345"
+            "password": "12345",
+            "email": "sommy@gmail.com",
+            "gender": "male",
+            "street": "ljan terrasse 346",
+            "city": "ikotun",
+            "state": "lagos",
+            "dob": "2015-11-04",
+            "registered": "2015-11-04T22:09:36Z",
+            "phone": "66976498",
+            "userImage": "",
         },
         "message": "Success",
         "error": false
@@ -102,8 +162,8 @@ This action takes a x-www-form-urlencoded payload as part of the request as foll
 + Request (application/x-www-form-urlencoded)
 
                 {
-                  "username": "sommyjezzy",
-                  "email": "boss@gmail.com",
+                  "username": "duboy",
+                  "password": "123",
                 }
 
 This example returns a 200 status code, along with HTTP headers and a body.
@@ -114,11 +174,21 @@ This example returns a 200 status code, along with HTTP headers and a body.
 
             {
                 "Users": {
-                    "id": 3,
-                    "name": "somto",
-                    "username": "sommyjezzy",
-                    "email": "boss@gmail.com",
-                    "password": "12345"
+                  "id": 3,
+                  "titlename": "mr",
+                  "firstname": "dumebi",
+                  "lastname": "sonna",
+                  "username": "duboy",
+                  "password": "123",
+                  "email": "boss@gmail.com",
+                  "gender": "male",
+                  "street": "",
+                  "city": "",
+                  "state": "",
+                  "dob": "2015-11-04",
+                  "registered": "2015-11-04T22:09:36Z",
+                  "phone": "66976498",
+                  "userImage": ""
                 },
                 "message": "Success",
                 "error": false
@@ -142,25 +212,28 @@ Resource related to business in the API.
                     "businessId": "1",
                     "businessName": "Sommyj IceCream",
                     "userId": "2",
-                    "reviews": "We sell happiness, do u want to be happy.",
+                    "description": "We sell happiness, do u want to be happy.",
                     "location": "lagos",
-                    "category": "entertainment"
+                    "category": "entertainment",
+                    "companyImage": ""
                   },
                   {
                     "businessId": "2",
                     "businessName": "Sommyj Farms",
                     "userId": "3",
-                    "reviews": "We feed the world and you know it,",
+                    "description": "We feed the world and you know it,",
                     "location": "imo",
-                    "category": "farming"
+                    "category": "farming",
+                    "companyImage": ""
                   },
                   {
                     "businessId": "3",
                     "businessName": "Sommyj Security",
                     "userId": "1",
-                    "reviews": "We will protect you no matter what, trust us.",
+                    "description": "We will protect you no matter what, trust us.",
                     "location": "abuja",
-                    "category": "security"
+                    "category": "security",
+                    "companyImage": ""
                   }
             ],
             "message": "Success",
@@ -169,23 +242,26 @@ Resource related to business in the API.
 
 ### Create a New Business [POST]
 
-You may create your own Business using this action. It takes a JSON object
+You may create your own Business using this action. It takes a multipart/form-data enctype object
 containing Business details.
 
         + businessName (string) - The businessName
+        + description (string) - The business description
         + location (string) - The business location
         + category (string) - The business category
+        + companyImage (file) - The company image or logo
 
-This action takes a x-www-form-urlencoded payload as part of the request as follows:
+This action takes a multipart/form-data enctype of the request as follows:
 
-+ Request (application/x-www-form-urlencoded)
++ Request (multipart/form-data)
 
             {
               businessName: 'Sommyj',
               userId: '22',
-              reviews: 'We produce quality products',
+              description: 'We produce quality products',
               location: 'lagos',
               category: 'Production',
+              companyImage: ''
             }
 
 This example returns a 201 status code, along with HTTP headers and a body.
@@ -199,9 +275,10 @@ This example returns a 201 status code, along with HTTP headers and a body.
                         "businessId": "4",
                         "businessName": "Sommyj",
                         "userId": "22",
-                        "reviews": "We produce quality products",
+                        "description": "We produce quality products",
                         "location": "lagos",
                         "category": "Production"
+                        "companyImage": ""
                   },
                   "message": "Success",
                   "error": false
@@ -229,9 +306,10 @@ This resource has an action to retrieve a business detail.
                         "businessId": "4",
                         "businessName": "Sommyj",
                         "userId": "22",
-                        "reviews": "We produce quality products",
+                        "description": "We produce quality products",
                         "location": "lagos",
                         "category": "Production"
+                        "companyImage": ""
                   },
                   "message": "Success",
                   "error": false
@@ -241,16 +319,17 @@ This resource has a update action to edit a business.
 
 ### Update a Business Detail [PUT]
 
-This action takes a x-www-form-urlencoded payload as part of the request as follows:
+This action takes a multipart/form-data enctype of the request as follows:
 
-+ Request (application/x-www-form-urlencoded)
++ Request (multipart/form-data)
 
             {
               businessName: 'Sommyj',
               userId: '22',
-              reviews: 'We produce quality products',
+              description: 'We produce quality products',
               location: 'lagos',
               category: 'Production',
+              companyImage: ''
             }
 
 + Response 200 (application/json)
@@ -262,9 +341,10 @@ This action takes a x-www-form-urlencoded payload as part of the request as foll
                         "businessId": "4",
                         "businessName": "Sommyj",
                         "userId": "22",
-                        "reviews": "We produce quality products",
+                        "description": "We produce quality products",
                         "location": "lagos",
                         "category": "Production"
+                        "companyImage": ""
                   },
                   "message": "Bussiness updated!",
                   "error": false
@@ -293,16 +373,18 @@ This resource has a delete action. The server will return a 204 response without
                           "businessId": "3",
                           "businessName": "Sommyj Security",
                           "userId": "1",
-                          "reviews": "We will protect you no matter what, trust us.",
+                          "description": "We will protect you no matter what, trust us.",
                           "location": "abuja",
                           "category": "security"
+                          "companyImage": ""
                       },{
                           "businessId": "6",
                           "businessName": "jay ltd",
                           "userId": "12",
-                          "reviews": "We produce quality products",
+                          "description": "We produce quality products",
                           "location": "abuja",
                           "category": "production"
+                          "companyImage": ""
                      }
 
                 ],
@@ -327,16 +409,18 @@ This resource has a delete action. The server will return a 204 response without
                           "businessId": "2",
                           "businessName": "Sommyj",
                           "userId": "3",
-                          "reviews": "The best production",
+                          "description": "The best production",
                           "location": "lagos",
                           "category": "production"
+                          "companyImage": ""
                       },{
                           "businessId": "6",
                           "businessName": "jay ltd",
                           "userId": "12",
-                          "reviews": "We produce quality products",
+                          "description": "We produce quality products",
                           "location": "abuja",
                           "category": "production"
+                          "companyImage": ""
                      }
 
                 ],
@@ -349,21 +433,29 @@ This resource has a delete action. The server will return a 204 response without
 + Parameters
     + businessId: 2 (required, number) - ID of the Business in form of an integer
 
-This resource has an action to retrieve a business review detail.
+This resource has an action to retrieve business review details.
 
-### View a Businesses Detail [GET]
+### View a Business review Details [GET]
 
 + Response 200 (application/json)
 
         + Body
 
                 {
-                    "Reviews": {
-                          "id": 4,
-                          "response": "confirm move on",
-                          "userId": "3",
-                          "businessId": "2"
-                    },
+                    "Reviews": [
+                          {
+                              "id": 1,
+                              "response": "very good.",
+                              "userId": "3",
+                              "businessId": "2"
+                          },
+                          {
+                              "id": 2,
+                              "response": "Excellent",
+                              "userId": "1",
+                              "businessId": "2"
+                          }
+                    ],
                     "message": "Success",
                     "error": false
                 }
@@ -376,7 +468,7 @@ It takes a x-www-form-urlencoded payload as part of the request as follows:
 + Request (application/x-www-form-urlencoded)
 
             {
-              id: 1,
+              response: 'confirm move on',
               userId: '3',
               businessId: '2',
             };
@@ -384,21 +476,15 @@ It takes a x-www-form-urlencoded payload as part of the request as follows:
 
 + Response 201 (application/json)
 
-            {
-                "Reviews": [
-                      {
-                          "id": 1,
-                          "response": "very good.",
+          + Body
+
+                {
+                    "Reviews": {
+                          "id": 4,
+                          "response": "confirm move on",
                           "userId": "3",
                           "businessId": "2"
-                      },
-                      {
-                          "id": 2,
-                          "response": "Excellent",
-                          "userId": "1",
-                          "businessId": "2"
-                      }
-                ],
-                "message": "Success",
-                "error": false
-            }
+                    },
+                    "message": "Success",
+                    "error": false
+                }

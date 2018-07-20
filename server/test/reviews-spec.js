@@ -91,10 +91,6 @@ describe('Reviews', () => {
           done();
         });
     });
-
-
-
-
   });
 
   describe('/POST review', () => {
@@ -140,6 +136,6 @@ describe('Reviews', () => {
           res.body.should.have.property('error').eql(false);
           done();
         });
-      });
     });
   });
+});

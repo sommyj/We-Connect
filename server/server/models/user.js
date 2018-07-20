@@ -12,13 +12,13 @@ const Users = [
     city: 'ikotun',
     state: 'lagos',
     dob: '2015-11-04',
-    registered: "2015-11-04T22:09:36Z",
+    registered: '2015-11-04T22:09:36Z',
     phone: '66976498',
     userImage: '',
   },
   {
     id: 2,
-    titlename: 'mr',
+    title: 'mr',
     firstname: 'justin',
     lastname: 'sommy',
     username: 'sommy',
@@ -29,13 +29,13 @@ const Users = [
     city: 'ikotun',
     state: 'lagos',
     dob: '2015-11-04',
-    registered: "2015-11-04T22:09:36Z",
-    phone: "66976498",
+    registered: '2015-11-04T22:09:36Z',
+    phone: '66976498',
     userImage: ''
   },
   {
     id: 3,
-    titlename: 'mr',
+    title: 'mr',
     firstname: 'duboy',
     lastname: 'sonna',
     username: 'sommyjezzy',
@@ -46,11 +46,10 @@ const Users = [
     city: '',
     state: '',
     dob: '2015-11-04',
-    registered: "2015-11-04T22:09:36Z",
-    phone: "66976498",
+    registered: '2015-11-04T22:09:36Z',
+    phone: '66976498',
     userImage: ''
   },
-
 
 
   // {
