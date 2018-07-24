@@ -65,7 +65,7 @@ describe('Users', () => {
         .field('state', '')
         .field('dob', '')
         .field('phone', '')
-        .attach('userImage', './travis config.png')
+        .attach('userImage', './testFile.png')
         .end((err, res) => {
           res.should.have.status(206);
           res.body.should.be.a('object');
@@ -92,7 +92,7 @@ describe('Users', () => {
         .field('state', 'lagos')
         .field('dob', '2015-11-04')
         .field('phone', '66976498')
-        .attach('userImage', './travis config.png')
+        .attach('userImage', './testFile.png')
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.a('object');
@@ -416,7 +416,7 @@ describe('Users', () => {
         .field('state', 'lagos')
         .field('dob', '2015-11-04')
         .field('phone', '66976498')
-        .attach('userImage', './travis config.png')
+        .attach('userImage', './testFile.png')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -477,7 +477,7 @@ describe('Users', () => {
         .field('state', 'lagos')
         .field('dob', '2015-11-04')
         .field('phone', '66976498')
-        .attach('userImage', './travis config.png')
+        .attach('userImage', './testFile.png')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -558,13 +558,13 @@ describe('Users', () => {
         dob: '2015-11-04',
         registered: '2015-11-04T22:09:36Z',
         phone: '66976498',
-        userImage: 'usersUploads/travis config.png',
+        userImage: 'usersUploads/testFile.png',
       };
 
       // Passing user to user model
       Users.push(user);
 
-      let filename = 'travis config.png';
+      let filename = 'testFile.png';
       let src = path.join('./', filename);
       let destDir = path.join('./', 'usersUploads');
 
@@ -590,7 +590,7 @@ describe('Users', () => {
         .field('state', 'lagos')
         .field('dob', '2015-11-04')
         .field('phone', '66976498')
-        .attach('userImage', './travis config.png')
+        .attach('userImage', './testFile.png')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -636,13 +636,13 @@ describe('Users', () => {
         dob: '2015-11-04',
         registered: '2015-11-04T22:09:36Z',
         phone: '66976498',
-        userImage: 'usersUploads/travis config.png',
+        userImage: 'usersUploads/testFile.png',
       };
 
       // Passing user to user model
       Users.push(user);
 
-      let filename = 'travis config.png';
+      let filename = 'testFile.png';
       let src = path.join('./', filename);
       let destDir = path.join('./', 'usersUploads');
 
@@ -699,7 +699,7 @@ describe('Users', () => {
   describe('connect.static()', function(){
     it('should serve static files', function(done){
 
-      let filename = 'travis config.png';
+      let filename = 'testFile.png';
       let src = path.join('./', filename);
       let destDir = path.join('./', 'usersUploads');
 
@@ -712,11 +712,11 @@ describe('Users', () => {
       });
 
       request
-      .get('/usersUploads/travis config.png')
+      .get('/usersUploads/testFile.png')
       .end((err, res) => {
         //delete test image file
-        if (path.resolve(`./usersUploads/travis config.png`)) {
-          fs.unlink(`./usersUploads/travis config.png`, (err) => {
+        if (path.resolve(`./usersUploads/testFile.png`)) {
+          fs.unlink(`./usersUploads/testFile.png`, (err) => {
             if (err) new Error('oohs something went wrong');
           });
         }

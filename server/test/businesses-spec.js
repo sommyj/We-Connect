@@ -61,7 +61,7 @@ describe('Businesses', () => {
         .field('description', '')
         .field('location', '')
         .field('category', '')
-        .attach('companyImage', './travis config.png')
+        .attach('companyImage', './testFile.png')
         .end(function(err, res) {
 
           res.should.have.status(206);
@@ -84,7 +84,7 @@ describe('Businesses', () => {
         .field('description', 'We produce quality products')
         .field('location', 'lagos')
         .field('category', 'Production')
-        .attach('companyImage', './travis config.png')
+        .attach('companyImage', './testFile.png')
         .end(function(err, res) {
           res.should.have.status(201) // 'success' status
           res.body.should.be.a('object');
@@ -140,9 +140,6 @@ describe('Businesses', () => {
         });
 
     });
-
-
-
 
   });
 
@@ -550,7 +547,7 @@ describe('Businesses', () => {
         .field('description', 'We sale quality products')
         .field('location', 'port-harcourt')
         .field('category', 'Sales')
-        .attach('companyImage', './travis config.png')
+        .attach('companyImage', './testFile.png')
         .end(function(err, res) {
           res.should.have.status(200) // 'success' status
           res.body.should.be.a('object');
@@ -614,7 +611,7 @@ describe('Businesses', () => {
         .field('description', 'We sale quality products')
         .field('location', 'port-harcourt')
         .field('category', 'Sales')
-        .attach('companyImage', './travis config.png')
+        .attach('companyImage', './testFile.png')
         .end(function(err, res) {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -698,7 +695,7 @@ describe('Businesses', () => {
           location: 'lagos',
           category: 'Production',
           registered:'2015-11-04T22:09:36Z',
-          companyImage: 'businessesUploads/travis config.png',
+          companyImage: 'businessesUploads/testFile.png',
         },
         {
           businessId: '13',
@@ -716,7 +713,7 @@ describe('Businesses', () => {
         Businesses.push(business[0]);
         Businesses.push(business[1]);
 
-        let filename = 'travis config.png';
+        let filename = 'testFile.png';
         let src = path.join('./', filename);
         let destDir = path.join('./', 'businessesUploads');
 
@@ -736,7 +733,7 @@ describe('Businesses', () => {
         .field('description', 'We sale quality products')
         .field('location', 'port-harcourt')
         .field('category', 'Sales')
-        .attach('companyImage', './travis config.png')
+        .attach('companyImage', './testFile.png')
         .end(function(err, res) {
           res.should.have.status(200) // 'success' status
           res.body.should.be.a('object');
@@ -761,15 +758,7 @@ describe('Businesses', () => {
         });
     });
 
-
-
-
-
   });
-
-
-
-
 
   /*
   * Test the /DELETE/:id route
@@ -785,7 +774,7 @@ describe('Businesses', () => {
           location: 'lagos',
           category: 'Production',
           registered:'2015-11-04T22:09:36Z',
-          companyImage: 'businessesUploads/travis config.png',
+          companyImage: 'businessesUploads/testFile.png',
         },
         {
           businessId: '12',
@@ -803,7 +792,7 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
 
-      let filename = 'travis config.png';
+      let filename = 'testFile.png';
       let src = path.join('./', filename);
       let destDir = path.join('./', 'businessesUploads');
 
@@ -854,7 +843,7 @@ describe('Businesses', () => {
   describe('connect.static()', function(){
     it('should serve static files', function(done){
 
-      let filename = 'travis config.png';
+      let filename = 'testFile.png';
       let src = path.join('./', filename);
       let destDir = path.join('./', 'businessesUploads');
 
@@ -867,11 +856,11 @@ describe('Businesses', () => {
       });
 
       request
-      .get('/businessesUploads/travis config.png')
+      .get('/businessesUploads/testFile.png')
       .end((err, res) => {
         //delete test image file
-        if (path.resolve(`./businessesUploads/travis config.png`)) {
-          fs.unlink(`./businessesUploads/travis config.png`, (err) => {
+        if (path.resolve(`./businessesUploads/testFile.png`)) {
+          fs.unlink(`./businessesUploads/testFile.png`, (err) => {
             if (err) new Error('oohs something went wrong');
           });
         }
