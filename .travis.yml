@@ -14,7 +14,7 @@ before_script:
 notificatios:
   email: false
 
-install: travis_wait npm install
+install: travis_wait 30 npm install
 
 script: npm test
 
