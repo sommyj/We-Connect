@@ -94,11 +94,12 @@ describe('Reviews', () => {
   });
 
   describe('/POST review', () => {
-    it('it should not POST a review without a response', (done) => {
+    it('it should not POST a review without a response, userId, businessId', (done) => {
       const review = {
         id: 1,
-        userId: '3',
-        businessId: '2',
+        response: '',
+        userId: '',
+        businessId: '',
       };
 
       chai.request(app)

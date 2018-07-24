@@ -1,12 +1,30 @@
 // Require the dev-dependencies
 import chai from 'chai';
-import chaiHttp from 'chai-http';
+import supertest from 'supertest';
+import fs from 'file-system';
+import path from 'path';
 
 import Businesses from '../server/models/business';
 import app from '../app';
 
 chai.should();
-chai.use(chaiHttp);
+const request = supertest(app);
+
+//copy file from a directory to another
+function copyFile(src, dest) {
+
+  let readStream = fs.createReadStream(src);
+
+  readStream.once('error', (err) => {
+    console.log(err);
+  });
+
+  readStream.once('end', () => {
+    console.log('done copying');
+  });
+
+  readStream.pipe(fs.createWriteStream(dest));
+}
 
 
 describe('Businesses', () => {
@@ -30,44 +48,45 @@ describe('Businesses', () => {
   });
 
   describe('/POST business', () => {
-    it('it should not POST a business without description', (done) => {
-      const business = {
-        businessId: '11',
-        businessName: 'Sommyj',
-        userId: '22',
-        location: 'lagos',
-        category: 'Production',
-        companyImage: '',
-      };
 
-      chai.request(app)
+
+    it(`it should not CREATE a business without description, businessName, userId,
+    description, location and category`, (done) => {
+
+      request
         .post('/v1/businesses/')
-        .send(business)
-        .end((err, res) => {
+        .field('businessId', '1')
+        .field('businessName', '')
+        .field('userId', '')
+        .field('description', '')
+        .field('location', '')
+        .field('category', '')
+        .attach('companyImage', './travis config.png')
+        .end(function(err, res) {
+
           res.should.have.status(206);
           res.body.should.be.a('object');
           res.body.should.have.property('message').eql('Incomplete fields');
           res.body.should.have.property('error').eql(true);
-          done();
+
+          done()
         });
+
     });
 
-    it('it should post a business', (done) => {
-      const business = {
-        businessId: '1',
-        businessName: 'Sommyj',
-        userId: '22',
-        description: 'We produce quality products',
-        location: 'lagos',
-        category: 'Production',
-        companyImage: '',
-      };
+    it('it should CREATE a business', (done) => {
 
-      chai.request(app)
+      request
         .post('/v1/businesses/')
-        .send(business)
-        .end((err, res) => {
-          res.should.have.status(201);
+        .field('businessId', '1')
+        .field('businessName', 'Sommyj')
+        .field('userId', '22')
+        .field('description', 'We produce quality products')
+        .field('location', 'lagos')
+        .field('category', 'Production')
+        .attach('companyImage', './travis config.png')
+        .end(function(err, res) {
+          res.should.have.status(201) // 'success' status
           res.body.should.be.a('object');
           res.body.should.have.property('Businesses');
           res.body.Businesses.should.have.property('businessId').eql('1');
@@ -76,12 +95,55 @@ describe('Businesses', () => {
           res.body.Businesses.should.have.property('description').eql('We produce quality products');
           res.body.Businesses.should.have.property('location').eql('lagos');
           res.body.Businesses.should.have.property('category').eql('Production');
-          res.body.Businesses.should.have.property('companyImage').eql('');
+          res.body.Businesses.should.have.property('companyImage').eql(Businesses[0].companyImage);
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
-          done();
+
+          //delete test image file
+          if (Businesses[0].companyImage) {
+            fs.unlink(`./${Businesses[0].companyImage}`, (err) => {
+              if (err) new Error('oohs something went wrong');
+            });
+          }
+          done()
         });
     });
+
+
+
+    it('it should CREATE a business without image', (done) => {
+
+      request
+        .post('/v1/businesses/')
+        .field('businessId', '1')
+        .field('businessName', 'Sommyj')
+        .field('userId', '22')
+        .field('description', 'We produce quality products')
+        .field('location', 'lagos')
+        .field('category', 'Production')
+        .attach('companyImage', '')
+        .end(function(err, res) {
+          res.should.have.status(201) // 'success' status
+          res.body.should.be.a('object');
+          res.body.should.have.property('Businesses');
+          res.body.Businesses.should.have.property('businessId').eql('1');
+          res.body.Businesses.should.have.property('businessName').eql('Sommyj');
+          res.body.Businesses.should.have.property('userId').eql('22');
+          res.body.Businesses.should.have.property('description').eql('We produce quality products');
+          res.body.Businesses.should.have.property('location').eql('lagos');
+          res.body.Businesses.should.have.property('category').eql('Production');
+          res.body.Businesses.should.have.property('companyImage').eql(Businesses[0].companyImage);
+          res.body.should.have.property('message').eql('Success');
+          res.body.should.have.property('error').eql(false);
+
+          done()
+        });
+
+    });
+
+
+
+
   });
 
   /*
@@ -97,6 +159,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -106,6 +169,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'owerri',
           category: 'Importation',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -113,7 +177,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business[0]);
       Businesses.push(business[1]);
-      chai.request(app)
+      request
         .get('/v1/businesses')
         .end((err, res) => {
           res.should.have.status(200);
@@ -150,12 +214,13 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        registered:'2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
       // Passing business to business model
       Businesses.push(business);
-      chai.request(app)
+      request
         .get(`/v1/businesses/${business.businessId}`)
         .end((err, res) => {
           res.should.have.status(200);
@@ -181,12 +246,13 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        registered:'2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
       // Passing business to business model
       Businesses.push(business);
-      chai.request(app)
+      request
         .get('/v1/businesses/13')
         .end((err, res) => {
           res.should.have.status(404);
@@ -205,12 +271,13 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        registered:'2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
       // Passing business to business model
       Businesses.push(business);
-      chai.request(app)
+      request
         .get('/v1/businesses')
         .query(`category=${business.category}`) // /businesses?category='Production'
         .end((err, res) => {
@@ -241,12 +308,13 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        registered:'2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
       // Passing business to business model
       Businesses.push(business);
-      chai.request(app)
+      request
         .get('/v1/businesses')
         .query('category=Sales') // /businesses?category='Production'
         .end((err, res) => {
@@ -268,6 +336,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -277,6 +346,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'owerri',
           category: 'Importation',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -284,7 +354,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business[0]);
       Businesses.push(business[1]);
-      chai.request(app)
+      request
         .get('/v1/businesses')
         .query(`location=${business[0].location}`) // /businesses?location='lagos'
         .end((err, res) => {
@@ -316,6 +386,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -325,6 +396,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'owerri',
           category: 'Importation',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -332,7 +404,7 @@ describe('Businesses', () => {
       // Passing business to business model
       Businesses.push(business[0]);
       Businesses.push(business[1]);
-      chai.request(app)
+      request
         .get('/v1/businesses')
         .query('location=abuja') // /businesses?location='lagos'
         .end((err, res) => {
@@ -354,6 +426,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -363,6 +436,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'lagos',
           category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -371,7 +445,7 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
 
-      chai.request(app)
+      request
         .get('/v1/businesses')
         .query({ location: 'lagos', category: 'Production' }) // /businesses?location='lagos'&category='Production'
         .end((err, res) => {
@@ -402,6 +476,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -411,6 +486,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'abuja',
           category: 'Services',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -419,7 +495,7 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
 
-      chai.request(app)
+      request
         .get('/v1/businesses')
         .query({ location: 'abuja', category: 'Production' }) // /businesses?location ='lagos'&category='Production'
         .end((err, res) => {
@@ -436,7 +512,9 @@ describe('Businesses', () => {
    * Test the /PUT/:id route
    */
   describe('/PUT/:id business', () => {
+
     it('it should UPDATE a business given the id', (done) => {
+
       const business = [
         {
           businessId: '11',
@@ -445,7 +523,8 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          companyImage: 'usersUploads/kdknnffnnf.jpg',
+          registered:'2015-11-04T22:09:36Z',
+          companyImage: '',
         },
         {
           businessId: '13',
@@ -454,40 +533,52 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'abuja',
           category: 'Services',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
 
       // Passing business to business model
-      Businesses.push(business[0]);
-      Businesses.push(business[1]);
+        Businesses.push(business[0]);
+        Businesses.push(business[1]);
 
-      chai.request(app)
+      request
         .put(`/v1/businesses/${business[0].businessId}`)
-        .send({
-          businessId: '12',
-          businessName: 'Sommyj Enterprise',
-          userId: '22',
-          description: 'We produce quality products',
-          location: 'port-harcourt',
-          category: 'Sales',
-          companyImage: '',
-        })
-        .end((err, res) => {
-          res.should.have.status(200);
+        .field('businessId', '1')
+        .field('businessName', 'Sommyj Enterprise')
+        .field('userId', '22')
+        .field('description', 'We sale quality products')
+        .field('location', 'port-harcourt')
+        .field('category', 'Sales')
+        .attach('companyImage', './travis config.png')
+        .end(function(err, res) {
+          res.should.have.status(200) // 'success' status
           res.body.should.be.a('object');
-          res.body.should.have.property('error').eql(false);
-          res.body.should.have.property('message').eql('Bussiness updated!');
+          res.body.should.have.property('Businesses');
           res.body.Businesses.should.have.property('businessId').eql('11');
+          res.body.Businesses.should.have.property('businessName').eql('Sommyj Enterprise');
+          res.body.Businesses.should.have.property('userId').eql('22');
+          res.body.Businesses.should.have.property('description').eql('We sale quality products');
           res.body.Businesses.should.have.property('location').eql('port-harcourt');
           res.body.Businesses.should.have.property('category').eql('Sales');
-          res.body.Businesses.should.have.property('businessName').eql('Sommyj Enterprise');
-          res.body.Businesses.should.have.property('companyImage').eql('usersUploads/kdknnffnnf.jpg');
-          done();
+          res.body.Businesses.should.have.property('companyImage').eql(Businesses[0].companyImage);
+          res.body.should.have.property('message').eql('Bussiness updated!');
+          res.body.should.have.property('error').eql(false);
+
+          //delete test image file
+          if (Businesses[0].companyImage) {
+            fs.unlink(`./${Businesses[0].companyImage}`, (err) => {
+              if (err) new Error('oohs something went wrong');
+            });
+          }
+          done()
         });
     });
 
+
+
     it('it should not UPDATE a business given the wrong id', (done) => {
+
       const business = [
         {
           businessId: '11',
@@ -496,43 +587,189 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
-          businessId: '12',
+          businessId: '13',
           businessName: 'Sommy',
           userId: '23',
           description: 'We produce quality service',
-          location: 'lagos',
-          category: 'Production',
+          location: 'abuja',
+          category: 'Services',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
 
       // Passing business to business model
-      Businesses.push(business[0]);
-      Businesses.push(business[1]);
+        Businesses.push(business[0]);
+        Businesses.push(business[1]);
 
-      chai.request(app)
-        .put('/v1/businesses/13')
-        .send({
-          businessId: '19',
-          businessName: 'Sommyj',
-          userId: '22',
-          description: 'We produce quality products',
-          location: 'port-harcourt',
-          category: 'Production',
-          companyImage: '',
-        })
-        .end((err, res) => {
+      request
+        .put(`/v1/businesses/12`)
+        .field('businessId', '1')
+        .field('businessName', 'Sommyj Enterprise')
+        .field('userId', '22')
+        .field('description', 'We sale quality products')
+        .field('location', 'port-harcourt')
+        .field('category', 'Sales')
+        .attach('companyImage', './travis config.png')
+        .end(function(err, res) {
           res.should.have.status(404);
           res.body.should.be.a('object');
           res.body.should.have.property('error').eql(true);
           res.body.should.have.property('message').eql('Business not found');
-          done();
+
+          done()
         });
     });
+
+    it(`it should UPDATE a business given the id and
+    maintain already existing fields and file if none is entered`, (done) => {
+
+      const business = [
+        {
+          businessId: '11',
+          businessName: 'Sommyj',
+          userId: '22',
+          description: 'We produce quality products',
+          location: 'lagos',
+          category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
+          companyImage: 'businessesUploads/2018-07-23T16:04:36.226ZNIIT Certificate (copy).resized.jpg',
+        },
+        {
+          businessId: '13',
+          businessName: 'Sommy',
+          userId: '23',
+          description: 'We produce quality service',
+          location: 'abuja',
+          category: 'Services',
+          registered:'2015-11-04T22:09:36Z',
+          companyImage: '',
+        },
+      ];
+
+      // Passing business to business model
+        Businesses.push(business[0]);
+        Businesses.push(business[1]);
+
+      request
+        .put(`/v1/businesses/${business[0].businessId}`)
+        .field('businessId', '1')
+        .field('businessName', '')
+        .field('userId', '')
+        .field('description', '')
+        .field('location', '')
+        .field('category', '')
+        .attach('companyImage', '')
+        .end(function(err, res) {
+          res.should.have.status(200) // 'success' status
+          res.body.should.be.a('object');
+          res.body.should.have.property('Businesses');
+          res.body.Businesses.should.have.property('businessId').eql('11');
+          res.body.Businesses.should.have.property('businessName').eql('Sommyj');
+          res.body.Businesses.should.have.property('userId').eql('22');
+          res.body.Businesses.should.have.property('description').eql('We produce quality products');
+          res.body.Businesses.should.have.property('location').eql('lagos');
+          res.body.Businesses.should.have.property('category').eql('Production');
+          res.body.Businesses.should.have.property('companyImage').eql(business[0].companyImage);
+          res.body.should.have.property('message').eql('Bussiness updated!');
+          res.body.should.have.property('error').eql(false);
+
+          done()
+        });
+    });
+
+
+
+
+
+
+    it('it should UPDATE a business given the id and replace already existing file', (done) => {
+
+      const business = [
+        {
+          businessId: '11',
+          businessName: 'Sommyj',
+          userId: '22',
+          description: 'We produce quality products',
+          location: 'lagos',
+          category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
+          companyImage: 'businessesUploads/travis config.png',
+        },
+        {
+          businessId: '13',
+          businessName: 'Sommy',
+          userId: '23',
+          description: 'We produce quality service',
+          location: 'abuja',
+          category: 'Services',
+          registered:'2015-11-04T22:09:36Z',
+          companyImage: '',
+        },
+      ];
+
+      // Passing business to business model
+        Businesses.push(business[0]);
+        Businesses.push(business[1]);
+
+        let filename = 'travis config.png';
+        let src = path.join('./', filename);
+        let destDir = path.join('./', 'businessesUploads');
+
+        fs.access(destDir, (err) => {
+          if(err)
+            fs.mkdirSync(destDir);
+
+          copyFile(src, path.join(destDir, filename));
+        });
+
+
+      request
+        .put(`/v1/businesses/11`)
+        .field('businessId', '13')
+        .field('businessName', 'Sommyj Enterprise')
+        .field('userId', '22')
+        .field('description', 'We sale quality products')
+        .field('location', 'port-harcourt')
+        .field('category', 'Sales')
+        .attach('companyImage', './travis config.png')
+        .end(function(err, res) {
+          res.should.have.status(200) // 'success' status
+          res.body.should.be.a('object');
+          res.body.should.have.property('Businesses');
+          res.body.Businesses.should.have.property('businessId').eql('11');
+          res.body.Businesses.should.have.property('businessName').eql('Sommyj Enterprise');
+          res.body.Businesses.should.have.property('userId').eql('22');
+          res.body.Businesses.should.have.property('description').eql('We sale quality products');
+          res.body.Businesses.should.have.property('location').eql('port-harcourt');
+          res.body.Businesses.should.have.property('category').eql('Sales');
+          res.body.Businesses.should.have.property('companyImage').eql(Businesses[0].companyImage);
+          res.body.should.have.property('message').eql('Bussiness updated!');
+          res.body.should.have.property('error').eql(false);
+
+          //delete test image file
+          if (Businesses[0].companyImage) {
+            fs.unlink(`./${Businesses[0].companyImage}`, (err) => {
+              if (err) new Error('oohs something went wrong');
+            });
+          }
+          done()
+        });
+    });
+
+
+
+
+
   });
+
+
+
+
 
   /*
   * Test the /DELETE/:id route
@@ -547,7 +784,8 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          companyImage: '',
+          registered:'2015-11-04T22:09:36Z',
+          companyImage: 'businessesUploads/travis config.png',
         },
         {
           businessId: '12',
@@ -556,6 +794,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'lagos',
           category: 'Production',
+          registered:'2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -564,14 +803,24 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
 
-      chai.request(app)
-        .delete(`/v1/businesses/${business[0].businessId}`)
+      let filename = 'travis config.png';
+      let src = path.join('./', filename);
+      let destDir = path.join('./', 'businessesUploads');
+
+      //copy image file to businessesUploads
+      fs.access(destDir, (err) => {
+        if(err)
+          fs.mkdirSync(destDir);
+
+        copyFile(src, path.join(destDir, filename));
+      });
+
+
+      request
+        .delete(`/v1/businesses/11`)
         .end((err, res) => {
           res.should.have.status(204);
           res.body.should.be.a('object');
-          // res.body.error.should.be.eql(false);
-          // res.body.Businesses.length.should.be.eql(0);
-          // res.body.should.have.property('message').eql('Business successfully deleted!');
           done();
         });
     });
@@ -584,12 +833,13 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
+        registered:'2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
       // Passing business to business model
       Businesses.push(business);
-      chai.request(app)
+      request
         .delete('/v1/businesses/13')
         .end((err, res) => {
           res.should.have.status(404);
@@ -600,4 +850,34 @@ describe('Businesses', () => {
         });
     });
   });
+
+  describe('connect.static()', function(){
+    it('should serve static files', function(done){
+
+      let filename = 'travis config.png';
+      let src = path.join('./', filename);
+      let destDir = path.join('./', 'businessesUploads');
+
+      // copy image file to businessesUploads
+      fs.access(destDir, (err) => {
+        if(err)
+          fs.mkdirSync(destDir);
+
+        copyFile(src, path.join(destDir, filename));
+      });
+
+      request
+      .get('/businessesUploads/travis config.png')
+      .end((err, res) => {
+        //delete test image file
+        if (path.resolve(`./businessesUploads/travis config.png`)) {
+          fs.unlink(`./businessesUploads/travis config.png`, (err) => {
+            if (err) new Error('oohs something went wrong');
+          });
+        }
+        done();
+      });
+    })
+  });
+
 });

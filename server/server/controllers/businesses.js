@@ -42,16 +42,25 @@ const businessesController = {
   create(req, res) {
     const Business = {
       businessId: `${Businesses.length + 1}`,
-      businessName: req.body.businessName,
-      userId: req.body.userId,
-      description: req.body.description,
-      location: req.body.location,
-      category: req.body.category,
+      businessName: req.body.businessName ? req.body.businessName.trim() : req.body.businessName,
+      userId: req.body.userId ? req.body.userId.trim() : req.body.userId,
+      description: req.body.description ? req.body.description.trim() : req.body.description,
+      location: req.body.location ? req.body.location.trim() : req.body.location,
+      category: req.body.category ? req.body.category.trim() : req.body.category,
+      registered:new Date(),
       companyImage: req.file ? req.file.path : '',
     };
 
+    //image to be saved
+    const picture = req.file ? req.file.path : '';
+
     if (!req.body.businessName || !req.body.userId || !req.body.description ||
       !req.body.location || !req.body.category) {
+        if (picture) {
+          fs.unlink(`./${picture}`, (err) => {
+            if (err) return handleError(err, res);
+          });
+        }
       return res.status(206).json({ message: 'Incomplete fields', error: true });
     }
     Businesses.push(Business);
@@ -65,15 +74,15 @@ const businessesController = {
       const picture = Business.companyImage;
 
       if (Business.businessId === req.params.businessId) {
-        Business.businessName = req.body.businessName;
-        Business.userId = req.body.userId;
-        Business.description = req.body.description;
-        Business.location = req.body.location;
-        Business.category = req.body.category;
+        Business.businessName = req.body.businessName ? req.body.businessName.trim() : Business.businessName;
+        Business.userId = req.body.userId ? req.body.userId.trim() : Business.userId;
+        Business.description = req.body.description ? req.body.description.trim() : Business.description;
+        Business.location = req.body.location ? req.body.location.trim() : Business.location;
+        Business.category = req.body.category ? req.body.category.trim() : Business.category;
 
         // if file and url is not empty delete img for updation
         if (req.file) {
-          if (Business.companyImage.trim()) {
+          if (Business.companyImage) {
             fs.unlink(`./${Business.companyImage}`, (err) => {
               if (err) return handleError(err, res);
             });
@@ -84,6 +93,13 @@ const businessesController = {
         return res.json({ Businesses: Business, message: 'Bussiness updated!', error: false });
       }
     }
+
+    //remove file if id is not available
+    if (req.file) {
+        fs.unlink(`./${req.file.path}`, (err) => {
+          if (err) return handleError(err, res);
+        });
+    }
     return res.status(404).json({ message: 'Business not found', error: true });
   },
   // delete business
@@ -91,7 +107,7 @@ const businessesController = {
     let i = 0;
     for (const Business of Businesses) {
       if (Business.businessId === req.params.businessId) {
-        if (Business.companyImage.trim()) {
+        if (Business.companyImage) {
           fs.unlink(`./${Business.companyImage}`, (err) => {
             if (err) return handleError(err, res);
           });

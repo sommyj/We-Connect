@@ -42,25 +42,33 @@ const usersController = {
   create(req, res) {
     const User = {
       id: Users.length + 1,
-      title: req.body.title,
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      username: req.body.username,
-      password: req.body.password,
-      email: req.body.email,
-      gender: req.body.gender,
-      street: req.body.street,
-      city: req.body.city,
-      state: req.body.state,
+      title: req.body.title ? req.body.title.trim() : req.body.title,
+      firstname: req.body.firstname ? req.body.firstname.trim() : req.body.firstname,
+      lastname: req.body.lastname ? req.body.lastname.trim() : req.body.lastname,
+      username: req.body.username ? req.body.username.trim() : req.body.username,
+      password: req.body.password ? req.body.password.trim() : req.body.password,
+      email: req.body.email ? req.body.email.trim() : req.body.email,
+      gender: req.body.gender ? req.body.gender.trim() : req.body.gender,
+      street: req.body.street ? req.body.street.trim() : req.body.street,
+      city: req.body.city ? req.body.city.trim() : req.body.city,
+      state: req.body.state ? req.body.state.trim() : req.body.state,
       dob: req.body.date,
       registered: new Date(),
-      phone: req.body.phone,
+      phone: req.body.phone ? req.body.phone.trim() : req.body.phone,
       userImage: req.file ? req.file.path : ''
     };
+
+    //image to be saved
+    const picture = req.file ? req.file.path : '';
 
     if (!req.body.title || !req.body.firstname || !req.body.lastname ||
       !req.body.username || !req.body.password || !req.body.email ||
       !req.body.gender || !req.body.dob || !req.body.phone) {
+        if (picture) {
+          fs.unlink(`./${picture}`, (err) => {
+            if (err) return handleError(err, res);
+          });
+        }
       return res.status(206).json({ message: 'Incomplete field', error: true });
     }
 
@@ -88,16 +96,17 @@ const usersController = {
         const picture = User.userImage;
 
         User.title = req.body.title;
-        User.firstname = req.body.first;
-        User.lastname = req.body.last;
-        User.username = req.body.username;
-        User.password = req.body.password;
-        User.email = req.body.email;
+        User.firstname = req.body.firstname ? req.body.firstname.trim() : User.firstname;
+        User.lastname = req.body.lastname ? req.body.lastname.trim() : User.lastname;
+        User.username = req.body.username ? req.body.username.trim() : User.username;
+        User.password = req.body.password ? req.body.password.trim() : User.password;
+        User.email = req.body.email ? req.body.email.trim() : User.email;
         User.gender = req.body.gender;
-        User.street = req.body.street;
-        User.city = req.body.city;
-        User.state = req.body.state;
-        User.phone = req.body.phone;
+        User.street = req.body.street ? req.body.street.trim() : User.street;
+        User.city = req.body.city ? req.body.city.trim() : User.city;
+        User.state = req.body.state ? req.body.state.trim() : User.state;
+        User.dob = req.body.dob ? req.body.dob.trim() : User.dob;
+        User.phone = req.body.phone ? req.body.phone.trim() : User.phone;
 
         // if file and url is not empty delete img for updation
         if (req.file) {
@@ -111,6 +120,13 @@ const usersController = {
 
         return res.json({ Users: User, message: 'User updated!', error: false });
       }
+    }
+
+    //remove file if id is not available
+    if (req.file) {
+        fs.unlink(`./${req.file.path}`, (err) => {
+          if (err) return handleError(err, res);
+        });
     }
     return res.status(404).json({ message: 'User not found', error: true });
   },

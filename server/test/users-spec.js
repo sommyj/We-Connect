@@ -1,13 +1,30 @@
 // Require the dev-dependencies
 import chai from 'chai';
-import chaiHttp from 'chai-http';
+import supertest from 'supertest';
+import fs from 'file-system';
+import path from 'path';
 
 import Users from '../server/models/user';
 import app from '../app';
 
 chai.should();
-chai.use(chaiHttp);
+const request = supertest(app);
 
+//copy file from a directory to another
+function copyFile(src, dest) {
+
+  let readStream = fs.createReadStream(src);
+
+  readStream.once('error', (err) => {
+    console.log(err);
+  });
+
+  readStream.once('end', () => {
+    console.log('done copying');
+  });
+
+  readStream.pipe(fs.createWriteStream(dest));
+}
 
 describe('Users', () => {
   beforeEach((done) => { // Before each test we empty the database
@@ -30,27 +47,25 @@ describe('Users', () => {
   });
 
   describe('/POST user', () => {
-    it('it should not POST a user without email', (done) => {
-      const user = {
-        id: 12,
-        title: 'mr',
-        firstname: 'Somto',
-        lastname: 'Ikwuoma',
-        username: 'sommyjezzy',
-        password: '12345',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        dob: '2015-11-04',
-        registered: '2015-11-04T22:09:36Z',
-        phone: '66976498',
-        userImage: '',
-      };
+    it(`it should not POST a user without firstname, lastname, username, password,
+     email, gender, street, city, state, dob, phone`, (done) => {
 
-      chai.request(app)
+      request
         .post('/auth/v1/signup')
-        .send(user)
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', '')
+        .field('lastname', '')
+        .field('username', '')
+        .field('password', '')
+        .field('email', '')
+        .field('gender', '')
+        .field('street', '')
+        .field('city', '')
+        .field('state', '')
+        .field('dob', '')
+        .field('phone', '')
+        .attach('userImage', './travis config.png')
         .end((err, res) => {
           res.should.have.status(206);
           res.body.should.be.a('object');
@@ -61,45 +76,90 @@ describe('Users', () => {
     });
 
     it('it should post a user', (done) => {
-      const user = {
-        id: 1,
-        title: 'mr',
-        firstname: 'justin',
-        lastname: 'Ikwuoma',
-        username: 'justman',
-        password: 'abc',
-        email: 'justin@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        dob: '2015-11-04',
-        registered: '2015-11-04T22:09:36Z',
-        phone: '66976498',
-        userImage: '',
-      };
 
-      chai.request(app)
+      request
         .post('/auth/v1/signup')
-        .send(user)
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', './travis config.png')
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.have.property('Users');
           res.body.Users.should.have.property('id').eql(1);
-          res.body.Users.should.have.property('firstname').eql('justin');
+          res.body.Users.should.have.property('firstname').eql('Justin');
           res.body.Users.should.have.property('lastname').eql('Ikwuoma');
           res.body.Users.should.have.property('username').eql('justman');
           res.body.Users.should.have.property('email').eql('justin@gmail.com');
           res.body.Users.should.have.property('password').eql('abc');
           res.body.Users.should.have.property('gender').eql('male');
           res.body.Users.should.have.property('street').eql('ljan terrasse 346');
-          res.body.Users.should.have.property('userImage').eql('');
+          res.body.Users.should.have.property('city').eql('ikotun');
+          res.body.Users.should.have.property('userImage').eql(Users[0].userImage);
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
+
+          //delete test image file
+          if (Users[0].userImage) {
+            fs.unlink(`./${Users[0].userImage}`, (err) => {
+              if (err) new Error('oohs something went wrong');
+            });
+          }
+
           done();
         });
     });
+
+    it('it should post a user without image', (done) => {
+
+      request
+        .post('/auth/v1/signup')
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
+          res.should.have.status(201);
+          res.body.should.be.a('object');
+          res.body.should.have.property('Users');
+          res.body.Users.should.have.property('id').eql(1);
+          res.body.Users.should.have.property('firstname').eql('Justin');
+          res.body.Users.should.have.property('lastname').eql('Ikwuoma');
+          res.body.Users.should.have.property('username').eql('justman');
+          res.body.Users.should.have.property('email').eql('justin@gmail.com');
+          res.body.Users.should.have.property('password').eql('abc');
+          res.body.Users.should.have.property('gender').eql('male');
+          res.body.Users.should.have.property('street').eql('ljan terrasse 346');
+          res.body.Users.should.have.property('city').eql('ikotun');
+          res.body.Users.should.have.property('userImage').eql('');
+          res.body.should.have.property('message').eql('Success');
+          res.body.should.have.property('error').eql(false);
+
+          done();
+        });
+    });
+
     it('it should POST username && password and get the particular user ', (done) => {
       const user = {
         id: 12,
@@ -120,7 +180,7 @@ describe('Users', () => {
       };
 
       Users.push(user);
-      chai.request(app)
+      request
         .post('/auth/v1/login')
         .send({ username: 'justman', password: 'abc' })
         .end((err, res) => {
@@ -130,7 +190,9 @@ describe('Users', () => {
           res.body.Users.should.have.property('firstname').eql('justin');
           res.body.Users.should.have.property('lastname').eql('Ikwuoma');
           res.body.Users.should.have.property('username').eql('justman');
+          res.body.Users.should.have.property('email').eql('justin@gmail.com');
           res.body.Users.should.have.property('password').eql('abc');
+          res.body.Users.should.have.property('userImage').eql('');
           res.body.should.have.property('message').eql('Success');
           res.body.error.should.be.eql(false);
           done();
@@ -157,7 +219,7 @@ describe('Users', () => {
       };
 
       Users.push(user);
-      chai.request(app)
+      request
         .post('/auth/v1/login')
         .send({ username: 'justin', password: 'abc' })
         .end((err, res) => {
@@ -214,7 +276,7 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user[0]);
       Users.push(user[1]);
-      chai.request(app)
+      request
         .get('/api/v1/users/')
         .end((err, res) => {
           res.should.have.status(200);
@@ -258,12 +320,12 @@ describe('Users', () => {
         dob: '2015-11-04',
         registered: '2015-11-04T22:09:36Z',
         phone: '66976498',
-        userImage: '',
+        userImage: 'usersUploads/2018-07-23T16:04:36.226Zpassport.resized.JPG',
       };
 
       // Passing user to user model
       Users.push(user);
-      chai.request(app)
+      request
         .get(`/api/v1/users/${user.id}`)
         .end((err, res) => {
           res.should.have.status(200);
@@ -274,6 +336,7 @@ describe('Users', () => {
           res.body.Users.should.have.property('email').eql('justin@gmail.com');
           res.body.Users.should.have.property('password').eql('abc');
           res.body.Users.should.have.property('id').eql(user.id);
+          res.body.Users.should.have.property('userImage').eql('usersUploads/2018-07-23T16:04:36.226Zpassport.resized.JPG');
           done();
         });
     });
@@ -295,12 +358,12 @@ describe('Users', () => {
         dob: '2015-11-04',
         registered: '2015-11-04T22:09:36Z',
         phone: '66976498',
-        userImage: '',
+        userImage: 'usersUploads/2018-07-23T16:04:36.226Zpassport.resized.JPG',
       };
 
       // Passing user to user model
       Users.push(user);
-      chai.request(app)
+      request
         .get('/api/v1/users/14')
         .end((err, res) => {
           res.should.have.status(404);
@@ -320,7 +383,7 @@ describe('Users', () => {
       const user = {
         id: 12,
         title: 'mr',
-        firstname: 'justin',
+        firstname: 'Justin',
         lastname: 'Ikwuoma',
         username: 'justman',
         password: 'abc',
@@ -338,31 +401,41 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
 
-      chai.request(app)
+      request
         .put(`/api/v1/users/${user.id}`)
-        .send({
-          id: 12,
-          title: 'mr',
-          firstname: 'justin',
-          lastname: 'Ikwuoma',
-          username: 'sojust',
-          password: 'abcd',
-          email: 'justin@gmail.com',
-          gender: 'male',
-          street: 'ljan terrasse 346',
-          city: 'ikotun',
-          state: 'lagos',
-          dob: '2015-11-04',
-          registered: '2015-11-04T22:09:36Z',
-          phone: '66976498',
-          userImage: '',
-        })
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'sojust')
+        .field('password', 'abcd')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', './travis config.png')
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           res.body.should.have.property('message').eql('User updated!');
+          res.body.Users.should.have.property('title').eql('mr');
+          res.body.Users.should.have.property('firstname').eql('Justin');
+          res.body.Users.should.have.property('lastname').eql('Ikwuoma');
           res.body.Users.should.have.property('password').eql('abcd');
           res.body.Users.should.have.property('username').eql('sojust');
+          res.body.Users.should.have.property('email').eql('justin@gmail.com');
+          res.body.Users.should.have.property('userImage').eql(Users[0].userImage);
+
+          //delete test image file
+          if (Users[0].userImage) {
+            fs.unlink(`./${Users[0].userImage}`, (err) => {
+              if (err) new Error('oohs something went wrong');
+            });
+          }
+
           done();
         });
     });
@@ -389,25 +462,22 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
 
-      chai.request(app)
+      request
         .put('/api/v1/users/14')
-        .send({
-          id: 12,
-          title: 'mr',
-          firstname: 'justin',
-          lastname: 'Ikwuoma',
-          username: 'sojust',
-          password: 'abcd',
-          email: 'justin@gmail.com',
-          gender: 'male',
-          street: 'ljan terrasse 346',
-          city: 'ikotun',
-          state: 'lagos',
-          dob: '2015-11-04',
-          registered: '2015-11-04T22:09:36Z',
-          phone: '66976498',
-          userImage: '',
-        })
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'sojust')
+        .field('password', 'abcd')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', './travis config.png')
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
@@ -416,6 +486,134 @@ describe('Users', () => {
           done();
         });
     });
+
+    it(`it should UPDATE a user given the id and
+      maintain already existing fields and file if none is entered`, (done) => {
+      const user = {
+        id: 12,
+        title: 'mr',
+        firstname: 'Justin',
+        lastname: 'Ikwuoma',
+        username: 'justman',
+        password: 'abcd',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: 'usersUploads/2018-07-23T16:04:36.226Zpassport.resized.JPG',
+      };
+
+      // Passing user to user model
+      Users.push(user);
+
+      request
+        .put(`/api/v1/users/${user.id}`)
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', '')
+        .field('lastname', '')
+        .field('username', '')
+        .field('password', '')
+        .field('email', '')
+        .field('gender', '')
+        .field('street', '')
+        .field('city', '')
+        .field('state', '')
+        .field('dob', '')
+        .field('phone', '')
+        .attach('userImage', '')
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('User updated!');
+          res.body.Users.should.have.property('title').eql('mr');
+          res.body.Users.should.have.property('firstname').eql('Justin');
+          res.body.Users.should.have.property('lastname').eql('Ikwuoma');
+          res.body.Users.should.have.property('password').eql('abcd');
+          res.body.Users.should.have.property('username').eql('justman');
+          res.body.Users.should.have.property('email').eql('justin@gmail.com');
+          res.body.Users.should.have.property('userImage').eql(Users[0].userImage);
+
+          done();
+        });
+    });
+
+    it('it should UPDATE a user given the id and replace already existing file', (done) => {
+      const user = {
+        id: 12,
+        title: 'mr',
+        firstname: 'Justin',
+        lastname: 'Ikwuoma',
+        username: 'justman',
+        password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: 'usersUploads/travis config.png',
+      };
+
+      // Passing user to user model
+      Users.push(user);
+
+      let filename = 'travis config.png';
+      let src = path.join('./', filename);
+      let destDir = path.join('./', 'usersUploads');
+
+      fs.access(destDir, (err) => {
+        if(err)
+          fs.mkdirSync(destDir);
+
+        copyFile(src, path.join(destDir, filename));
+      });
+
+      request
+        .put(`/api/v1/users/${user.id}`)
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'sojust')
+        .field('password', 'abcd')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', './travis config.png')
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('User updated!');
+          res.body.Users.should.have.property('title').eql('mr');
+          res.body.Users.should.have.property('firstname').eql('Justin');
+          res.body.Users.should.have.property('lastname').eql('Ikwuoma');
+          res.body.Users.should.have.property('password').eql('abcd');
+          res.body.Users.should.have.property('username').eql('sojust');
+          res.body.Users.should.have.property('email').eql('justin@gmail.com');
+          res.body.Users.should.have.property('userImage').eql(Users[0].userImage);
+
+          //delete test image file
+          if (Users[0].userImage) {
+            fs.unlink(`./${Users[0].userImage}`, (err) => {
+              if (err) new Error('oohs something went wrong');
+            });
+          }
+
+          done();
+        });
+    });
+
   });
 
   /*
@@ -438,18 +636,29 @@ describe('Users', () => {
         dob: '2015-11-04',
         registered: '2015-11-04T22:09:36Z',
         phone: '66976498',
-        userImage: '',
+        userImage: 'usersUploads/travis config.png',
       };
 
       // Passing user to user model
       Users.push(user);
-      chai.request(app)
+
+      let filename = 'travis config.png';
+      let src = path.join('./', filename);
+      let destDir = path.join('./', 'usersUploads');
+
+      //copy image file to businessesUploads
+      fs.access(destDir, (err) => {
+        if(err)
+          fs.mkdirSync(destDir);
+
+        copyFile(src, path.join(destDir, filename));
+      });
+
+      request
         .delete(`/api/v1/users/${user.id}`)
         .end((err, res) => {
           res.should.have.status(204);
           res.body.should.be.a('object');
-          // res.body.should.have.property('message').eql('User deleted!');
-          // res.body.error.should.be.eql(false);
           done();
         });
     });
@@ -486,4 +695,34 @@ describe('Users', () => {
         });
     });
   });
+
+  describe('connect.static()', function(){
+    it('should serve static files', function(done){
+
+      let filename = 'travis config.png';
+      let src = path.join('./', filename);
+      let destDir = path.join('./', 'usersUploads');
+
+      // copy image file to businessesUploads
+      fs.access(destDir, (err) => {
+        if(err)
+          fs.mkdirSync(destDir);
+
+        copyFile(src, path.join(destDir, filename));
+      });
+
+      request
+      .get('/usersUploads/travis config.png')
+      .end((err, res) => {
+        //delete test image file
+        if (path.resolve(`./usersUploads/travis config.png`)) {
+          fs.unlink(`./usersUploads/travis config.png`, (err) => {
+            if (err) new Error('oohs something went wrong');
+          });
+        }
+        done();
+      });
+    })
+  });
+
 });

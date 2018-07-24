@@ -6,6 +6,7 @@ const Businesses = [
     description: 'We sell happiness, do u want to be happy.',
     location: 'lagos',
     category: 'entertainment',
+    registered:'2015-11-04T22:09:36Z',
     companyImage: ''
   },
   {
@@ -15,6 +16,7 @@ const Businesses = [
     description: 'We feed the world and you know it,',
     location: 'imo',
     category: 'farming',
+    registered:'2015-11-04T22:09:36Z',
     companyImage: ''
   },
   {
@@ -24,6 +26,7 @@ const Businesses = [
     description: 'We will protect you no matter what, trust us.',
     location: 'abuja',
     category: 'security',
+    registered:'2015-11-04T22:09:36Z',
     companyImage: ''
   },
 ];
