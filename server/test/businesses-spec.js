@@ -10,18 +10,14 @@ import app from '../app';
 chai.should();
 const request = supertest(app);
 
-//copy file from a directory to another
+/**
+ * copy file from a directory to another
+ * @param {String} src The source you are copying from.
+ * @param {String} dest The destination you are copying to.
+ * @returns {void} nothing.
+ */
 function copyFile(src, dest) {
-
-  let readStream = fs.createReadStream(src);
-
-  readStream.once('error', (err) => {
-    console.log(err);
-  });
-
-  readStream.once('end', () => {
-    console.log('done copying');
-  });
+  const readStream = fs.createReadStream(src);
 
   readStream.pipe(fs.createWriteStream(dest));
 }
@@ -48,11 +44,8 @@ describe('Businesses', () => {
   });
 
   describe('/POST business', () => {
-
-
     it(`it should not CREATE a business without description, businessName, userId,
     description, location and category`, (done) => {
-
       request
         .post('/v1/businesses/')
         .field('businessId', '1')
@@ -62,20 +55,17 @@ describe('Businesses', () => {
         .field('location', '')
         .field('category', '')
         .attach('companyImage', './testFile.png')
-        .end(function(err, res) {
-
+        .end((err, res) => {
           res.should.have.status(206);
           res.body.should.be.a('object');
           res.body.should.have.property('message').eql('Incomplete fields');
           res.body.should.have.property('error').eql(true);
 
-          done()
+          done();
         });
-
     });
 
     it('it should CREATE a business', (done) => {
-
       request
         .post('/v1/businesses/')
         .field('businessId', '1')
@@ -85,8 +75,8 @@ describe('Businesses', () => {
         .field('location', 'lagos')
         .field('category', 'Production')
         .attach('companyImage', './testFile.png')
-        .end(function(err, res) {
-          res.should.have.status(201) // 'success' status
+        .end((err, res) => {
+          res.should.have.status(201); // 'success' status
           res.body.should.be.a('object');
           res.body.should.have.property('Businesses');
           res.body.Businesses.should.have.property('businessId').eql('1');
@@ -99,20 +89,18 @@ describe('Businesses', () => {
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
 
-          //delete test image file
+          // delete test image file
           if (Businesses[0].companyImage) {
             fs.unlink(`./${Businesses[0].companyImage}`, (err) => {
-              if (err) new Error('oohs something went wrong');
+              if (err) throw err;
             });
           }
-          done()
+          done();
         });
     });
 
 
-
     it('it should CREATE a business without image', (done) => {
-
       request
         .post('/v1/businesses/')
         .field('businessId', '1')
@@ -122,8 +110,8 @@ describe('Businesses', () => {
         .field('location', 'lagos')
         .field('category', 'Production')
         .attach('companyImage', '')
-        .end(function(err, res) {
-          res.should.have.status(201) // 'success' status
+        .end((err, res) => {
+          res.should.have.status(201); // 'success' status
           res.body.should.be.a('object');
           res.body.should.have.property('Businesses');
           res.body.Businesses.should.have.property('businessId').eql('1');
@@ -136,11 +124,26 @@ describe('Businesses', () => {
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
 
-          done()
+          done();
         });
-
     });
 
+    it('it should not CREATE a business when image file type not jpg/png', (done) => {
+      request
+        .post('/v1/businesses/')
+        .field('businessId', '1')
+        .field('businessName', 'Sommyj')
+        .field('userId', '22')
+        .field('description', 'We produce quality products')
+        .field('location', 'lagos')
+        .field('category', 'Production')
+        .attach('companyImage', './testFileType.txt')
+        .end((err, res) => {
+          res.should.have.status(500);
+          res.body.should.be.a('object');
+          done();
+        });
+    });
   });
 
   /*
@@ -156,7 +159,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -166,7 +169,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'owerri',
           category: 'Importation',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -211,7 +214,7 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
-        registered:'2015-11-04T22:09:36Z',
+        registered: '2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
@@ -243,7 +246,7 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
-        registered:'2015-11-04T22:09:36Z',
+        registered: '2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
@@ -268,7 +271,7 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
-        registered:'2015-11-04T22:09:36Z',
+        registered: '2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
@@ -305,7 +308,7 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
-        registered:'2015-11-04T22:09:36Z',
+        registered: '2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
@@ -333,7 +336,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -343,7 +346,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'owerri',
           category: 'Importation',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -383,7 +386,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -393,7 +396,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'owerri',
           category: 'Importation',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -423,7 +426,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -433,7 +436,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -473,7 +476,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -483,7 +486,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'abuja',
           category: 'Services',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -509,9 +512,7 @@ describe('Businesses', () => {
    * Test the /PUT/:id route
    */
   describe('/PUT/:id business', () => {
-
     it('it should UPDATE a business given the id', (done) => {
-
       const business = [
         {
           businessId: '11',
@@ -520,7 +521,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -530,14 +531,14 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'abuja',
           category: 'Services',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
 
       // Passing business to business model
-        Businesses.push(business[0]);
-        Businesses.push(business[1]);
+      Businesses.push(business[0]);
+      Businesses.push(business[1]);
 
       request
         .put(`/v1/businesses/${business[0].businessId}`)
@@ -548,8 +549,8 @@ describe('Businesses', () => {
         .field('location', 'port-harcourt')
         .field('category', 'Sales')
         .attach('companyImage', './testFile.png')
-        .end(function(err, res) {
-          res.should.have.status(200) // 'success' status
+        .end((err, res) => {
+          res.should.have.status(200); // 'success' status
           res.body.should.be.a('object');
           res.body.should.have.property('Businesses');
           res.body.Businesses.should.have.property('businessId').eql('11');
@@ -562,20 +563,18 @@ describe('Businesses', () => {
           res.body.should.have.property('message').eql('Bussiness updated!');
           res.body.should.have.property('error').eql(false);
 
-          //delete test image file
+          // delete test image file
           if (Businesses[0].companyImage) {
             fs.unlink(`./${Businesses[0].companyImage}`, (err) => {
-              if (err) new Error('oohs something went wrong');
+              if (err) throw err;
             });
           }
-          done()
+          done();
         });
     });
 
 
-
     it('it should not UPDATE a business given the wrong id', (done) => {
-
       const business = [
         {
           businessId: '11',
@@ -584,7 +583,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
         {
@@ -594,17 +593,17 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'abuja',
           category: 'Services',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
 
       // Passing business to business model
-        Businesses.push(business[0]);
-        Businesses.push(business[1]);
+      Businesses.push(business[0]);
+      Businesses.push(business[1]);
 
       request
-        .put(`/v1/businesses/12`)
+        .put('/v1/businesses/12')
         .field('businessId', '1')
         .field('businessName', 'Sommyj Enterprise')
         .field('userId', '22')
@@ -612,19 +611,18 @@ describe('Businesses', () => {
         .field('location', 'port-harcourt')
         .field('category', 'Sales')
         .attach('companyImage', './testFile.png')
-        .end(function(err, res) {
+        .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
           res.body.should.have.property('error').eql(true);
           res.body.should.have.property('message').eql('Business not found');
 
-          done()
+          done();
         });
     });
 
     it(`it should UPDATE a business given the id and
     maintain already existing fields and file if none is entered`, (done) => {
-
       const business = [
         {
           businessId: '11',
@@ -633,7 +631,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: 'businessesUploads/2018-07-23T16:04:36.226ZNIIT Certificate (copy).resized.jpg',
         },
         {
@@ -643,14 +641,14 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'abuja',
           category: 'Services',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
 
       // Passing business to business model
-        Businesses.push(business[0]);
-        Businesses.push(business[1]);
+      Businesses.push(business[0]);
+      Businesses.push(business[1]);
 
       request
         .put(`/v1/businesses/${business[0].businessId}`)
@@ -661,8 +659,8 @@ describe('Businesses', () => {
         .field('location', '')
         .field('category', '')
         .attach('companyImage', '')
-        .end(function(err, res) {
-          res.should.have.status(200) // 'success' status
+        .end((err, res) => {
+          res.should.have.status(200); // 'success' status
           res.body.should.be.a('object');
           res.body.should.have.property('Businesses');
           res.body.Businesses.should.have.property('businessId').eql('11');
@@ -675,17 +673,12 @@ describe('Businesses', () => {
           res.body.should.have.property('message').eql('Bussiness updated!');
           res.body.should.have.property('error').eql(false);
 
-          done()
+          done();
         });
     });
 
 
-
-
-
-
     it('it should UPDATE a business given the id and replace already existing file', (done) => {
-
       const business = [
         {
           businessId: '11',
@@ -694,7 +687,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: 'businessesUploads/testFile.png',
         },
         {
@@ -704,29 +697,28 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'abuja',
           category: 'Services',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
 
       // Passing business to business model
-        Businesses.push(business[0]);
-        Businesses.push(business[1]);
+      Businesses.push(business[0]);
+      Businesses.push(business[1]);
 
-        let filename = 'testFile.png';
-        let src = path.join('./', filename);
-        let destDir = path.join('./', 'businessesUploads');
+      const filename = 'testFile.png';
+      const src = path.join('./', filename);
+      const destDir = path.join('./', 'businessesUploads');
 
-        fs.access(destDir, (err) => {
-          if(err)
-            fs.mkdirSync(destDir);
+      fs.access(destDir, (err) => {
+        if (err) { fs.mkdirSync(destDir); }
 
-          copyFile(src, path.join(destDir, filename));
-        });
+        copyFile(src, path.join(destDir, filename));
+      });
 
 
       request
-        .put(`/v1/businesses/11`)
+        .put('/v1/businesses/11')
         .field('businessId', '13')
         .field('businessName', 'Sommyj Enterprise')
         .field('userId', '22')
@@ -734,8 +726,8 @@ describe('Businesses', () => {
         .field('location', 'port-harcourt')
         .field('category', 'Sales')
         .attach('companyImage', './testFile.png')
-        .end(function(err, res) {
-          res.should.have.status(200) // 'success' status
+        .end((err, res) => {
+          res.should.have.status(200); // 'success' status
           res.body.should.be.a('object');
           res.body.should.have.property('Businesses');
           res.body.Businesses.should.have.property('businessId').eql('11');
@@ -748,16 +740,15 @@ describe('Businesses', () => {
           res.body.should.have.property('message').eql('Bussiness updated!');
           res.body.should.have.property('error').eql(false);
 
-          //delete test image file
+          // delete test image file
           if (Businesses[0].companyImage) {
             fs.unlink(`./${Businesses[0].companyImage}`, (err) => {
-              if (err) new Error('oohs something went wrong');
+              if (err) throw err;
             });
           }
-          done()
+          done();
         });
     });
-
   });
 
   /*
@@ -773,7 +764,7 @@ describe('Businesses', () => {
           description: 'We produce quality products',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: 'businessesUploads/testFile.png',
         },
         {
@@ -783,7 +774,7 @@ describe('Businesses', () => {
           description: 'We produce quality service',
           location: 'lagos',
           category: 'Production',
-          registered:'2015-11-04T22:09:36Z',
+          registered: '2015-11-04T22:09:36Z',
           companyImage: '',
         },
       ];
@@ -792,21 +783,20 @@ describe('Businesses', () => {
       Businesses.push(business[0]);
       Businesses.push(business[1]);
 
-      let filename = 'testFile.png';
-      let src = path.join('./', filename);
-      let destDir = path.join('./', 'businessesUploads');
+      const filename = 'testFile.png';
+      const src = path.join('./', filename);
+      const destDir = path.join('./', 'businessesUploads');
 
-      //copy image file to businessesUploads
+      // copy image file to businessesUploads
       fs.access(destDir, (err) => {
-        if(err)
-          fs.mkdirSync(destDir);
+        if (err) { fs.mkdirSync(destDir); }
 
         copyFile(src, path.join(destDir, filename));
       });
 
 
       request
-        .delete(`/v1/businesses/11`)
+        .delete('/v1/businesses/11')
         .end((err, res) => {
           res.should.have.status(204);
           res.body.should.be.a('object');
@@ -822,7 +812,7 @@ describe('Businesses', () => {
         description: 'We produce quality products',
         location: 'lagos',
         category: 'Production',
-        registered:'2015-11-04T22:09:36Z',
+        registered: '2015-11-04T22:09:36Z',
         companyImage: '',
       };
 
@@ -840,33 +830,30 @@ describe('Businesses', () => {
     });
   });
 
-  describe('connect.static()', function(){
-    it('should serve static files', function(done){
-
-      let filename = 'testFile.png';
-      let src = path.join('./', filename);
-      let destDir = path.join('./', 'businessesUploads');
+  describe('connect.static()', () => {
+    it('should serve static files', (done) => {
+      const filename = 'testFile.png';
+      const src = path.join('./', filename);
+      const destDir = path.join('./', 'businessesUploads');
 
       // copy image file to businessesUploads
       fs.access(destDir, (err) => {
-        if(err)
-          fs.mkdirSync(destDir);
+        if (err) { fs.mkdirSync(destDir); }
 
         copyFile(src, path.join(destDir, filename));
       });
 
       request
-      .get('/businessesUploads/testFile.png')
-      .end((err, res) => {
-        //delete test image file
-        if (path.resolve(`./businessesUploads/testFile.png`)) {
-          fs.unlink(`./businessesUploads/testFile.png`, (err) => {
-            if (err) new Error('oohs something went wrong');
-          });
-        }
-        done();
-      });
-    })
+        .get('/businessesUploads/testFile.png')
+        .end(() => {
+        // delete test image file
+          if (path.resolve('./businessesUploads/testFile.png')) {
+            fs.unlink('./businessesUploads/testFile.png', (err) => {
+              if (err) throw err;
+            });
+          }
+          done();
+        });
+    });
   });
-
 });

@@ -10,18 +10,14 @@ import app from '../app';
 chai.should();
 const request = supertest(app);
 
-//copy file from a directory to another
+/**
+ * copy file from a directory to another
+ * @param {String} src The source you are copying from.
+ * @param {String} dest The destination you are copying to.
+ * @returns {void} nothing.
+ */
 function copyFile(src, dest) {
-
-  let readStream = fs.createReadStream(src);
-
-  readStream.once('error', (err) => {
-    console.log(err);
-  });
-
-  readStream.once('end', () => {
-    console.log('done copying');
-  });
+  const readStream = fs.createReadStream(src);
 
   readStream.pipe(fs.createWriteStream(dest));
 }
@@ -49,7 +45,6 @@ describe('Users', () => {
   describe('/POST user', () => {
     it(`it should not POST a user without firstname, lastname, username, password,
      email, gender, street, city, state, dob, phone`, (done) => {
-
       request
         .post('/auth/v1/signup')
         .field('id', '1')
@@ -76,7 +71,6 @@ describe('Users', () => {
     });
 
     it('it should post a user', (done) => {
-
       request
         .post('/auth/v1/signup')
         .field('id', '1')
@@ -110,10 +104,10 @@ describe('Users', () => {
           res.body.should.have.property('message').eql('Success');
           res.body.should.have.property('error').eql(false);
 
-          //delete test image file
+          // delete test image file
           if (Users[0].userImage) {
             fs.unlink(`./${Users[0].userImage}`, (err) => {
-              if (err) new Error('oohs something went wrong');
+              if (err) throw err;
             });
           }
 
@@ -122,7 +116,6 @@ describe('Users', () => {
     });
 
     it('it should post a user without image', (done) => {
-
       request
         .post('/auth/v1/signup')
         .field('id', '1')
@@ -159,6 +152,32 @@ describe('Users', () => {
           done();
         });
     });
+
+
+    it('it should not post a user when image file type not jpg/png', (done) => {
+      request
+        .post('/auth/v1/signup')
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', './testFileType.txt')
+        .end((err, res) => {
+          res.should.have.status(500);
+          res.body.should.be.a('object');
+          done();
+        });
+    });
+
 
     it('it should POST username && password and get the particular user ', (done) => {
       const user = {
@@ -429,10 +448,10 @@ describe('Users', () => {
           res.body.Users.should.have.property('email').eql('justin@gmail.com');
           res.body.Users.should.have.property('userImage').eql(Users[0].userImage);
 
-          //delete test image file
+          // delete test image file
           if (Users[0].userImage) {
             fs.unlink(`./${Users[0].userImage}`, (err) => {
-              if (err) new Error('oohs something went wrong');
+              if (err) throw err;
             });
           }
 
@@ -564,13 +583,12 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
 
-      let filename = 'testFile.png';
-      let src = path.join('./', filename);
-      let destDir = path.join('./', 'usersUploads');
+      const filename = 'testFile.png';
+      const src = path.join('./', filename);
+      const destDir = path.join('./', 'usersUploads');
 
       fs.access(destDir, (err) => {
-        if(err)
-          fs.mkdirSync(destDir);
+        if (err) { fs.mkdirSync(destDir); }
 
         copyFile(src, path.join(destDir, filename));
       });
@@ -603,17 +621,16 @@ describe('Users', () => {
           res.body.Users.should.have.property('email').eql('justin@gmail.com');
           res.body.Users.should.have.property('userImage').eql(Users[0].userImage);
 
-          //delete test image file
+          // delete test image file
           if (Users[0].userImage) {
             fs.unlink(`./${Users[0].userImage}`, (err) => {
-              if (err) new Error('oohs something went wrong');
+              if (err) throw err;
             });
           }
 
           done();
         });
     });
-
   });
 
   /*
@@ -642,14 +659,13 @@ describe('Users', () => {
       // Passing user to user model
       Users.push(user);
 
-      let filename = 'testFile.png';
-      let src = path.join('./', filename);
-      let destDir = path.join('./', 'usersUploads');
+      const filename = 'testFile.png';
+      const src = path.join('./', filename);
+      const destDir = path.join('./', 'usersUploads');
 
-      //copy image file to businessesUploads
+      // copy image file to businessesUploads
       fs.access(destDir, (err) => {
-        if(err)
-          fs.mkdirSync(destDir);
+        if (err) { fs.mkdirSync(destDir); }
 
         copyFile(src, path.join(destDir, filename));
       });
@@ -696,33 +712,30 @@ describe('Users', () => {
     });
   });
 
-  describe('connect.static()', function(){
-    it('should serve static files', function(done){
-
-      let filename = 'testFile.png';
-      let src = path.join('./', filename);
-      let destDir = path.join('./', 'usersUploads');
+  describe('connect.static()', () => {
+    it('should serve static files', (done) => {
+      const filename = 'testFile.png';
+      const src = path.join('./', filename);
+      const destDir = path.join('./', 'usersUploads');
 
       // copy image file to businessesUploads
       fs.access(destDir, (err) => {
-        if(err)
-          fs.mkdirSync(destDir);
+        if (err) { fs.mkdirSync(destDir); }
 
         copyFile(src, path.join(destDir, filename));
       });
 
       request
-      .get('/usersUploads/testFile.png')
-      .end((err, res) => {
-        //delete test image file
-        if (path.resolve(`./usersUploads/testFile.png`)) {
-          fs.unlink(`./usersUploads/testFile.png`, (err) => {
-            if (err) new Error('oohs something went wrong');
-          });
-        }
-        done();
-      });
-    })
+        .get('/usersUploads/testFile.png')
+        .end(() => {
+        // delete test image file
+          if (path.resolve('./usersUploads/testFile.png')) {
+            fs.unlink('./usersUploads/testFile.png', (err) => {
+              if (err) throw err;
+            });
+          }
+          done();
+        });
+    });
   });
-
 });

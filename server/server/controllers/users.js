@@ -2,15 +2,6 @@ import multer from 'multer';
 import fs from 'file-system';
 import Users from '../models/user';
 
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, './usersUploads/');
-  },
-  filename(req, file, cb) {
-    cb(null, new Date().toISOString() + file.originalname);
-  }
-});
-
 const fileFilter = (req, file, cb) => {
   // reject a file
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
@@ -21,7 +12,8 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage,
+  dest: './usersUploads/',
+  // storage,
   limits: {
     fileSize: 1024 * 1024 * 5,
   },
@@ -40,6 +32,19 @@ const usersController = {
   upload: upload.single('userImage'),
   // create a user
   create(req, res) {
+    let filePath = '';
+    if (req.file) {
+      const tempPath = req.file.path;
+      const targetPath = `./usersUploads/${new Date().toISOString() + req.file.originalname}`;
+
+      // rename file to an appropriate name
+      fs.rename(tempPath, targetPath, (err) => {
+        if (err) return handleError(err, res);
+      });
+
+      filePath = targetPath.substring(0, targetPath.length);
+    }
+
     const User = {
       id: Users.length + 1,
       title: req.body.title ? req.body.title.trim() : req.body.title,
@@ -55,20 +60,20 @@ const usersController = {
       dob: req.body.date,
       registered: new Date(),
       phone: req.body.phone ? req.body.phone.trim() : req.body.phone,
-      userImage: req.file ? req.file.path : ''
+      userImage: filePath
     };
 
-    //image to be saved
-    const picture = req.file ? req.file.path : '';
+    // image to be saved
+    const picture = filePath;
 
     if (!req.body.title || !req.body.firstname || !req.body.lastname ||
       !req.body.username || !req.body.password || !req.body.email ||
       !req.body.gender || !req.body.dob || !req.body.phone) {
-        if (picture) {
-          fs.unlink(`./${picture}`, (err) => {
-            if (err) return handleError(err, res);
-          });
-        }
+      if (picture) {
+        fs.unlink(`./${picture}`, (err) => {
+          if (err) return handleError(err, res);
+        });
+      }
       return res.status(206).json({ message: 'Incomplete field', error: true });
     }
 
@@ -90,6 +95,19 @@ const usersController = {
   },
   // update user
   update(req, res) {
+    let filePath = '';
+    if (req.file) {
+      const tempPath = req.file.path;
+      const targetPath = `./usersUploads/${new Date().toISOString() + req.file.originalname}`;
+
+      // rename file to an appropriate name
+      fs.rename(tempPath, targetPath, (err) => {
+        if (err) return handleError(err, res);
+      });
+
+      filePath = targetPath.substring(0, targetPath.length);
+    }
+
     for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {
       // holds the url of the image before update in other not to loose it
@@ -116,23 +134,22 @@ const usersController = {
             });
           }
         }
-        User.userImage = req.file ? req.file.path : picture;
+        User.userImage = req.file ? filePath : picture;
 
         return res.json({ Users: User, message: 'User updated!', error: false });
       }
     }
 
-    //remove file if id is not available
+    // remove file if id is not available
     if (req.file) {
-        fs.unlink(`./${req.file.path}`, (err) => {
-          if (err) return handleError(err, res);
-        });
+      fs.unlink(`./${filePath}`, (err) => {
+        if (err) return handleError(err, res);
+      });
     }
     return res.status(404).json({ message: 'User not found', error: true });
   },
   // delete user
   destroy(req, res) {
-    // console.log(path.join(__dirname, `./usersUploads/2018-07-20T09:10:45.662ZNIIT Certificate (copy).resized.jpg`));
     let i = 0;
     for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {

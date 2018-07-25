@@ -2,15 +2,6 @@ import multer from 'multer';
 import fs from 'file-system';
 import Businesses from '../models/business';
 
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, './businessesUploads/');
-  },
-  filename(req, file, cb) {
-    cb(null, new Date().toISOString() + file.originalname);
-  }
-});
-
 const fileFilter = (req, file, cb) => {
   // reject a file
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
@@ -21,7 +12,8 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage,
+  dest: './businessesUploads/',
+  // storage,
   limits: {
     fileSize: 1024 * 1024 * 5,
   },
@@ -40,6 +32,19 @@ const businessesController = {
   upload: upload.single('companyImage'),
   // create a business
   create(req, res) {
+    let filePath = '';
+    if (req.file) {
+      const tempPath = req.file.path;
+      const targetPath = `./businessesUploads/${new Date().toISOString() + req.file.originalname}`;
+
+      // rename file to an appropriate name
+      fs.rename(tempPath, targetPath, (err) => {
+        if (err) return handleError(err, res);
+      });
+
+      filePath = targetPath.substring(0, targetPath.length);
+    }
+
     const Business = {
       businessId: `${Businesses.length + 1}`,
       businessName: req.body.businessName ? req.body.businessName.trim() : req.body.businessName,
@@ -47,20 +52,20 @@ const businessesController = {
       description: req.body.description ? req.body.description.trim() : req.body.description,
       location: req.body.location ? req.body.location.trim() : req.body.location,
       category: req.body.category ? req.body.category.trim() : req.body.category,
-      registered:new Date(),
-      companyImage: req.file ? req.file.path : '',
+      registered: new Date(),
+      companyImage: filePath,
     };
 
-    //image to be saved
-    const picture = req.file ? req.file.path : '';
+    // image to be saved
+    const picture = filePath;
 
     if (!req.body.businessName || !req.body.userId || !req.body.description ||
       !req.body.location || !req.body.category) {
-        if (picture) {
-          fs.unlink(`./${picture}`, (err) => {
-            if (err) return handleError(err, res);
-          });
-        }
+      if (picture) {
+        fs.unlink(`./${picture}`, (err) => {
+          if (err) return handleError(err, res);
+        });
+      }
       return res.status(206).json({ message: 'Incomplete fields', error: true });
     }
     Businesses.push(Business);
@@ -69,14 +74,30 @@ const businessesController = {
   },
   // update business
   update(req, res) {
+    let filePath = '';
+    if (req.file) {
+      const tempPath = req.file.path;
+      const targetPath = `./businessesUploads/${new Date().toISOString() + req.file.originalname}`;
+
+      // rename file to an appropriate name
+      fs.rename(tempPath, targetPath, (err) => {
+        if (err) return handleError(err, res);
+      });
+
+      filePath = targetPath.substring(0, targetPath.length);
+    }
+
+
     for (const Business of Businesses) {
     // holds the url of the image before update in other not to loose it
       const picture = Business.companyImage;
 
       if (Business.businessId === req.params.businessId) {
-        Business.businessName = req.body.businessName ? req.body.businessName.trim() : Business.businessName;
+        Business.businessName = req.body.businessName ?
+          req.body.businessName.trim() : Business.businessName;
         Business.userId = req.body.userId ? req.body.userId.trim() : Business.userId;
-        Business.description = req.body.description ? req.body.description.trim() : Business.description;
+        Business.description = req.body.description ?
+          req.body.description.trim() : Business.description;
         Business.location = req.body.location ? req.body.location.trim() : Business.location;
         Business.category = req.body.category ? req.body.category.trim() : Business.category;
 
@@ -88,17 +109,17 @@ const businessesController = {
             });
           }
         }
-        Business.companyImage = req.file ? req.file.path : picture;
+        Business.companyImage = req.file ? filePath : picture;
 
         return res.json({ Businesses: Business, message: 'Bussiness updated!', error: false });
       }
     }
 
-    //remove file if id is not available
+    // remove file if id is not available
     if (req.file) {
-        fs.unlink(`./${req.file.path}`, (err) => {
-          if (err) return handleError(err, res);
-        });
+      fs.unlink(`./${filePath}`, (err) => {
+        if (err) return handleError(err, res);
+      });
     }
     return res.status(404).json({ message: 'Business not found', error: true });
   },
