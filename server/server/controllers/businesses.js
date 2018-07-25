@@ -36,15 +36,11 @@ const businessesController = {
     if (req.file) {
       const tempPath = req.file.path;
       const targetPath = `./businessesUploads/${new Date().toISOString() + req.file.originalname}`;
-
       // rename file to an appropriate name
-      fs.rename(tempPath, targetPath, (err) => {
-        if (err) return handleError(err, res);
-      });
-
+      fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
+      // remove the dot in targetPath
       filePath = targetPath.substring(0, targetPath.length);
     }
-
     const Business = {
       businessId: `${Businesses.length + 1}`,
       businessName: req.body.businessName ? req.body.businessName.trim() : req.body.businessName,
@@ -55,16 +51,12 @@ const businessesController = {
       registered: new Date(),
       companyImage: filePath,
     };
-
     // image to be saved
     const picture = filePath;
-
     if (!req.body.businessName || !req.body.userId || !req.body.description ||
       !req.body.location || !req.body.category) {
       if (picture) {
-        fs.unlink(`./${picture}`, (err) => {
-          if (err) return handleError(err, res);
-        });
+        fs.unlink(`./${picture}`, (err) => { if (err) return handleError(err, res); });
       }
       return res.status(206).json({ message: 'Incomplete fields', error: true });
     }
@@ -78,16 +70,11 @@ const businessesController = {
     if (req.file) {
       const tempPath = req.file.path;
       const targetPath = `./businessesUploads/${new Date().toISOString() + req.file.originalname}`;
-
       // rename file to an appropriate name
-      fs.rename(tempPath, targetPath, (err) => {
-        if (err) return handleError(err, res);
-      });
-
+      fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
+      // remove the dot in targetPath
       filePath = targetPath.substring(0, targetPath.length);
     }
-
-
     for (const Business of Businesses) {
     // holds the url of the image before update in other not to loose it
       const picture = Business.companyImage;
@@ -100,26 +87,19 @@ const businessesController = {
           req.body.description.trim() : Business.description;
         Business.location = req.body.location ? req.body.location.trim() : Business.location;
         Business.category = req.body.category ? req.body.category.trim() : Business.category;
-
         // if file and url is not empty delete img for updation
         if (req.file) {
           if (Business.companyImage) {
-            fs.unlink(`./${Business.companyImage}`, (err) => {
-              if (err) return handleError(err, res);
-            });
+            fs.unlink(`./${Business.companyImage}`, (err) => { if (err) return handleError(err, res); });
           }
         }
         Business.companyImage = req.file ? filePath : picture;
-
         return res.json({ Businesses: Business, message: 'Bussiness updated!', error: false });
       }
     }
-
     // remove file if id is not available
     if (req.file) {
-      fs.unlink(`./${filePath}`, (err) => {
-        if (err) return handleError(err, res);
-      });
+      fs.unlink(`./${filePath}`, (err) => { if (err) return handleError(err, res); });
     }
     return res.status(404).json({ message: 'Business not found', error: true });
   },
@@ -129,14 +109,10 @@ const businessesController = {
     for (const Business of Businesses) {
       if (Business.businessId === req.params.businessId) {
         if (Business.companyImage) {
-          fs.unlink(`./${Business.companyImage}`, (err) => {
-            if (err) return handleError(err, res);
-          });
-        }
-        Businesses.splice(i, 1);
+          fs.unlink(`./${Business.companyImage}`, (err) => { if (err) return handleError(err, res); });
+        }Businesses.splice(i, 1);
         return res.status(204).json({ Businesses, message: 'Business successfully deleted!', error: false });
-      }
-      i += 1;
+      }i += 1;
     }
     return res.status(404).json({ message: 'Business not found', error: true });
   },
