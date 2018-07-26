@@ -39,7 +39,7 @@ const businessesController = {
       // rename file to an appropriate name
       fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
       // remove the dot in targetPath
-      filePath = targetPath.substring(0, targetPath.length);
+      filePath = targetPath.substring(1, targetPath.length);
     }
     const Business = {
       businessId: `${Businesses.length + 1}`,
@@ -73,7 +73,7 @@ const businessesController = {
       // rename file to an appropriate name
       fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
       // remove the dot in targetPath
-      filePath = targetPath.substring(0, targetPath.length);
+      filePath = targetPath.substring(1, targetPath.length);
     }
     for (const Business of Businesses) {
     // holds the url of the image before update in other not to loose it
