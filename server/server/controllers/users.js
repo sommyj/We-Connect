@@ -38,7 +38,7 @@ const usersController = {
       const targetPath = `./usersUploads/${new Date().toISOString() + req.file.originalname}`;
       // rename file to an appropriate name
       fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
-      filePath = targetPath.substring(0, targetPath.length);
+      filePath = targetPath.substring(1, targetPath.length);
     }
     const User = {
       id: Users.length + 1,
@@ -92,7 +92,7 @@ const usersController = {
       // rename file to an appropriate name
       fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
       // remove the dot in targetPath
-      filePath = targetPath.substring(0, targetPath.length);
+      filePath = targetPath.substring(1, targetPath.length);
     }
     for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {
