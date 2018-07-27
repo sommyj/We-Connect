@@ -16,12 +16,22 @@ const request = supertest(app);
  * @param {String} dest The destination you are copying to.
  * @returns {void} nothing.
  */
-function copyFile(src, dest) {
+const copyFile = (src, dest) => {
   const readStream = fs.createReadStream(src);
 
   readStream.pipe(fs.createWriteStream(dest));
-}
+};
 
+/**
+ * delete a file
+ * @param {String} targetPath The part to delete from
+ * @returns {void} nothing.
+ */
+const deleteFile = (targetPath) => {
+  fs.unlink(targetPath, (err) => {
+    if (err) throw err;
+  });
+};
 
 describe('Businesses', () => {
   beforeEach((done) => { // Before each test we empty the database
@@ -44,7 +54,7 @@ describe('Businesses', () => {
   });
 
   describe('/POST business', () => {
-    it(`it should not CREATE a business without description, businessName, userId,
+    it(`it should not POST a business without description, businessName, userId,
     description, location and category`, (done) => {
       request
         .post('/v1/businesses/')
@@ -65,7 +75,7 @@ describe('Businesses', () => {
         });
     });
 
-    it('it should CREATE a business', (done) => {
+    it('it should POST a business', (done) => {
       request
         .post('/v1/businesses/')
         .field('businessId', '1')
@@ -91,16 +101,14 @@ describe('Businesses', () => {
 
           // delete test image file
           if (Businesses[0].companyImage) {
-            fs.unlink(`./${Businesses[0].companyImage}`, (err) => {
-              if (err) throw err;
-            });
+            deleteFile(`./${Businesses[0].companyImage}`);
           }
           done();
         });
     });
 
 
-    it('it should CREATE a business without image', (done) => {
+    it('it should POST a business without image', (done) => {
       request
         .post('/v1/businesses/')
         .field('businessId', '1')
@@ -128,7 +136,7 @@ describe('Businesses', () => {
         });
     });
 
-    it('it should not CREATE a business when image file type not jpg/png', (done) => {
+    it('it should not POST a business when image file type not jpg/png', (done) => {
       request
         .post('/v1/businesses/')
         .field('businessId', '1')
@@ -139,8 +147,30 @@ describe('Businesses', () => {
         .field('category', 'Production')
         .attach('companyImage', './testFileType.txt')
         .end((err, res) => {
-          res.should.have.status(500);
+          res.should.have.status(403);
           res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('Only .png and .jpg files are allowed!');
+          res.body.should.have.property('error').eql(true);
+          done();
+        });
+    });
+
+    it(`it should not UPDATE a business
+    when image file size is larger than 2mb`, (done) => {
+      request
+        .post('/v1/businesses/')
+        .field('businessId', '1')
+        .field('businessName', 'Sommyj')
+        .field('userId', '22')
+        .field('description', 'We produce quality products')
+        .field('location', 'lagos')
+        .field('category', 'Production')
+        .attach('companyImage', './testFileSize.jpg')
+        .end((err, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('file should not be more than 2mb!');
+          res.body.should.have.property('error').eql(true);
           done();
         });
     });
@@ -565,9 +595,7 @@ describe('Businesses', () => {
 
           // delete test image file
           if (Businesses[0].companyImage) {
-            fs.unlink(`./${Businesses[0].companyImage}`, (err) => {
-              if (err) throw err;
-            });
+            deleteFile(`./${Businesses[0].companyImage}`);
           }
           done();
         });
@@ -742,10 +770,102 @@ describe('Businesses', () => {
 
           // delete test image file
           if (Businesses[0].companyImage) {
-            fs.unlink(`./${Businesses[0].companyImage}`, (err) => {
-              if (err) throw err;
-            });
+            deleteFile(`./${Businesses[0].companyImage}`);
           }
+          done();
+        });
+    });
+
+    it('it should not UPDATE a business when image file type not jpg/png', (done) => {
+      const business = [
+        {
+          businessId: '11',
+          businessName: 'Sommyj',
+          userId: '22',
+          description: 'We produce quality products',
+          location: 'lagos',
+          category: 'Production',
+          registered: '2015-11-04T22:09:36Z',
+          companyImage: 'businessesUploads/testFile.png',
+        },
+        {
+          businessId: '13',
+          businessName: 'Sommy',
+          userId: '23',
+          description: 'We produce quality service',
+          location: 'abuja',
+          category: 'Services',
+          registered: '2015-11-04T22:09:36Z',
+          companyImage: '',
+        },
+      ];
+
+      // Passing business to business model
+      Businesses.push(business[0]);
+      Businesses.push(business[1]);
+
+      request
+        .put('/v1/businesses/11')
+        .field('businessId', '1')
+        .field('businessName', 'Sommyj')
+        .field('userId', '22')
+        .field('description', 'We produce quality products')
+        .field('location', 'lagos')
+        .field('category', 'Production')
+        .attach('companyImage', './testFileType.txt')
+        .end((err, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('Only .png and .jpg files are allowed!');
+          res.body.should.have.property('error').eql(true);
+          done();
+        });
+    });
+
+
+    it(`it should not UPDATE a business
+    when image file size is larger than 2mb`, (done) => {
+      const business = [
+        {
+          businessId: '11',
+          businessName: 'Sommyj',
+          userId: '22',
+          description: 'We produce quality products',
+          location: 'lagos',
+          category: 'Production',
+          registered: '2015-11-04T22:09:36Z',
+          companyImage: 'businessesUploads/testFile.png',
+        },
+        {
+          businessId: '13',
+          businessName: 'Sommy',
+          userId: '23',
+          description: 'We produce quality service',
+          location: 'abuja',
+          category: 'Services',
+          registered: '2015-11-04T22:09:36Z',
+          companyImage: '',
+        },
+      ];
+
+      // Passing business to business model
+      Businesses.push(business[0]);
+      Businesses.push(business[1]);
+
+      request
+        .put('/v1/businesses/11')
+        .field('businessId', '1')
+        .field('businessName', 'Sommyj')
+        .field('userId', '22')
+        .field('description', 'We produce quality products')
+        .field('location', 'lagos')
+        .field('category', 'Production')
+        .attach('companyImage', './testFileSize.jpg')
+        .end((err, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('file should not be more than 2mb!');
+          res.body.should.have.property('error').eql(true);
           done();
         });
     });
@@ -829,31 +949,5 @@ describe('Businesses', () => {
         });
     });
   });
-
-  describe('connect.static()', () => {
-    it('should serve static files', (done) => {
-      const filename = 'testFile.png';
-      const src = path.join('./', filename);
-      const destDir = path.join('./', 'businessesUploads');
-
-      // copy image file to businessesUploads
-      fs.access(destDir, (err) => {
-        if (err) { fs.mkdirSync(destDir); }
-
-        copyFile(src, path.join(destDir, filename));
-      });
-
-      request
-        .get('/businessesUploads/testFile.png')
-        .end(() => {
-        // delete test image file
-          if (path.resolve('./businessesUploads/testFile.png')) {
-            fs.unlink('./businessesUploads/testFile.png', (err) => {
-              if (err) throw err;
-            });
-          }
-          done();
-        });
-    });
-  });
+  
 });

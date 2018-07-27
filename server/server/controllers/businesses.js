@@ -2,29 +2,43 @@ import multer from 'multer';
 import fs from 'file-system';
 import Businesses from '../models/business';
 
-const fileFilter = (req, file, cb) => {
-  // reject a file
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-    cb(null, true);
-  } else {
-    cb(new Error('File should be jpeg or png'), false);
-  }
-};
-
 const upload = multer({
-  dest: './businessesUploads/',
-  // storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5,
-  },
-  fileFilter
+  dest: './businessesUploads/'
 });
 
-const handleError = (err, res) => {
-  res
-    .status(500)
-    .contentType('text/plain')
-    .end('Oops! Something went wrong!');
+const fileSizeLimit = 1024 * 1024 * 2;
+
+/**
+ * rename file to an appropriate name
+ * @param {String} tempPath The temporary path name.
+ * @param {String} targetPath The target path name.
+ * @returns {void} nothing.
+ */
+const renameFile = (tempPath, targetPath) => {
+  fs.rename(tempPath, targetPath, (err) => {
+    if (err) throw err;
+  });
+};
+
+/**
+ * delete a file
+ * @param {String} targetPath The part to delete from
+ * @returns {void} nothing.
+ */
+const deleteFile = (targetPath) => {
+  fs.unlink(targetPath, (err) => {
+    if (err) throw err;
+  });
+};
+
+// file type handleError
+const fileTypeHandleError = (res) => {
+  res.status(403).json({ message: 'Only .png and .jpg files are allowed!', error: true });
+};
+
+// file size handleError
+const fileSizeHandleError = (res) => {
+  res.status(403).json({ message: 'file should not be more than 2mb!', error: true });
 };
 
 const businessesController = {
@@ -36,10 +50,19 @@ const businessesController = {
     if (req.file) {
       const tempPath = req.file.path;
       const targetPath = `./businessesUploads/${new Date().toISOString() + req.file.originalname}`;
-      // rename file to an appropriate name
-      fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
-      // remove the dot in targetPath
-      filePath = targetPath.substring(1, targetPath.length);
+      if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
+        if (req.file.size <= fileSizeLimit) {
+          renameFile(tempPath, targetPath);
+          // remove the dot in targetPath
+          filePath = targetPath.substring(1, targetPath.length);
+        } else {
+          deleteFile(tempPath);
+          return fileSizeHandleError(res);
+        }
+      } else {
+        deleteFile(tempPath);
+        return fileTypeHandleError(res);
+      }
     }
     const Business = {
       businessId: `${Businesses.length + 1}`,
@@ -56,7 +79,7 @@ const businessesController = {
     if (!req.body.businessName || !req.body.userId || !req.body.description ||
       !req.body.location || !req.body.category) {
       if (picture) {
-        fs.unlink(`./${picture}`, (err) => { if (err) return handleError(err, res); });
+        deleteFile(`./${picture}`);
       }
       return res.status(206).json({ message: 'Incomplete fields', error: true });
     }
@@ -70,10 +93,19 @@ const businessesController = {
     if (req.file) {
       const tempPath = req.file.path;
       const targetPath = `./businessesUploads/${new Date().toISOString() + req.file.originalname}`;
-      // rename file to an appropriate name
-      fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
-      // remove the dot in targetPath
-      filePath = targetPath.substring(1, targetPath.length);
+      if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
+        if (req.file.size <= fileSizeLimit) {
+          renameFile(tempPath, targetPath);
+          // remove the dot in targetPath
+          filePath = targetPath.substring(1, targetPath.length);
+        } else {
+          deleteFile(tempPath);
+          return fileSizeHandleError(res);
+        }
+      } else {
+        deleteFile(tempPath);
+        return fileTypeHandleError(res);
+      }
     }
     for (const Business of Businesses) {
     // holds the url of the image before update in other not to loose it
@@ -90,7 +122,7 @@ const businessesController = {
         // if file and url is not empty delete img for updation
         if (req.file) {
           if (Business.companyImage) {
-            fs.unlink(`./${Business.companyImage}`, (err) => { if (err) return handleError(err, res); });
+            deleteFile(`./${Business.companyImage}`);
           }
         }
         Business.companyImage = req.file ? filePath : picture;
@@ -99,7 +131,7 @@ const businessesController = {
     }
     // remove file if id is not available
     if (req.file) {
-      fs.unlink(`./${filePath}`, (err) => { if (err) return handleError(err, res); });
+      deleteFile(`./${filePath}`);
     }
     return res.status(404).json({ message: 'Business not found', error: true });
   },
@@ -109,8 +141,9 @@ const businessesController = {
     for (const Business of Businesses) {
       if (Business.businessId === req.params.businessId) {
         if (Business.companyImage) {
-          fs.unlink(`./${Business.companyImage}`, (err) => { if (err) return handleError(err, res); });
-        }Businesses.splice(i, 1);
+          deleteFile(`./${Business.companyImage}`);
+        }
+        Businesses.splice(i, 1);
         return res.status(204).json({ Businesses, message: 'Business successfully deleted!', error: false });
       }i += 1;
     }

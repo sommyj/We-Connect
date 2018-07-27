@@ -2,29 +2,43 @@ import multer from 'multer';
 import fs from 'file-system';
 import Users from '../models/user';
 
-const fileFilter = (req, file, cb) => {
-  // reject a file
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-    cb(null, true);
-  } else {
-    cb(new Error('File should be jpeg or png'), false);
-  }
-};
-
 const upload = multer({
-  dest: './usersUploads/',
-  // storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5,
-  },
-  fileFilter
+  dest: './usersUploads/'
 });
 
-const handleError = (err, res) => {
-  res
-    .status(500)
-    .contentType('text/plain')
-    .end('Oops! Something went wrong!');
+const fileSizeLimit = 1024 * 1024 * 2;
+
+/**
+ * rename file to an appropriate name
+ * @param {String} tempPath The temporary path name.
+ * @param {String} targetPath The target path name.
+ * @returns {void} nothing.
+ */
+const renameFile = (tempPath, targetPath) => {
+  fs.rename(tempPath, targetPath, (err) => {
+    if (err) throw err;
+  });
+};
+
+/**
+ * delete a file
+ * @param {String} targetPath The part to delete from
+ * @returns {void} nothing.
+ */
+const deleteFile = (targetPath) => {
+  fs.unlink(targetPath, (err) => {
+    if (err) throw err;
+  });
+};
+
+// file type handleError
+const fileTypeHandleError = (res) => {
+  res.status(403).json({ message: 'Only .png and .jpg files are allowed!', error: true });
+};
+
+// file size handleError
+const fileSizeHandleError = (res) => {
+  res.status(403).json({ message: 'file should not be more than 2mb!', error: true });
 };
 
 const usersController = {
@@ -36,9 +50,19 @@ const usersController = {
     if (req.file) {
       const tempPath = req.file.path;
       const targetPath = `./usersUploads/${new Date().toISOString() + req.file.originalname}`;
-      // rename file to an appropriate name
-      fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
-      filePath = targetPath.substring(1, targetPath.length);
+      if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
+        if (req.file.size <= fileSizeLimit) {
+          renameFile(tempPath, targetPath);
+          // remove the dot in targetPath
+          filePath = targetPath.substring(1, targetPath.length);
+        } else {
+          deleteFile(tempPath);
+          return fileSizeHandleError(res);
+        }
+      } else {
+        deleteFile(tempPath);
+        return fileTypeHandleError(res);
+      }
     }
     const User = {
       id: Users.length + 1,
@@ -63,7 +87,7 @@ const usersController = {
       !req.body.username || !req.body.password || !req.body.email ||
       !req.body.gender || !req.body.dob || !req.body.phone) {
       if (picture) {
-        fs.unlink(`./${picture}`, (err) => { if (err) return handleError(err, res); });
+        deleteFile(`./${picture}`);
       }
       return res.status(206).json({ message: 'Incomplete field', error: true });
     }
@@ -89,10 +113,20 @@ const usersController = {
     if (req.file) {
       const tempPath = req.file.path;
       const targetPath = `./usersUploads/${new Date().toISOString() + req.file.originalname}`;
-      // rename file to an appropriate name
-      fs.rename(tempPath, targetPath, (err) => { if (err) return handleError(err, res); });
-      // remove the dot in targetPath
-      filePath = targetPath.substring(1, targetPath.length);
+
+      if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
+        if (req.file.size <= fileSizeLimit) {
+          renameFile(tempPath, targetPath);
+          // remove the dot in targetPath
+          filePath = targetPath.substring(1, targetPath.length);
+        } else {
+          deleteFile(tempPath);
+          return fileSizeHandleError(res);
+        }
+      } else {
+        deleteFile(tempPath);
+        return fileTypeHandleError(res);
+      }
     }
     for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {
@@ -114,7 +148,7 @@ const usersController = {
         // if file and url is not empty delete img for updation
         if (req.file) {
           if (User.userImage.trim()) {
-            fs.unlink(`./${User.userImage}`, (err) => { if (err) return handleError(err, res); });
+            deleteFile(`./${User.userImage}`);
           }
         }
         User.userImage = req.file ? filePath : picture;
@@ -123,7 +157,7 @@ const usersController = {
     }
     // remove file if id is not available
     if (req.file) {
-      fs.unlink(`./${filePath}`, (err) => { if (err) return handleError(err, res); });
+      deleteFile(`./${filePath}`);
     }
     return res.status(404).json({ message: 'User not found', error: true });
   },
@@ -133,8 +167,9 @@ const usersController = {
     for (const User of Users) {
       if (User.id === parseInt(req.params.userId, 10)) {
         if (User.userImage.trim()) {
-          fs.unlink(`./${User.userImage}`, (err) => { if (err) return handleError(err, res); });
-        }Users.splice(i, 1);
+          deleteFile(`./${User.userImage}`);
+        }
+        Users.splice(i, 1);
         return res.status(204).json({ Users, message: 'User deleted!', error: false });
       }i += 1;
     }

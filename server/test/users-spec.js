@@ -16,11 +16,22 @@ const request = supertest(app);
  * @param {String} dest The destination you are copying to.
  * @returns {void} nothing.
  */
-function copyFile(src, dest) {
+const copyFile = (src, dest) => {
   const readStream = fs.createReadStream(src);
 
   readStream.pipe(fs.createWriteStream(dest));
-}
+};
+
+/**
+ * delete a file
+ * @param {String} targetPath The part to delete from
+ * @returns {void} nothing.
+ */
+const deleteFile = (targetPath) => {
+  fs.unlink(targetPath, (err) => {
+    if (err) throw err;
+  });
+};
 
 describe('Users', () => {
   beforeEach((done) => { // Before each test we empty the database
@@ -70,7 +81,7 @@ describe('Users', () => {
         });
     });
 
-    it('it should post a user', (done) => {
+    it('it should POST a user', (done) => {
       request
         .post('/auth/v1/signup')
         .field('id', '1')
@@ -106,16 +117,14 @@ describe('Users', () => {
 
           // delete test image file
           if (Users[0].userImage) {
-            fs.unlink(`./${Users[0].userImage}`, (err) => {
-              if (err) throw err;
-            });
+            deleteFile(`./${Users[0].userImage}`);
           }
 
           done();
         });
     });
 
-    it('it should post a user without image', (done) => {
+    it('it should POST a user without image', (done) => {
       request
         .post('/auth/v1/signup')
         .field('id', '1')
@@ -154,7 +163,7 @@ describe('Users', () => {
     });
 
 
-    it('it should not post a user when image file type not jpg/png', (done) => {
+    it('it should not POST a user when image file type not jpg/png', (done) => {
       request
         .post('/auth/v1/signup')
         .field('id', '1')
@@ -172,8 +181,38 @@ describe('Users', () => {
         .field('phone', '66976498')
         .attach('userImage', './testFileType.txt')
         .end((err, res) => {
-          res.should.have.status(500);
+          res.should.have.status(403);
           res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('Only .png and .jpg files are allowed!');
+          res.body.should.have.property('error').eql(true);
+          done();
+        });
+    });
+
+    it(`it should not POST a user
+      when image file size is larger than 2mb`, (done) => {
+      request
+        .post('/auth/v1/signup')
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', './testFileSize.jpg')
+        .end((err, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message')
+            .eql('file should not be more than 2mb!');
+          res.body.should.have.property('error').eql(true);
           done();
         });
     });
@@ -450,9 +489,7 @@ describe('Users', () => {
 
           // delete test image file
           if (Users[0].userImage) {
-            fs.unlink(`./${Users[0].userImage}`, (err) => {
-              if (err) throw err;
-            });
+            deleteFile(`./${Users[0].userImage}`);
           }
 
           done();
@@ -623,11 +660,99 @@ describe('Users', () => {
 
           // delete test image file
           if (Users[0].userImage) {
-            fs.unlink(`./${Users[0].userImage}`, (err) => {
-              if (err) throw err;
-            });
+            deleteFile(`./${Users[0].userImage}`);
           }
 
+          done();
+        });
+    });
+
+    it('it should UPDATE a user given the id when image file type not jpg/png', (done) => {
+      const user = {
+        id: 12,
+        title: 'mr',
+        firstname: 'Justin',
+        lastname: 'Ikwuoma',
+        username: 'justman',
+        password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
+      };
+
+      request
+        .put(`/api/v1/users/${user.id}`)
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', './testFileType.txt')
+        .end((err, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message').eql('Only .png and .jpg files are allowed!');
+          res.body.should.have.property('error').eql(true);
+          done();
+        });
+    });
+
+    it(`it should UPDATE a user given the id
+      when image file size is larger than 2mb`, (done) => {
+      const user = {
+        id: 12,
+        title: 'mr',
+        firstname: 'Justin',
+        lastname: 'Ikwuoma',
+        username: 'justman',
+        password: 'abc',
+        email: 'justin@gmail.com',
+        gender: 'male',
+        street: 'ljan terrasse 346',
+        city: 'ikotun',
+        state: 'lagos',
+        dob: '2015-11-04',
+        registered: '2015-11-04T22:09:36Z',
+        phone: '66976498',
+        userImage: '',
+      };
+
+      request
+        .put(`/api/v1/users/${user.id}`)
+        .field('id', '1')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', './testFileSize.jpg')
+        .end((err, res) => {
+          res.should.have.status(403);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message')
+            .eql('file should not be more than 2mb!');
+          res.body.should.have.property('error').eql(true);
           done();
         });
     });
@@ -712,30 +837,4 @@ describe('Users', () => {
     });
   });
 
-  describe('connect.static()', () => {
-    it('should serve static files', (done) => {
-      const filename = 'testFile.png';
-      const src = path.join('./', filename);
-      const destDir = path.join('./', 'usersUploads');
-
-      // copy image file to businessesUploads
-      fs.access(destDir, (err) => {
-        if (err) { fs.mkdirSync(destDir); }
-
-        copyFile(src, path.join(destDir, filename));
-      });
-
-      request
-        .get('/usersUploads/testFile.png')
-        .end(() => {
-        // delete test image file
-          if (path.resolve('./usersUploads/testFile.png')) {
-            fs.unlink('./usersUploads/testFile.png', (err) => {
-              if (err) throw err;
-            });
-          }
-          done();
-        });
-    });
-  });
 });
