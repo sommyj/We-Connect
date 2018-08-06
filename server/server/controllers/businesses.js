@@ -1,6 +1,9 @@
 import multer from 'multer';
 import fs from 'file-system';
-import Businesses from '../models/business';
+import model from '../models';
+
+const Business = model.Business;
+const Review = model.Review;
 
 const upload = multer({
   dest: './businessesUploads/'
@@ -64,28 +67,33 @@ const businessesController = {
         return fileTypeHandleError(res);
       }
     }
-    const Business = {
-      businessId: `${Businesses.length + 1}`,
-      businessName: req.body.businessName ? req.body.businessName.trim() : req.body.businessName,
-      userId: req.body.userId ? req.body.userId.trim() : req.body.userId,
-      description: req.body.description ? req.body.description.trim() : req.body.description,
-      location: req.body.location ? req.body.location.trim() : req.body.location,
-      category: req.body.category ? req.body.category.trim() : req.body.category,
-      registered: new Date(),
-      companyImage: filePath,
-    };
-    // image to be saved
-    const picture = filePath;
+
     if (!req.body.businessName || !req.body.userId || !req.body.description ||
-      !req.body.location || !req.body.category) {
-      if (picture) {
-        deleteFile(`./${picture}`);
-      }
-      return res.status(206).json({ message: 'Incomplete fields', error: true });
+      !req.body.email || !req.body.phone || !req.body.category) {
+      if (filePath) { deleteFile(`./${filePath}`); }
+      return res.status(206).send({message: 'Incomplete fields'});
     }
-    Businesses.push(Business);
-    // Businesses.push(req.body);
-    return res.status(201).json({ Businesses: Business, message: 'Success', error: false });
+
+    return Business
+      .create({
+        businessName: req.body.businessName,
+        description: req.body.description,
+        street: req.body.street,
+        city: req.body.city,
+        state: req.body.state,
+        country: req.body.country,
+        datefound: req.body.datefound,
+        email: req.body.email,
+        phone: req.body.phone,
+        category: req.body.category,
+        companyImage: filePath,
+        userId: req.body.userId,
+      })
+      .then(business => res.status(201).send(business))
+      .catch(error => {
+        if (filePath) {deleteFile(`./${filePath}`);}
+        return res.status(400).send(error)
+      });
   },
   // update business
   update(req, res) {
@@ -107,86 +115,120 @@ const businessesController = {
         return fileTypeHandleError(res);
       }
     }
-    for (const Business of Businesses) {
-    // holds the url of the image before update in other not to loose it
-      const picture = Business.companyImage;
 
-      if (Business.businessId === req.params.businessId) {
-        Business.businessName = req.body.businessName ?
-          req.body.businessName.trim() : Business.businessName;
-        Business.userId = req.body.userId ? req.body.userId.trim() : Business.userId;
-        Business.description = req.body.description ?
-          req.body.description.trim() : Business.description;
-        Business.location = req.body.location ? req.body.location.trim() : Business.location;
-        Business.category = req.body.category ? req.body.category.trim() : Business.category;
-        // if file and url is not empty delete img for updation
-        if (req.file) {
-          if (Business.companyImage) {
-            deleteFile(`./${Business.companyImage}`);
-          }
+    return Business
+      .findById(req.params.businessId, {
+        include: [{
+          model: Review,
+          as: 'reviews'
+        }]
+      })
+      .then(business => {
+        if(!business) {
+          return res.status(404).send({message: 'Bussiness not found'})
         }
-        Business.companyImage = req.file ? filePath : picture;
-        return res.json({ Businesses: Business, message: 'Bussiness updated!', error: false });
-      }
-    }
-    // remove file if id is not available
-    if (req.file) {
-      deleteFile(`./${filePath}`);
-    }
-    return res.status(404).json({ message: 'Business not found', error: true });
+        // holds the url of the image before update in other not to loose it
+          const previousImage = business.companyImage;
+          return business
+            .update({
+              businessName: req.body.businessName || business.businessName,
+              description: req.body.description || business.description,
+              street: req.body.street || business.street,
+              city: req.body.city || business.city,
+              state: req.body.state || business.state,
+              country: req.body.country || business.country,
+              datefound: req.body.datefound || business.datefound,
+              email: req.body.email || business.email,
+              phone: req.body.phone || business.phone,
+              category: req.body.category || business.category,
+              companyImage: filePath || business.companyImage,
+              userId: req.body.userId || business.userId,
+            })
+            .then(business => {
+              // if file and url is not empty delete img for updation
+                if (filePath) {
+                  if (previousImage) {
+                    deleteFile(`./${previousImage}`);
+                  }
+                }
+              return res.status(200).send(business)})
+            .catch(error => {
+              if (filePath) {deleteFile(`./${filePath}`);}
+              return res.status(400).send(error)});
+      }).catch(error => res.status(400).send(error));
+
   },
   // delete business
   destroy(req, res) {
-    let i = 0;
-    for (const Business of Businesses) {
-      if (Business.businessId === req.params.businessId) {
-        if (Business.companyImage) {
-          deleteFile(`./${Business.companyImage}`);
+    return Business
+      .findById(req.params.businessId)
+      .then(business => {
+        if(!business){
+          return res.status(404).send({message: 'Business not found'});
         }
-        Businesses.splice(i, 1);
-        return res.status(204).json({ Businesses, message: 'Business successfully deleted!', error: false });
-      }i += 1;
-    }
-    return res.status(404).json({ message: 'Business not found', error: true });
+        return business
+          .destroy()
+          .then(() => {
+            if (business.companyImage) {
+                  deleteFile(`./${business.companyImage}`);
+            }
+            return res.status(204).send();})
+          .catch(error => res.status(400).send(error));
+      }).catch(error => res.status(400).send(error));
   },
   // get a business
   retrieve(req, res) {
-    for (const Business of Businesses) {
-      if (Business.businessId === req.params.businessId) {
-        return res.json({ Businesses: Business, message: 'Success', error: false });
-      }
-    }
-    return res.status(404).json({ message: 'Business not found', error: true });
+    return Business
+      .findById(req.params.businessId, {
+        include: [{
+          model: Review,
+          as: 'reviews'
+        }]
+      })
+      .then(business => {
+        if(!business) {
+          return res.status(404).send({message: 'Bussiness not found'})
+        }
+        return res.status(200).send(business);})
+      .catch(error => res.status(400).send(error));
   },
   // get businesses
   list(req, res) {
+    let selectionType;
     if (!req.query.location && !req.query.category) {
-      return res.json({ Businesses, message: 'Success', error: false });
+      selectionType = Business
+        .findAll({
+          include: [{ model: Review, as: 'reviews' }]
+        });
     }
     if (req.query.location && !req.query.category) {
-      const array = [];
-      for (const Business of Businesses) {
-        if (Business.location === req.query.location) { array.push(Business); }
-      }
-      if (array.length !== 0) { return res.json({ Businesses: array, message: 'Success', error: false }); }
+      selectionType = Business
+        .findAll({
+          where: { country: req.query.location },
+          include: [{ model: Review, as: 'reviews' }]
+        });
     }
-    if (req.query.category && !req.query.location) {
-      const array = [];
-      for (const Business of Businesses) {
-        if (Business.category === req.query.category) { array.push(Business); }
-      }
-      if (array.length !== 0) { return res.json({ Businesses: array, message: 'Success', error: false }); }
+    if (!req.query.location && req.query.category) {
+      selectionType = Business
+        .findAll({
+          where: { category: req.query.category },
+          include: [{ model: Review, as: 'reviews' }]
+        });
     }
     if (req.query.location && req.query.category) {
-      const array = [];
-      for (const Business of Businesses) {
-        if (Business.location === req.query.location && Business.category === req.query.category) {
-          array.push(Business);
-        }
-      }
-      if (array.length !== 0) { return res.json({ Businesses: array, message: 'Success', error: false }); }
+      selectionType = Business
+        .findAll({
+          where: { country: req.query.location, category: req.query.category },
+          include: [{ model: Review, as: 'reviews' }]
+        });
     }
-    return res.status(404).json({ message: 'Business not found', error: true });
+      return selectionType
+      .then(business =>{
+        if(business.length === 0){
+          return res.status(404).send({message: 'Businesses not found'});
+        }
+        res.status(404).send(business)})
+      .catch(error => res.status(400).send(error));
   },
 };
 

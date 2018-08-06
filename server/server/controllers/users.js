@@ -1,7 +1,9 @@
 import multer from 'multer';
 import fs from 'file-system';
-import Users from '../models/user';
+import model from '../models';
 
+const User = model.User;
+const Business = model.Business;
 const upload = multer({
   dest: './usersUploads/'
 });
@@ -64,48 +66,61 @@ const usersController = {
         return fileTypeHandleError(res);
       }
     }
-    const User = {
-      id: Users.length + 1,
-      title: req.body.title ? req.body.title.trim() : req.body.title,
-      firstname: req.body.firstname ? req.body.firstname.trim() : req.body.firstname,
-      lastname: req.body.lastname ? req.body.lastname.trim() : req.body.lastname,
-      username: req.body.username ? req.body.username.trim() : req.body.username,
-      password: req.body.password ? req.body.password.trim() : req.body.password,
-      email: req.body.email ? req.body.email.trim() : req.body.email,
-      gender: req.body.gender ? req.body.gender.trim() : req.body.gender,
-      street: req.body.street ? req.body.street.trim() : req.body.street,
-      city: req.body.city ? req.body.city.trim() : req.body.city,
-      state: req.body.state ? req.body.state.trim() : req.body.state,
-      dob: req.body.date,
-      registered: new Date(),
-      phone: req.body.phone ? req.body.phone.trim() : req.body.phone,
-      userImage: filePath
-    };
-    // image to be saved
-    const picture = filePath;
+
     if (!req.body.title || !req.body.firstname || !req.body.lastname ||
       !req.body.username || !req.body.password || !req.body.email ||
       !req.body.gender || !req.body.dob || !req.body.phone) {
-      if (picture) {
-        deleteFile(`./${picture}`);
-      }
-      return res.status(206).json({ message: 'Incomplete field', error: true });
+      if (filePath) {deleteFile(`./${filePath}`);}
+      return res.status(206).send({ message: 'Incomplete field'});
     }
-    // Users.push(req.body);
-    Users.push(User);
-    return res.status(201).json({ Users: User, message: 'Success', error: false });
+
+    return User
+        .create({
+          title: req.body.title,
+          firstname: req.body.firstname,
+          lastname: req.body.lastname,
+          username: req.body.username,
+          password: req.body.password,
+          email: req.body.email,
+          gender: req.body.gender,
+          street: req.body.street,
+          city: req.body.city,
+          state: req.body.state,
+          country: req.body.country,
+          dob: new Date(req.body.dob),
+          phone: req.body.phone,
+          userImage: filePath
+        })
+        .then(user => {
+          return res.status(201).send(user)})
+        .catch(error => {
+          if (filePath) {
+              deleteFile(`./${filePath}`);
+            }
+          return res.status(400).send(error)
+        });
   },
   // login with username and password
   check(req, res) {
-    for (const User of Users) {
-      if (User.username === req.body.username && User.password === req.body.password) {
-        return res.json({ Users: User, message: 'Success', error: false });
-      }
-    }
-    return res.status(404).json({ message: 'User not found', error: true });
+    return User
+      .findOne({ where: {username: req.body.username, password: req.body.password }})
+      .then(user => {
+        if(!user) {
+          return res.status(404).send({message: 'User not found'})
+        }
+        return res.status(200).send(user)})
+      .catch(error => res.status(400).send(error));
   },
   list(req, res) {
-    return res.json({ Users, error: false });
+    return User
+    .findAll({
+      include: [{
+        model: Business,
+        as: 'businesses',
+      }],
+    })
+    .then(users => res.status(200).send(users))
+    .catch(error => res.status(400).send(error));
   },
   // update user
   update(req, res) {
@@ -128,61 +143,87 @@ const usersController = {
         return fileTypeHandleError(res);
       }
     }
-    for (const User of Users) {
-      if (User.id === parseInt(req.params.userId, 10)) {
-      // holds the url of the image before update in other not to loose it
-        const picture = User.userImage;
 
-        User.title = req.body.title;
-        User.firstname = req.body.firstname ? req.body.firstname.trim() : User.firstname;
-        User.lastname = req.body.lastname ? req.body.lastname.trim() : User.lastname;
-        User.username = req.body.username ? req.body.username.trim() : User.username;
-        User.password = req.body.password ? req.body.password.trim() : User.password;
-        User.email = req.body.email ? req.body.email.trim() : User.email;
-        User.gender = req.body.gender;
-        User.street = req.body.street ? req.body.street.trim() : User.street;
-        User.city = req.body.city ? req.body.city.trim() : User.city;
-        User.state = req.body.state ? req.body.state.trim() : User.state;
-        User.dob = req.body.dob ? req.body.dob.trim() : User.dob;
-        User.phone = req.body.phone ? req.body.phone.trim() : User.phone;
-        // if file and url is not empty delete img for updation
-        if (req.file) {
-          if (User.userImage.trim()) {
-            deleteFile(`./${User.userImage}`);
-          }
+    return User
+      .findById(req.params.userId, {
+        include: [{
+          model: Business,
+          as: 'businesses'
+        }]
+      })
+      .then(user => {
+        if(!user) {
+          return res.status(404).send({message: 'User not found'})
         }
-        User.userImage = req.file ? filePath : picture;
-        return res.json({ Users: User, message: 'User updated!', error: false });
-      }
-    }
-    // remove file if id is not available
-    if (req.file) {
-      deleteFile(`./${filePath}`);
-    }
-    return res.status(404).json({ message: 'User not found', error: true });
+        // holds the url of the image before update in other not to loose it
+          const previousImage = user.userImage;
+        return user
+          .update({
+            title: req.body.title || user.title,
+            firstname: req.body.firstname || user.firstname,
+            lastname: req.body.lastname || user.lastname,
+            username: req.body.username || user.username,
+            password: req.body.password || user.password,
+            email: req.body.email || user.email,
+            gender: req.body.gender || user.gender,
+            street: req.body.street || user.street,
+            city: req.body.city || user.city,
+            state: req.body.state || user.state,
+            country: req.body.country || user.country,
+            dob: new Date(req.body.dob) || user.dob,
+            phone: req.body.phone || user.phone,
+            userImage: filePath || user.userImage,
+          })
+          .then(user => {
+            // if file and url is not empty delete img for updation
+              if (filePath) {
+                if (previousImage) {
+                  deleteFile(`./${previousImage}`);
+                }
+              }
+            return res.status(200).send(user)}) // Send back the updated user
+          .catch(error => {
+            if (filePath) {
+                deleteFile(`./${filePath}`);
+              }
+            return res.status(400).send(error)});
+      }).catch(error => res.status(400).send(error));
   },
   // delete user
   destroy(req, res) {
-    let i = 0;
-    for (const User of Users) {
-      if (User.id === parseInt(req.params.userId, 10)) {
-        if (User.userImage.trim()) {
-          deleteFile(`./${User.userImage}`);
+    return User
+      .findById(req.params.userId)
+      .then(user => {
+        if(!user) {
+          return res.status(404).send({message: 'User not found'});
         }
-        Users.splice(i, 1);
-        return res.status(204).json({ Users, message: 'User deleted!', error: false });
-      }i += 1;
-    }
-    return res.status(404).json({ message: 'User not found', error: true });
-  },
+
+        return user
+          .destroy()
+          .then(() => {
+            if (user.userImage) {
+                  deleteFile(`./${user.userImage}`);
+            }
+            return res.status(204).send()})
+          .catch(error => res.status(400).send(error));
+      }).catch(error => res.status(400).send(error));
+    },
   // get a user
   retrieve(req, res) {
-    for (const User of Users) {
-      if (User.id === parseInt(req.params.userId, 10)) {
-        return res.json({ Users: User, message: 'Success', error: false });
-      }
-    }
-    return res.status(404).json({ message: 'User not found', error: true });
+    return User
+      .findById(req.params.userId, {
+        include: [{
+          model: Business,
+          as: 'businesses'
+        }]
+      })
+      .then(user => {
+        if(!user) {
+          return res.status(404).send({message: 'User not found'});
+        }
+        return res.status(200).send(user)
+      })
+      .catch(error => res.status(400).send(error));
   },
 };
 

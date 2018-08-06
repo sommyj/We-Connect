@@ -19,7 +19,9 @@ const routes = (app) => {
   app.get('/v1/businesses/', businessesController.list);
 
   app.post('/v1/businesses/:businessId/reviews', reviewsController.create);
-  app.get('/v1/businesses/:businessId/reviews', reviewsController.retrieve);
+  app.get('/v1/businesses/:businessId/reviews', reviewsController.list);
+  app.put('/v1/businesses/:businessId/reviews/:reviewId', reviewsController.update);
+  app.delete('/v1/businesses/:businessId/reviews/:reviewId', reviewsController.destroy);
 };
 
 export default routes;
