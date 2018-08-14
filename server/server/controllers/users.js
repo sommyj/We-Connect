@@ -87,7 +87,7 @@ const usersController = {
           city: req.body.city,
           state: req.body.state,
           country: req.body.country,
-          dob: new Date(req.body.dob),
+          dob: req.body.dob,
           phone: req.body.phone,
           userImage: filePath
         })
@@ -153,6 +153,10 @@ const usersController = {
       })
       .then(user => {
         if(!user) {
+          // if file and url is not empty delete img for updation
+            if (filePath) {
+                deleteFile(`./${filePath}`);
+            }
           return res.status(404).send({message: 'User not found'})
         }
         // holds the url of the image before update in other not to loose it
@@ -170,7 +174,7 @@ const usersController = {
             city: req.body.city || user.city,
             state: req.body.state || user.state,
             country: req.body.country || user.country,
-            dob: new Date(req.body.dob) || user.dob,
+            dob: req.body.dob || user.dob,
             phone: req.body.phone || user.phone,
             userImage: filePath || user.userImage,
           })

@@ -32,7 +32,10 @@ const reviewsController = {
           return res.status(404).send({message: 'Review not found'});
         }
         if(review.userId != req.body.userId) {
-          return res.status(404).send({message: 'User not found'});
+          return res.status(400).send({message: 'User can not be altered'});
+        }
+        if(review.businessId != req.body.businessId) {
+          return res.status(400).send({message: 'Business can not be altered'});
         }
         return review
           .update({
@@ -50,9 +53,6 @@ const reviewsController = {
       .then(review => {
         if(!review) {
           return res.status(404).send({message: 'Review not found'});
-        }
-        if(review.userId != req.body.userId) {
-          return res.status(404).send({message: 'User not found'});
         }
         return review
           .destroy()

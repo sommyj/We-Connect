@@ -125,7 +125,11 @@ const businessesController = {
       })
       .then(business => {
         if(!business) {
-          return res.status(404).send({message: 'Bussiness not found'})
+          // if file and url is not empty delete img for updation
+            if (filePath) {
+                deleteFile(`./${filePath}`);
+            }
+          return res.status(404).send({message: 'Business not found'})
         }
         // holds the url of the image before update in other not to loose it
           const previousImage = business.companyImage;
@@ -187,7 +191,7 @@ const businessesController = {
       })
       .then(business => {
         if(!business) {
-          return res.status(404).send({message: 'Bussiness not found'})
+          return res.status(404).send({message: 'Business not found'})
         }
         return res.status(200).send(business);})
       .catch(error => res.status(400).send(error));
@@ -223,11 +227,11 @@ const businessesController = {
         });
     }
       return selectionType
-      .then(business =>{
+      .then(business => {
         if(business.length === 0){
           return res.status(404).send({message: 'Businesses not found'});
         }
-        res.status(404).send(business)})
+        return res.status(200).send(business)})
       .catch(error => res.status(400).send(error));
   },
 };
