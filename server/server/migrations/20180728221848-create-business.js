@@ -1,4 +1,4 @@
-'use strict';
+
 export default {
   up: (queryInterface, Sequelize) =>
     queryInterface.createTable('Businesses', {
@@ -62,6 +62,6 @@ export default {
         },
       },
     }),
-  down: (queryInterface/*, Sequelize*/) =>
+  down: queryInterface =>
     queryInterface.dropTable('Businesses'),
 };

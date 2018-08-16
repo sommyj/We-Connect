@@ -1,4 +1,4 @@
-'use strict';
+
 export default {
   up: (queryInterface, Sequelize) =>
     queryInterface.createTable('Users', {
@@ -62,6 +62,6 @@ export default {
         type: Sequelize.DATE
       }
     }),
-  down: (queryInterface/*, Sequelize*/) =>
+  down: queryInterface =>
     queryInterface.dropTable('Users'),
 };

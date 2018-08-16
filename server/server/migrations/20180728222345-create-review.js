@@ -1,4 +1,4 @@
-'use strict';
+
 export default {
   up: (queryInterface, Sequelize) =>
     queryInterface.createTable('Reviews', {
@@ -37,7 +37,7 @@ export default {
           as: 'businessId',
         },
       },
-  }),
-  down: (queryInterface/*, Sequelize*/) =>
+    }),
+  down: queryInterface =>
     queryInterface.dropTable('Reviews'),
 };

@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">79.31% </span>
+        <span class="strong">78.57% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>23/29</span>
+        <span class='fraction'>22/28</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">88.24% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>10/16</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">79.31% </span>
+        <span class="strong">78.57% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>23/29</span>
+        <span class='fraction'>22/28</span>
       </div>
     </div>
     <p class="quiet">
@@ -111,13 +111,11 @@
 <a name='L63'></a><a href='#L63'>63</a>
 <a name='L64'></a><a href='#L64'>64</a>
 <a name='L65'></a><a href='#L65'>65</a>
-<a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L66'></a><a href='#L66'>66</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -180,13 +178,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import model from '../models';
 &nbsp;
-const Review = model.Review;
+const [Review] = [model.Review];
 &nbsp;
 const reviewsController = {
   create(req, res) {
-&nbsp;
     if (!req.body.response || !req.body.userId || !req.body.businessId) {
-      return res.status(206).send({message: 'Incomplete field'});
+      return res.status(206).send({ message: 'Incomplete field' });
     }
 &nbsp;
     return Review
@@ -200,22 +197,22 @@ const reviewsController = {
   },
   list(req, res) {
     return Review
-      .findAll({where: {businessId: req.params.businessId}})
+      .findAll({ where: { businessId: req.params.businessId } })
       .then(reviews =&gt; res.status(200).send(reviews))
       .catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
   },
   update(req, res) {
     return Review
       .findById(req.params.reviewId)
-      .then(review =&gt; {
-        if(!review) {
-          return res.status(404).send({message: 'Review not found'});
+      .then((review) =&gt; {
+        if (!review) {
+          return res.status(404).send({ message: 'Review not found' });
         }
-        if(review.userId != req.body.userId) {
-          return res.status(400).send({message: 'User can not be altered'});
+        if (review.userId !== req.body.userId) {
+          return res.status(400).send({ message: 'User can not be altered' });
         }
-        if(review.businessId != req.body.businessId) {
-          return res.status(400).send({message: 'Business can not be altered'});
+        if (review.businessId !== req.body.businessId) {
+          return res.status(400).send({ message: 'Business can not be altered' });
         }
         return review
           .update({
@@ -223,20 +220,20 @@ const reviewsController = {
             userId: req.body.userId || <span class="branch-1 cbranch-no" title="branch not covered" >review.userId,</span>
             businessId: req.params.businessId,
           })
-          .then(review =&gt; res.status(200).send(review))
+          .then(reviewUpdate =&gt; res.status(200).send(reviewUpdate))
           .catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
       }).catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
   },
   destroy(req, res) {
     return Review
       .findById(req.params.reviewId)
-      .then(review =&gt; {
-        if(!review) {
-          return res.status(404).send({message: 'Review not found'});
+      .then((review) =&gt; {
+        if (!review) {
+          return res.status(404).send({ message: 'Review not found' });
         }
         return review
           .destroy()
-          .then(() =&gt; {return res.status(204).send()})
+          .then(() =&gt; res.status(204).send())
           .catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
       }).catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
   },
@@ -250,7 +247,7 @@ export default reviewsController;
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Wed Aug 15 2018 15:49:03 GMT+0100 (West Africa Standard Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Aug 16 2018 13:45:22 GMT+0100 (West Africa Standard Time)
 </div>
 </div>
 <script src="../../../prettify.js"></script>

@@ -2,8 +2,7 @@ import multer from 'multer';
 import fs from 'file-system';
 import model from '../models';
 
-const Business = model.Business;
-const Review = model.Review;
+const [Business, Review] = [model.Business, model.Review];
 
 const upload = multer({
   dest: './businessesUploads/'
@@ -71,7 +70,7 @@ const businessesController = {
     if (!req.body.businessName || !req.body.userId || !req.body.description ||
       !req.body.email || !req.body.phone || !req.body.category) {
       if (filePath) { deleteFile(`./${filePath}`); }
-      return res.status(206).send({message: 'Incomplete fields'});
+      return res.status(206).send({ message: 'Incomplete fields' });
     }
 
     return Business
@@ -90,9 +89,9 @@ const businessesController = {
         userId: req.body.userId,
       })
       .then(business => res.status(201).send(business))
-      .catch(error => {
-        if (filePath) {deleteFile(`./${filePath}`);}
-        return res.status(400).send(error)
+      .catch((error) => {
+        if (filePath) { deleteFile(`./${filePath}`); }
+        return res.status(400).send(error);
       });
   },
   // update business
@@ -123,60 +122,62 @@ const businessesController = {
           as: 'reviews'
         }]
       })
-      .then(business => {
-        if(!business) {
+      .then((business) => {
+        if (!business) {
           // if file and url is not empty delete img for updation
-            if (filePath) {
-                deleteFile(`./${filePath}`);
-            }
-          return res.status(404).send({message: 'Business not found'})
+          if (filePath) {
+            deleteFile(`./${filePath}`);
+          }
+          return res.status(404).send({ message: 'Business not found' });
         }
         // holds the url of the image before update in other not to loose it
-          const previousImage = business.companyImage;
-          return business
-            .update({
-              businessName: req.body.businessName || business.businessName,
-              description: req.body.description || business.description,
-              street: req.body.street || business.street,
-              city: req.body.city || business.city,
-              state: req.body.state || business.state,
-              country: req.body.country || business.country,
-              datefound: req.body.datefound || business.datefound,
-              email: req.body.email || business.email,
-              phone: req.body.phone || business.phone,
-              category: req.body.category || business.category,
-              companyImage: filePath || business.companyImage,
-              userId: req.body.userId || business.userId,
-            })
-            .then(business => {
-              // if file and url is not empty delete img for updation
-                if (filePath) {
-                  if (previousImage) {
-                    deleteFile(`./${previousImage}`);
-                  }
-                }
-              return res.status(200).send(business)})
-            .catch(error => {
-              if (filePath) {deleteFile(`./${filePath}`);}
-              return res.status(400).send(error)});
+        const previousImage = business.companyImage;
+        return business
+          .update({
+            businessName: req.body.businessName || business.businessName,
+            description: req.body.description || business.description,
+            street: req.body.street || business.street,
+            city: req.body.city || business.city,
+            state: req.body.state || business.state,
+            country: req.body.country || business.country,
+            datefound: req.body.datefound || business.datefound,
+            email: req.body.email || business.email,
+            phone: req.body.phone || business.phone,
+            category: req.body.category || business.category,
+            companyImage: filePath || business.companyImage,
+            userId: req.body.userId || business.userId,
+          })
+          .then((businessForUpdate) => {
+            // if file and url is not empty delete img for updation
+            if (filePath) {
+              if (previousImage) {
+                deleteFile(`./${previousImage}`);
+              }
+            }
+            return res.status(200).send(businessForUpdate);
+          })
+          .catch((error) => {
+            if (filePath) { deleteFile(`./${filePath}`); }
+            return res.status(400).send(error);
+          });
       }).catch(error => res.status(400).send(error));
-
   },
   // delete business
   destroy(req, res) {
     return Business
       .findById(req.params.businessId)
-      .then(business => {
-        if(!business){
-          return res.status(404).send({message: 'Business not found'});
+      .then((business) => {
+        if (!business) {
+          return res.status(404).send({ message: 'Business not found' });
         }
         return business
           .destroy()
           .then(() => {
             if (business.companyImage) {
-                  deleteFile(`./${business.companyImage}`);
+              deleteFile(`./${business.companyImage}`);
             }
-            return res.status(204).send();})
+            return res.status(204).send();
+          })
           .catch(error => res.status(400).send(error));
       }).catch(error => res.status(400).send(error));
   },
@@ -189,11 +190,12 @@ const businessesController = {
           as: 'reviews'
         }]
       })
-      .then(business => {
-        if(!business) {
-          return res.status(404).send({message: 'Business not found'})
+      .then((business) => {
+        if (!business) {
+          return res.status(404).send({ message: 'Business not found' });
         }
-        return res.status(200).send(business);})
+        return res.status(200).send(business);
+      })
       .catch(error => res.status(400).send(error));
   },
   // get businesses
@@ -226,12 +228,13 @@ const businessesController = {
           include: [{ model: Review, as: 'reviews' }]
         });
     }
-      return selectionType
-      .then(business => {
-        if(business.length === 0){
-          return res.status(404).send({message: 'Businesses not found'});
+    return selectionType
+      .then((business) => {
+        if (business.length === 0) {
+          return res.status(404).send({ message: 'Businesses not found' });
         }
-        return res.status(200).send(business)})
+        return res.status(200).send(business);
+      })
       .catch(error => res.status(400).send(error));
   },
 };

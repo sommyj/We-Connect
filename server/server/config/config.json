@@ -3,7 +3,8 @@
     "use_env_variable": "DATABASE_URL"
   },
   "test": {
-    "use_env_variable": "DATABASE_TEST_URL"
+    "use_env_variable": "DATABASE_TEST_URL",
+    "logging": false
   },
   "production": {
     "username": "postgres",

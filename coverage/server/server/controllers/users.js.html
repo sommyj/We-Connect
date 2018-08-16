@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">88.89% </span>
+        <span class="strong">88.64% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>80/90</span>
+        <span class='fraction'>78/88</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">91.36% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>22/28</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">90.8% </span>
+        <span class="strong">90.59% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>79/87</span>
+        <span class='fraction'>77/85</span>
       </div>
     </div>
     <p class="quiet">
@@ -280,12 +280,15 @@
 <a name='L232'></a><a href='#L232'>232</a>
 <a name='L233'></a><a href='#L233'>233</a>
 <a name='L234'></a><a href='#L234'>234</a>
-<a name='L235'></a><a href='#L235'>235</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -373,7 +376,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -391,6 +393,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -469,10 +472,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -491,6 +496,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -518,8 +524,8 @@
 import fs from 'file-system';
 import model from '../models';
 &nbsp;
-const User = model.User;
-const Business = model.Business;
+const [User, Business] = [model.User, model.Business];
+&nbsp;
 const upload = multer({
   dest: './usersUploads/'
 });
@@ -586,57 +592,57 @@ const usersController = {
     if (!req.body.title || !req.body.firstname || !req.body.lastname ||
       !req.body.username || !req.body.password || !req.body.email ||
       !req.body.gender || !req.body.dob || !req.body.phone) {
-      <span class="missing-if-branch" title="else path not taken" >E</span>if (filePath) {deleteFile(`./${filePath}`);}
-      return res.status(206).send({ message: 'Incomplete field'});
+      <span class="missing-if-branch" title="else path not taken" >E</span>if (filePath) { deleteFile(`./${filePath}`); }
+      return res.status(206).send({ message: 'Incomplete field' });
     }
 &nbsp;
     return User
-        .create({
-          title: req.body.title,
-          firstname: req.body.firstname,
-          lastname: req.body.lastname,
-          username: req.body.username,
-          password: req.body.password,
-          email: req.body.email,
-          gender: req.body.gender,
-          street: req.body.street,
-          city: req.body.city,
-          state: req.body.state,
-          country: req.body.country,
-          dob: req.body.dob,
-          phone: req.body.phone,
-          userImage: filePath
-        })
-        .then(user =&gt; {
-          return res.status(201).send(user)})
-        .catch(error =&gt; {
-          <span class="missing-if-branch" title="if path not taken" >I</span>if (filePath) {
-<span class="cstat-no" title="statement not covered" >              deleteFile(`./${filePath}`);</span>
-            }
-          return res.status(400).send(error)
-        });
+      .create({
+        title: req.body.title,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        gender: req.body.gender,
+        street: req.body.street,
+        city: req.body.city,
+        state: req.body.state,
+        country: req.body.country,
+        dob: req.body.dob,
+        phone: req.body.phone,
+        userImage: filePath
+      })
+      .then(user =&gt; res.status(201).send(user))
+      .catch((error) =&gt; {
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (filePath) {
+<span class="cstat-no" title="statement not covered" >          deleteFile(`./${filePath}`);</span>
+        }
+        return res.status(400).send(error);
+      });
   },
   // login with username and password
   check(req, res) {
     return User
-      .findOne({ where: {username: req.body.username, password: req.body.password }})
-      .then(user =&gt; {
-        if(!user) {
-          return res.status(404).send({message: 'User not found'})
+      .findOne({ where: { username: req.body.username, password: req.body.password } })
+      .then((user) =&gt; {
+        if (!user) {
+          return res.status(404).send({ message: 'User not found' });
         }
-        return res.status(200).send(user)})
+        return res.status(200).send(user);
+      })
       .catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
   },
   list(req, res) {
     return User
-    .findAll({
-      include: [{
-        model: Business,
-        as: 'businesses',
-      }],
-    })
-    .then(users =&gt; res.status(200).send(users))
-    .catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
+      .findAll({
+        include: [{
+          model: Business,
+          as: 'businesses',
+        }],
+      })
+      .then(users =&gt; res.status(200).send(users))
+      .catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
   },
   // update user
   update(req, res) {
@@ -667,16 +673,16 @@ const usersController = {
           as: 'businesses'
         }]
       })
-      .then(user =&gt; {
-        if(!user) {
+      .then((user) =&gt; {
+        if (!user) {
           // if file and url is not empty delete img for updation
-            <span class="missing-if-branch" title="else path not taken" >E</span>if (filePath) {
-                deleteFile(`./${filePath}`);
-            }
-          return res.status(404).send({message: 'User not found'})
+          <span class="missing-if-branch" title="else path not taken" >E</span>if (filePath) {
+            deleteFile(`./${filePath}`);
+          }
+          return res.status(404).send({ message: 'User not found' });
         }
         // holds the url of the image before update in other not to loose it
-          const previousImage = user.userImage;
+        const previousImage = user.userImage;
         return user
           .update({
             title: req.body.title || user.title,
@@ -694,40 +700,43 @@ const usersController = {
             phone: req.body.phone || user.phone,
             userImage: filePath || user.userImage,
           })
-          .then(user =&gt; {
+          .then((userUpdate) =&gt; {
             // if file and url is not empty delete img for updation
-              if (filePath) {
-                if (previousImage) {
-                  deleteFile(`./${previousImage}`);
-                }
+            if (filePath) {
+              if (previousImage) {
+                deleteFile(`./${previousImage}`);
               }
-            return res.status(200).send(user)}) // Send back the updated user
-          .catch(error =&gt; {
+            }
+            return res.status(200).send(userUpdate);
+          }) // Send back the updated user
+          .catch((error) =&gt; {
             <span class="missing-if-branch" title="if path not taken" >I</span>if (filePath) {
-<span class="cstat-no" title="statement not covered" >                deleteFile(`./${filePath}`);</span>
-              }
-            return res.status(400).send(error)});
+<span class="cstat-no" title="statement not covered" >              deleteFile(`./${filePath}`);</span>
+            }
+            return res.status(400).send(error);
+          });
       }).catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
   },
   // delete user
   destroy(req, res) {
     return User
       .findById(req.params.userId)
-      .then(user =&gt; {
-        if(!user) {
-          return res.status(404).send({message: 'User not found'});
+      .then((user) =&gt; {
+        if (!user) {
+          return res.status(404).send({ message: 'User not found' });
         }
 &nbsp;
         return user
           .destroy()
           .then(() =&gt; {
             <span class="missing-if-branch" title="else path not taken" >E</span>if (user.userImage) {
-                  deleteFile(`./${user.userImage}`);
+              deleteFile(`./${user.userImage}`);
             }
-            return res.status(204).send()})
+            return res.status(204).send();
+          })
           .catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
       }).catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
-    },
+  },
   // get a user
   retrieve(req, res) {
     return User
@@ -737,11 +746,11 @@ const usersController = {
           as: 'businesses'
         }]
       })
-      .then(user =&gt; {
-        if(!user) {
-          return res.status(404).send({message: 'User not found'});
+      .then((user) =&gt; {
+        if (!user) {
+          return res.status(404).send({ message: 'User not found' });
         }
-        return res.status(200).send(user)
+        return res.status(200).send(user);
       })
       .catch(<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >error =&gt; res.status(400).send(error));</span></span>
   },
@@ -754,7 +763,7 @@ export default usersController;
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Wed Aug 15 2018 15:49:03 GMT+0100 (West Africa Standard Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Aug 16 2018 13:45:22 GMT+0100 (West Africa Standard Time)
 </div>
 </div>
 <script src="../../../prettify.js"></script>
