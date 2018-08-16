@@ -1,33 +1,60 @@
-const Businesses = [
-  {
-    businessId: '1',
-    businessName: 'Sommyj IceCream',
-    userId: '2',
-    description: 'We sell happiness, do u want to be happy.',
-    location: 'lagos',
-    category: 'entertainment',
-    registered: '2015-11-04T22:09:36Z',
-    companyImage: ''
-  },
-  {
-    businessId: '2',
-    businessName: 'Sommyj Farms',
-    userId: '3',
-    description: 'We feed the world and you know it,',
-    location: 'imo',
-    category: 'farming',
-    registered: '2015-11-04T22:09:36Z',
-    companyImage: ''
-  },
-  {
-    businessId: '3',
-    businessName: 'Sommyj Security',
-    userId: '1',
-    description: 'We will protect you no matter what, trust us.',
-    location: 'abuja',
-    category: 'security',
-    registered: '2015-11-04T22:09:36Z',
-    companyImage: ''
-  },
-];
-export default Businesses;
+
+export default (sequelize, DataTypes) => {
+  const Business = sequelize.define('Business', {
+    businessName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    street: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    state: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    datefound: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    category: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    companyImage: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  });
+  Business.associate = (models) => {
+    Business.hasMany(models.Review, {
+      foreignKey: 'businessId',
+      as: 'reviews',
+    });
+    Business.belongsTo(models.User, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
+  };
+  return Business;
+};

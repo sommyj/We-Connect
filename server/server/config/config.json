@@ -1,0 +1,18 @@
+{
+  "development": {
+    "use_env_variable": "DATABASE_URL"
+  },
+  "test": {
+    "use_env_variable": "DATABASE_TEST_URL",
+    "logging": false
+  },
+  "production": {
+    "username": "postgres",
+    "password": "sommy",
+    "database": "wecon-production",
+    "host": "127.0.0.1",
+	  "port": 5432,
+    "dialect": "postgres",
+    "logging": false
+  }
+}
