@@ -61,50 +61,68 @@ describe('Businesses', () => {
     it(`it should not CREATE a business without description, businessName, userId,
     description, location and category`, (done) => {
       request
-        .post('/v1/businesses/')
-        .field('businessName', '')
-        .field('userId', '')
-        .field('description', '')
-        .field('street', '')
-        .field('city', '')
-        .field('state', '')
-        .field('country', '')
-        .field('datefound', '')
-        .field('email', '')
-        .field('phone', '')
-        .field('category', '')
-        .attach('companyImage', './testFile.png')
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
         .end((err, res) => {
-          res.should.have.status(206);
-          res.body.should.be.a('object');
-          res.body.should.have.property('message').eql('Incomplete fields');
+          request
+            .post('/v1/businesses/')
+            .set('x-access-token', res.body.token)
+            .field('businessName', '')
+            .field('description', '')
+            .field('street', '')
+            .field('city', '')
+            .field('state', '')
+            .field('country', '')
+            .field('datefound', '')
+            .field('email', '')
+            .field('phone', '')
+            .field('category', '')
+            .attach('companyImage', './testFile.png')
+            .end((err, res) => {
+              res.should.have.status(206);
+              res.body.should.be.a('object');
+              res.body.should.have.property('message').eql('Incomplete fields');
 
-          done();
+              done();
+            });
         });
     });
 
     it('it should CREATE a business', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'sommy',
-        password: '123',
-        email: 'somto@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: new Date('2015-11-04'),
-        phone: '66976498',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           request
             .post('/v1/businesses/')
+            .set('x-access-token', res.body.token)
             .field('businessName', 'Sommyj')
-            .field('userId', user.dataValues.id)
             .field('description', 'We produce quality products')
             .field('street', '4, badamus str')
             .field('city', 'Stoppe')
@@ -120,7 +138,7 @@ describe('Businesses', () => {
               res.body.should.be.a('object');
               res.body.should.have.property('id').eql(res.body.id);
               res.body.should.have.property('businessName').eql('Sommyj');
-              res.body.should.have.property('userId').eql(user.dataValues.id);
+              res.body.should.have.property('userId').eql(res.body.userId);
               res.body.should.have.property('description').eql('We produce quality products');
               res.body.should.have.property('state').eql('Lagos');
               res.body.should.have.property('country').eql('Nigeria');
@@ -139,27 +157,27 @@ describe('Businesses', () => {
 
 
     it('it should CREATE a business without image', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'sommy',
-        password: '123',
-        email: 'somto@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: new Date('2015-11-04'),
-        phone: '66976498',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           request
             .post('/v1/businesses/')
+            .set('x-access-token', res.body.token)
             .field('businessName', 'Sommyj')
-            .field('userId', user.dataValues.id)
             .field('description', 'We produce quality products')
             .field('street', '4, badamus str')
             .field('city', 'Stoppe')
@@ -175,7 +193,7 @@ describe('Businesses', () => {
               res.body.should.be.a('object');
               res.body.should.have.property('id').eql(res.body.id);
               res.body.should.have.property('businessName').eql('Sommyj');
-              res.body.should.have.property('userId').eql(user.dataValues.id);
+              res.body.should.have.property('userId').eql(res.body.userId);
               res.body.should.have.property('description').eql('We produce quality products');
               res.body.should.have.property('state').eql('Lagos');
               res.body.should.have.property('category').eql('Production');
@@ -187,27 +205,27 @@ describe('Businesses', () => {
     });
 
     it('it should not CREATE a business when image file type not jpg/png', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'sommy',
-        password: '123',
-        email: 'somto@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: new Date('2015-11-04'),
-        phone: '66976498',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           request
             .post('/v1/businesses/')
+            .set('x-access-token', res.body.token)
             .field('businessName', 'Sommyj')
-            .field('userId', user.dataValues.id)
             .field('description', 'We produce quality products')
             .field('street', '4, badamus str')
             .field('city', 'Stoppe')
@@ -230,135 +248,181 @@ describe('Businesses', () => {
     it(`it should not CREATE a business
     when image file size is larger than 2mb`, (done) => {
       request
-        .post('/v1/businesses/')
-        .field('businessId', '1')
-        .field('businessName', 'Sommyj')
-        .field('userId', '22')
-        .field('description', 'We produce quality products')
-        .field('location', 'lagos')
-        .field('category', 'Production')
-        .attach('companyImage', './testFileSize.jpg')
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
         .end((err, res) => {
-          res.should.have.status(403);
-          res.body.should.be.a('object');
-          res.body.should.have.property('message').eql('file should not be more than 2mb!');
-          res.body.should.have.property('error').eql(true);
-          done();
+          request
+            .post('/v1/businesses/')
+            .set('x-access-token', res.body.token)
+            .field('businessId', '1')
+            .field('businessName', 'Sommyj')
+            .field('userId', '22')
+            .field('description', 'We produce quality products')
+            .field('location', 'lagos')
+            .field('category', 'Production')
+            .attach('companyImage', './testFileSize.jpg')
+            .end((err, res) => {
+              res.should.have.status(403);
+              res.body.should.be.a('object');
+              res.body.should.have.property('message').eql('file should not be more than 2mb!');
+              res.body.should.have.property('error').eql(true);
+              done();
+            });
         });
     });
 
     it('it should not CREATE a business if businessName, email, phone already exist', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'sommy',
-        password: '123',
-        email: 'somto@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: new Date('2015-11-04'),
-        phone: '66976498',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
-          Business.create({
-            businessName: 'Sommyj',
-            description: 'We produce quality products',
-            street: '4 jvjvkjvj, kfkjfj',
-            city: 'Sinner',
-            state: 'Lagos',
-            country: 'Nigeria',
-            datefound: '2015-11-04',
-            email: 'sommyj@gmail.com',
-            phone: '021316',
-            category: 'Production',
-            companyImage: '',
-            userId: user.dataValues.id,
-          }).then(() => {
-            request
-              .post('/v1/businesses/')
-              .field('businessName', 'Sommyj')
-              .field('userId', user.dataValues.id)
-              .field('description', 'We produce quality products')
-              .field('street', '4, badamus str')
-              .field('city', 'Stoppe')
-              .field('state', 'Lagos')
-              .field('country', 'Nigeria')
-              .field('datefound', '2015-11-04')
-              .field('email', 'sommyj@gmail.com')
-              .field('phone', '021316')
-              .field('category', 'Production')
-              .attach('companyImage', '')
-              .end((err, res) => {
-                res.should.have.status(400);
-                res.body.should.be.a('object');
-                res.body.should.have.property('errors');
-                res.body.should.have.property('name').eql('SequelizeUniqueConstraintError');
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
+          request
+            .post('/v1/businesses/')
+            .set('x-access-token', res.body.token)
+            .field('businessName', 'Sommyj')
+            .field('description', 'We produce quality products')
+            .field('street', '4, badamus str')
+            .field('city', 'Stoppe')
+            .field('state', 'Lagos')
+            .field('country', 'Nigeria')
+            .field('datefound', '2015-11-04')
+            .field('email', 'sommyj@gmail.com')
+            .field('phone', '021316')
+            .field('category', 'Production')
+            .attach('companyImage', '')
+            .end(() => {
+              request
+                .post('/v1/businesses/')
+                .set('x-access-token', res.body.token)
+                .field('businessName', 'Sommyj')
+                .field('description', 'We produce quality products')
+                .field('street', '4, badamus str')
+                .field('city', 'Stoppe')
+                .field('state', 'Lagos')
+                .field('country', 'Nigeria')
+                .field('datefound', '2015-11-04')
+                .field('email', 'sommyj@gmail.com')
+                .field('phone', '021316')
+                .field('category', 'Production')
+                .attach('companyImage', '')
+                .end((err, res) => {
+                  res.should.have.status(400);
+                  res.body.should.be.a('object');
+                  res.body.should.have.property('errors');
+                  res.body.should.have.property('name').eql('SequelizeUniqueConstraintError');
 
-                done();
-              });
-          });
+                  done();
+                });
+            });
         });
     });
 
-    it('it should not CREATE a business if user does not exist', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'sommy',
-        password: '123',
-        email: 'somto@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: new Date('2015-11-04'),
-        phone: '66976498',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
-          Business.create({
-            businessName: 'Sommyj',
-            description: 'We produce quality products',
-            street: '4 jvjvkjvj, kfkjfj',
-            city: 'Sinner',
-            state: 'Lagos',
-            country: 'Nigeria',
-            datefound: '2015-11-04',
-            email: 'sommyj@gmail.com',
-            phone: '021316',
-            category: 'Production',
-            companyImage: '',
-            userId: user.dataValues.id,
-          }).then(() => {
-            request
-              .post('/v1/businesses/')
-              .field('businessName', 'Sommy1')
-              .field('userId', 0)
-              .field('description', 'We produce quality products')
-              .field('street', '4, badamus str')
-              .field('city', 'Stoppe')
-              .field('state', 'Lagos')
-              .field('country', 'Nigeria')
-              .field('datefound', '2015-11-04')
-              .field('email', 'sommy@gmail.com')
-              .field('phone', '02131645')
-              .field('category', 'Production')
-              .attach('companyImage', '')
-              .end((err, res) => {
-                res.should.have.status(400);
-                res.body.should.be.a('object');
-                res.body.should.have.property('name').eql('SequelizeForeignKeyConstraintError');
+    it('it should not CREATE a business when a token is not provided', (done) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end(() => {
+          request
+            .post('/v1/businesses/')
+            .field('businessName', 'Sommyj')
+            .field('description', 'We produce quality products')
+            .field('street', '4, badamus str')
+            .field('city', 'Stoppe')
+            .field('state', 'Lagos')
+            .field('country', 'Nigeria')
+            .field('datefound', '2015-11-04')
+            .field('email', 'sommyj@gmail.com')
+            .field('phone', '021316')
+            .field('category', 'Production')
+            .attach('companyImage', './testFileType.txt')
+            .end((err, res) => {
+              res.should.have.status(401);
+              res.body.should.be.a('object');
+              res.body.should.have.property('auth').eql(false);
+              res.body.should.have.property('message').eql('No token provided.');
+              done();
+            });
+        });
+    });
 
-                done();
-              });
-          });
+    it('it should not CREATE a business when it fails to authenticate token.', (done) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', './testFileType.txt')
+        .end(() => {
+          request
+            .post('/v1/businesses/')
+            .set('x-access-token', 'jdkjdfskjs43354mxxnzsdz.drfsff.srfsf35324')
+            .field('businessName', 'Sommyj')
+            .field('description', 'We produce quality products')
+            .field('street', '4, badamus str')
+            .field('city', 'Stoppe')
+            .field('state', 'Lagos')
+            .field('country', 'Nigeria')
+            .field('datefound', '2015-11-04')
+            .field('email', 'sommyj@gmail.com')
+            .field('phone', '021316')
+            .field('category', 'Production')
+            .attach('companyImage', './testFileType.txt')
+            .end((err, res) => {
+              res.should.have.status(500);
+              res.body.should.be.a('object');
+              res.body.should.have.property('auth').eql(false);
+              res.body.should.have.property('message').eql('Failed to authenticate token.');
+              done();
+            });
         });
     });
   });
@@ -499,16 +563,16 @@ describe('Businesses', () => {
             category: 'Production',
             companyImage: '',
             userId: user.dataValues.id,
+          }).then(() => {
+            request
+              .get('/v1/businesses/13')
+              .end((err, res) => {
+                res.should.have.status(404);
+                res.body.should.be.a('object');
+                res.body.message.should.be.eql('Business not found');
+                done();
+              });
           });
-
-          request
-            .get('/v1/businesses/13')
-            .end((err, res) => {
-              res.should.have.status(404);
-              res.body.should.be.a('object');
-              res.body.message.should.be.eql('Business not found');
-              done();
-            });
         });
     });
 
@@ -816,23 +880,23 @@ describe('Businesses', () => {
    */
   describe('/PUT/:id business', () => {
     it('it should UPDATE a business given the id', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'som',
-        password: '123',
-        email: 'somto@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: '2015-11-04',
-        phone: '888888',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           Business.create({
             businessName: 'Comango',
             description: 'We manufacture quality products',
@@ -845,12 +909,12 @@ describe('Businesses', () => {
             phone: '888888',
             category: 'Production',
             companyImage: '',
-            userId: user.dataValues.id,
+            userId: res.body.user.id,
           }).then((business) => {
             request
               .put(`/v1/businesses/${business.dataValues.id}`)
+              .set('x-access-token', res.body.token)
               .field('businessName', 'Sommyj Enterprise')
-              .field('userId', user.dataValues.id)
               .field('description', 'We sale quality products')
               .field('street', '4, badamus str')
               .field('city', 'Stoppe')
@@ -866,7 +930,7 @@ describe('Businesses', () => {
                 res.body.should.be.a('object');
                 res.body.should.have.property('id').eql(business.dataValues.id);
                 res.body.should.have.property('businessName').eql('Sommyj Enterprise');
-                res.body.should.have.property('userId').eql(`${user.dataValues.id}`);
+                res.body.should.have.property('userId').eql(business.dataValues.userId);
                 res.body.should.have.property('description').eql('We sale quality products');
                 res.body.should.have.property('state').eql('port-harcourt');
                 res.body.should.have.property('category').eql('Sales');
@@ -884,25 +948,25 @@ describe('Businesses', () => {
 
 
     it('it should not UPDATE a business given the wrong id', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'somm',
-        password: '123',
-        email: 'somto@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: '2015-11-04',
-        phone: '8888884',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           Business.create({
-            businessName: 'Comango.com',
+            businessName: 'Comango',
             description: 'We manufacture quality products',
             street: 'demfec, spotless',
             city: 'Sinner',
@@ -910,15 +974,15 @@ describe('Businesses', () => {
             country: 'Nigeria',
             datefound: '2015-11-04',
             email: 'wecon@bfbf.b',
-            phone: '8888884',
+            phone: '888888',
             category: 'Production',
             companyImage: '',
-            userId: user.dataValues.id,
+            userId: res.body.user.id,
           }).then(() => {
             request
               .put('/v1/businesses/12')
+              .set('x-access-token', res.body.token)
               .field('businessName', 'Sommyj Enterprise')
-              .field('userId', user.dataValues.id)
               .field('description', 'We sale quality products')
               .field('street', '4, badamus str')
               .field('city', 'Stoppe')
@@ -942,25 +1006,25 @@ describe('Businesses', () => {
 
     it(`it should UPDATE a business given the id and
     maintain already existing fields and file if none is entered`, (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'sommj',
-        password: '123',
-        email: 'somtoj@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: '2015-11-04',
-        phone: '88888845',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           Business.create({
-            businessName: 'Comango.com',
+            businessName: 'Comango',
             description: 'We manufacture quality products',
             street: 'demfec, spotless',
             city: 'Sinner',
@@ -968,15 +1032,15 @@ describe('Businesses', () => {
             country: 'Nigeria',
             datefound: '2015-11-04',
             email: 'wecon@bfbf.b',
-            phone: '8888884',
+            phone: '888888',
             category: 'Production',
-            companyImage: 'businessesUploads/2018-07-23T16:04:36.226ZNIIT Certificate (copy).resized.jpg',
-            userId: user.dataValues.id,
+            companyImage: '',
+            userId: res.body.user.id,
           }).then((business) => {
             request
               .put(`/v1/businesses/${business.dataValues.id}`)
+              .set('x-access-token', res.body.token)
               .field('businessName', '')
-              .field('userId', '')
               .field('description', '')
               .field('street', '')
               .field('city', '')
@@ -991,8 +1055,8 @@ describe('Businesses', () => {
                 res.should.have.status(200); // 'success' status
                 res.body.should.be.a('object');
                 res.body.should.have.property('id').eql(business.dataValues.id);
-                res.body.should.have.property('businessName').eql('Comango.com');
-                res.body.should.have.property('userId').eql(user.dataValues.id);
+                res.body.should.have.property('businessName').eql('Comango');
+                res.body.should.have.property('userId').eql(res.body.userId);
                 res.body.should.have.property('description').eql('We manufacture quality products');
                 res.body.should.have.property('state').eql('Lagos');
                 res.body.should.have.property('country').eql('Nigeria');
@@ -1007,23 +1071,23 @@ describe('Businesses', () => {
 
 
     it('it should UPDATE a business given the id and replace already existing file', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'somman',
-        password: '123',
-        email: 'somtojy@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: '2015-11-04',
-        phone: '8888453',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           Business.create({
             businessName: 'Mango.com',
             description: 'We manufacture quality products',
@@ -1036,7 +1100,8 @@ describe('Businesses', () => {
             phone: '888888453',
             category: 'Production',
             companyImage: 'businessesUploads/testFile.png',
-            userId: user.dataValues.id,
+            userId: res.body.user.id,
+
           }).then((business) => {
             const filename = 'testFile.png';
             const src = path.join('./', filename);
@@ -1051,8 +1116,8 @@ describe('Businesses', () => {
 
             request
               .put(`/v1/businesses/${business.dataValues.id}`)
+              .set('x-access-token', res.body.token)
               .field('businessName', 'Sommy Enterprise')
-              .field('userId', user.dataValues.id)
               .field('description', 'We sale quality products')
               .field('street', '4, badamus str')
               .field('city', 'Stoppe')
@@ -1068,7 +1133,7 @@ describe('Businesses', () => {
                 res.body.should.be.a('object');
                 res.body.should.have.property('id').eql(business.dataValues.id);
                 res.body.should.have.property('businessName').eql('Sommy Enterprise');
-                res.body.should.have.property('userId').eql(`${user.dataValues.id}`);
+                res.body.should.have.property('userId').eql(res.body.userId);
                 res.body.should.have.property('description').eql('We sale quality products');
                 res.body.should.have.property('state').eql('port-harcourt');
                 res.body.should.have.property('country').eql('Nigeria');
@@ -1086,23 +1151,23 @@ describe('Businesses', () => {
     });
 
     it('it should not UPDATE a business when image file type not jpg/png', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'somman1',
-        password: '123',
-        email: 'somto1@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: '2015-11-04',
-        phone: '88884531',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           Business.create({
             businessName: 'Come.com',
             description: 'We use quality products',
@@ -1115,12 +1180,12 @@ describe('Businesses', () => {
             phone: '888188453',
             category: 'Production',
             companyImage: 'businessesUploads/testFile.png',
-            userId: user.dataValues.id,
+            userId: res.body.user.id,
           }).then((business) => {
             request
               .put(`/v1/businesses/${business.dataValues.id}`)
+              .set('x-access-token', res.body.token)
               .field('businessName', 'Sommy Enterprise')
-              .field('userId', user.dataValues.id)
               .field('description', 'We sale quality products')
               .field('street', '4, badamus str')
               .field('city', 'Stoppe')
@@ -1145,23 +1210,23 @@ describe('Businesses', () => {
 
     it(`it should not UPDATE a business
     when image file size is larger than 2mb`, (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'somman1',
-        password: '123',
-        email: 'somto1@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: '2015-11-04',
-        phone: '88884531',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           Business.create({
             businessName: 'Come.com',
             description: 'We use quality products',
@@ -1174,12 +1239,12 @@ describe('Businesses', () => {
             phone: '888188453',
             category: 'Production',
             companyImage: 'businessesUploads/testFile.png',
-            userId: user.dataValues.id,
+            userId: res.body.user.id,
           }).then((business) => {
             request
               .put(`/v1/businesses/${business.dataValues.id}`)
+              .set('x-access-token', res.body.token)
               .field('businessName', 'Sommy Limited')
-              .field('userId', user.dataValues.id)
               .field('description', 'We sale quality products')
               .field('street', '4, badamus str')
               .field('city', 'Stoppe')
@@ -1202,23 +1267,23 @@ describe('Businesses', () => {
     });
 
     it('it should not UPDATE a business if businessName, email, phone already exist', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'sommy',
-        password: '123',
-        email: 'somto@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: new Date('2015-11-04'),
-        phone: '66976498',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           Business.create({
             businessName: 'Sommyj',
             description: 'We produce quality products',
@@ -1231,67 +1296,67 @@ describe('Businesses', () => {
             phone: '021316',
             category: 'Production',
             companyImage: '',
-            userId: user.dataValues.id,
-          });
+            userId: res.body.user.id,
+          }).then(() => {
+            Business.create({
+              businessName: 'Sommy1',
+              description: 'We produce quality products',
+              street: '4 jvjvkjvj, kfkjfj',
+              city: 'Sinner',
+              state: 'Lagos',
+              country: 'Nigeria',
+              datefound: '2015-11-04',
+              email: 'sommy@gmail.com',
+              phone: '021316445',
+              category: 'Production',
+              companyImage: '',
+              userId: res.body.user.id,
+            }).then((business) => {
+              request
+                .put(`/v1/businesses/${business.dataValues.id}`)
+                .set('x-access-token', res.body.token)
+                .field('businessName', 'Sommyj')
+                .field('description', 'We produce quality products')
+                .field('street', '4, badamus str')
+                .field('city', 'Stoppe')
+                .field('state', 'Lagos')
+                .field('country', 'Nigeria')
+                .field('datefound', '2015-11-04')
+                .field('email', 'sommyj@gmail.com')
+                .field('phone', '021316')
+                .field('category', 'Production')
+                .attach('companyImage', './testFile.png')
+                .end((err, res) => {
+                  res.should.have.status(400);
+                  res.body.should.be.a('object');
+                  res.body.should.have.property('errors');
+                  res.body.should.have.property('name').eql('SequelizeUniqueConstraintError');
 
-          Business.create({
-            businessName: 'Sommy1',
-            description: 'We produce quality products',
-            street: '4 jvjvkjvj, kfkjfj',
-            city: 'Sinner',
-            state: 'Lagos',
-            country: 'Nigeria',
-            datefound: '2015-11-04',
-            email: 'sommy@gmail.com',
-            phone: '021316445',
-            category: 'Production',
-            companyImage: '',
-            userId: user.dataValues.id,
-          }).then((business) => {
-            request
-              .put(`/v1/businesses/${business.dataValues.id}`)
-              .field('businessName', 'Sommyj')
-              .field('userId', user.dataValues.id)
-              .field('description', 'We produce quality products')
-              .field('street', '4, badamus str')
-              .field('city', 'Stoppe')
-              .field('state', 'Lagos')
-              .field('country', 'Nigeria')
-              .field('datefound', '2015-11-04')
-              .field('email', 'sommyj@gmail.com')
-              .field('phone', '021316')
-              .field('category', 'Production')
-              .attach('companyImage', '')
-              .end((err, res) => {
-                res.should.have.status(400);
-                res.body.should.be.a('object');
-                res.body.should.have.property('errors');
-                res.body.should.have.property('name').eql('SequelizeUniqueConstraintError');
-
-                done();
-              });
+                  done();
+                });
+            });
           });
         });
     });
 
-    it('it should not UPDATE a business if user does not exist', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'sommy',
-        password: '123',
-        email: 'somto@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: new Date('2015-11-04'),
-        phone: '66976498',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+    it('it should not UPDATE a business when a token is not provided', (done) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           Business.create({
             businessName: 'Sommyj',
             description: 'We produce quality products',
@@ -1304,7 +1369,7 @@ describe('Businesses', () => {
             phone: '021316',
             category: 'Production',
             companyImage: '',
-            userId: user.dataValues.id,
+            userId: res.body.user.id,
           }).then((business) => {
             request
               .put(`/v1/businesses/${business.dataValues.id}`)
@@ -1319,15 +1384,147 @@ describe('Businesses', () => {
               .field('email', 'sommy@gmail.com')
               .field('phone', '02131645')
               .field('category', 'Production')
-              .attach('companyImage', '')
+              .attach('companyImage', './testFile.png')
               .end((err, res) => {
-                res.should.have.status(400);
+                res.should.have.status(401);
                 res.body.should.be.a('object');
-                res.body.should.have.property('name').eql('SequelizeForeignKeyConstraintError');
-
+                res.body.should.have.property('auth').eql(false);
+                res.body.should.have.property('message').eql('No token provided.');
                 done();
               });
           });
+        });
+    });
+
+    it('it should not UPDATE a business when it fails to authenticate token.', (done) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
+          Business.create({
+            businessName: 'Sommyj',
+            description: 'We produce quality products',
+            street: '4 jvjvkjvj, kfkjfj',
+            city: 'Sinner',
+            state: 'Lagos',
+            country: 'Nigeria',
+            datefound: '2015-11-04',
+            email: 'sommyj@gmail.com',
+            phone: '021316',
+            category: 'Production',
+            companyImage: '',
+            userId: res.body.user.id,
+          }).then((business) => {
+            request
+              .put(`/v1/businesses/${business.dataValues.id}`)
+              .set('x-access-token', 'nferf.edfef.34342')
+              .field('businessName', 'Sommy1')
+              .field('description', 'We produce quality products')
+              .field('street', '4, badamus str')
+              .field('city', 'Stoppe')
+              .field('state', 'Lagos')
+              .field('country', 'Nigeria')
+              .field('datefound', '2015-11-04')
+              .field('email', 'sommy@gmail.com')
+              .field('phone', '02131645')
+              .field('category', 'Production')
+              .attach('companyImage', './testFile.png')
+              .end((err, res) => {
+                res.should.have.status(500);
+                res.body.should.be.a('object');
+                res.body.should.have.property('auth').eql(false);
+                res.body.should.have.property('message').eql('Failed to authenticate token.');
+                done();
+              });
+          });
+        });
+    });
+
+    it('it should not UPDATE a business when user is unauthorize.', (done) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman1')
+        .field('password', 'abc')
+        .field('email', 'justin1@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '669764981')
+        .attach('userImage', '')
+        .end((err, res1) => {
+          request
+            .post('/auth/v1/signup')
+            .field('title', 'mr')
+            .field('firstname', 'Justin')
+            .field('lastname', 'Ikwuoma')
+            .field('username', 'justman')
+            .field('password', 'abc')
+            .field('email', 'justin@gmail.com')
+            .field('gender', 'male')
+            .field('street', 'ljan terrasse 346')
+            .field('city', 'ikotun')
+            .field('state', 'lagos')
+            .field('country', 'Nigeria')
+            .field('dob', '2015-11-04')
+            .field('phone', '66976498')
+            .attach('userImage', '')
+            .end((err, res2) => {
+              Business.create({
+                businessName: 'Sommyj',
+                description: 'We produce quality products',
+                street: '4 jvjvkjvj, kfkjfj',
+                city: 'Sinner',
+                state: 'Lagos',
+                country: 'Nigeria',
+                datefound: '2015-11-04',
+                email: 'sommyj@gmail.com',
+                phone: '021316',
+                category: 'Production',
+                companyImage: '',
+                userId: res2.body.user.id,
+              }).then((business) => {
+                request
+                  .put(`/v1/businesses/${business.dataValues.id}`)
+                  .set('x-access-token', res1.body.token)
+                  .field('businessName', 'Sommy1')
+                  .field('description', 'We produce quality products')
+                  .field('street', '4, badamus str')
+                  .field('city', 'Stoppe')
+                  .field('state', 'Lagos')
+                  .field('country', 'Nigeria')
+                  .field('datefound', '2015-11-04')
+                  .field('email', 'sommy@gmail.com')
+                  .field('phone', '02131645')
+                  .field('category', 'Production')
+                  .attach('companyImage', './testFile.png')
+                  .end((err, res) => {
+                    res.should.have.status(403);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('auth').eql(false);
+                    res.body.should.have.property('message').eql('User not allowed');
+                    done();
+                  });
+              });
+            });
         });
     });
   });
@@ -1336,24 +1533,69 @@ describe('Businesses', () => {
   * Test the /DELETE/:id route
   */
   describe('/DELETE/:id business', () => {
+    it('it should not DELETE a business given the wrong id', (done) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
+          Business.create({
+            businessName: 'Some1.com',
+            description: 'We use quality products',
+            street: 'demzec, zpotless',
+            city: 'Sinner',
+            state: 'Lagos',
+            country: 'Nigeria',
+            datefound: '2015-11-04',
+            email: 'ztod1@bfbf.bf',
+            phone: '881884530',
+            category: 'Production',
+            companyImage: 'businessesUploads/testFile.png',
+            userId: res.body.user.id,
+          }).then(() => {
+            request
+              .delete('/v1/businesses/13')
+              .set('x-access-token', res.body.token)
+              .end((err, res) => {
+                res.should.have.status(404);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message').eql('Business not found');
+                done();
+              });
+          });
+        });
+    });
+
     it('it should DELETE a business given the id', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'somman11',
-        password: '123',
-        email: 'somto12@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: '2015-11-04',
-        phone: '88584531',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
+      request
+        .post('/auth/v1/signup')
+        .field('title', 'mr')
+        .field('firstname', 'Justin')
+        .field('lastname', 'Ikwuoma')
+        .field('username', 'justman')
+        .field('password', 'abc')
+        .field('email', 'justin@gmail.com')
+        .field('gender', 'male')
+        .field('street', 'ljan terrasse 346')
+        .field('city', 'ikotun')
+        .field('state', 'lagos')
+        .field('country', 'Nigeria')
+        .field('dob', '2015-11-04')
+        .field('phone', '66976498')
+        .attach('userImage', '')
+        .end((err, res) => {
           Business.create({
             businessName: 'Some.com',
             description: 'We use quality products',
@@ -1366,7 +1608,7 @@ describe('Businesses', () => {
             phone: '88188453',
             category: 'Production',
             companyImage: 'businessesUploads/testFile.png',
-            userId: user.dataValues.id,
+            userId: res.body.user.id,
           }).then((business) => {
             const filename = 'testFile.png';
             const src = path.join('./', filename);
@@ -1381,53 +1623,10 @@ describe('Businesses', () => {
 
             request
               .delete(`/v1/businesses/${business.dataValues.id}`)
+              .set('x-access-token', res.body.token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.body.should.be.a('object');
-                done();
-              });
-          });
-        });
-    });
-
-    it('it should not DELETE a business given the wrong id', (done) => {
-      User.create({
-        title: 'mr',
-        firstname: 'somto',
-        lastname: 'Ikwuoma',
-        username: 'somman12',
-        password: '123',
-        email: 'sommy12@gmail.com',
-        gender: 'male',
-        street: 'ljan terrasse 346',
-        city: 'ikotun',
-        state: 'lagos',
-        country: 'Nigeria',
-        dob: '2015-11-04',
-        phone: '88584530',
-        userImage: 'usersUploads/testFile.png'
-      })
-        .then((user) => {
-          Business.create({
-            businessName: 'Some1.com',
-            description: 'We use quality products',
-            street: 'demzec, zpotless',
-            city: 'Sinner',
-            state: 'Lagos',
-            country: 'Nigeria',
-            datefound: '2015-11-04',
-            email: 'ztod1@bfbf.bf',
-            phone: '881884530',
-            category: 'Production',
-            companyImage: 'businessesUploads/testFile.png',
-            userId: user.dataValues.id,
-          }).then(() => {
-            request
-              .delete('/v1/businesses/13')
-              .end((err, res) => {
-                res.should.have.status(404);
-                res.body.should.be.a('object');
-                res.body.should.have.property('message').eql('Business not found');
                 done();
               });
           });

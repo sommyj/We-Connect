@@ -104,22 +104,23 @@ describe('Users', () => {
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.a('object');
-          res.body.should.have.property('id').eql(res.body.id);
-          res.body.should.have.property('firstname').eql('Justin');
-          res.body.should.have.property('lastname').eql('Ikwuoma');
-          res.body.should.have.property('username').eql('justman');
-          res.body.should.have.property('email').eql('justin@gmail.com');
-          res.body.should.have.property('password').eql('abc');
-          res.body.should.have.property('gender').eql('male');
-          res.body.should.have.property('street').eql('ljan terrasse 346');
-          res.body.should.have.property('city').eql('ikotun');
-          res.body.should.have.property('userImage').eql(res.body.userImage);
+          res.body.user.should.have.property('id').eql(res.body.user.id);
+          res.body.user.should.have.property('firstname').eql('Justin');
+          res.body.user.should.have.property('lastname').eql('Ikwuoma');
+          res.body.user.should.have.property('username').eql('justman');
+          res.body.user.should.have.property('email').eql('justin@gmail.com');
+          res.body.user.should.have.property('password').eql(res.body.user.password);
+          res.body.user.should.have.property('gender').eql('male');
+          res.body.user.should.have.property('street').eql('ljan terrasse 346');
+          res.body.user.should.have.property('city').eql('ikotun');
+          res.body.user.should.have.property('userImage').eql(res.body.user.userImage);
+          res.body.should.have.property('auth').eql(true);
+          res.body.should.have.property('token').eql(res.body.token);
 
           // delete test image file
           if (path.resolve('./testFile.png')) {
-            deleteFile(`./${res.body.userImage}`);
+            deleteFile(`./${res.body.user.userImage}`);
           }
-
           done();
         });
     });
@@ -145,17 +146,19 @@ describe('Users', () => {
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.a('object');
-          res.body.should.have.property('id').eql(res.body.id);
-          res.body.should.have.property('firstname').eql('Justin');
-          res.body.should.have.property('lastname').eql('Ikwuoma');
-          res.body.should.have.property('username').eql('justman1');
-          res.body.should.have.property('email').eql('justin1@gmail.com');
-          res.body.should.have.property('password').eql('abc');
-          res.body.should.have.property('gender').eql('male');
-          res.body.should.have.property('street').eql('ljan terrasse 346');
-          res.body.should.have.property('city').eql('ikotun');
-          res.body.should.have.property('country').eql('Nigeria');
-          res.body.should.have.property('userImage').eql('');
+          res.body.user.should.have.property('id').eql(res.body.user.id);
+          res.body.user.should.have.property('firstname').eql('Justin');
+          res.body.user.should.have.property('lastname').eql('Ikwuoma');
+          res.body.user.should.have.property('username').eql('justman1');
+          res.body.user.should.have.property('email').eql('justin1@gmail.com');
+          res.body.user.should.have.property('password').eql(res.body.user.password);
+          res.body.user.should.have.property('gender').eql('male');
+          res.body.user.should.have.property('street').eql('ljan terrasse 346');
+          res.body.user.should.have.property('city').eql('ikotun');
+          res.body.user.should.have.property('country').eql('Nigeria');
+          res.body.user.should.have.property('userImage').eql('');
+          res.body.should.have.property('auth').eql(true);
+          res.body.should.have.property('token').eql(res.body.token);
 
           done();
         });
@@ -268,13 +271,15 @@ describe('Users', () => {
           .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a('object');
-            res.body.should.have.property('id');
-            res.body.should.have.property('firstname').eql('Justin');
-            res.body.should.have.property('lastname').eql('Ikwuoma');
-            res.body.should.have.property('username').eql('justman4');
-            res.body.should.have.property('email').eql('justin4@gmail.com');
-            res.body.should.have.property('password').eql('abc');
-            res.body.should.have.property('userImage').eql('');
+            res.body.user.should.have.property('id');
+            res.body.user.should.have.property('firstname').eql('Justin');
+            res.body.user.should.have.property('lastname').eql('Ikwuoma');
+            res.body.user.should.have.property('username').eql('justman4');
+            res.body.user.should.have.property('email').eql('justin4@gmail.com');
+            res.body.user.should.have.property('password').eql(res.body.user.password);
+            res.body.user.should.have.property('userImage').eql('');
+            res.body.should.have.property('auth').eql(true);
+            res.body.should.have.property('token').eql(res.body.token);
             done();
           });
       });
@@ -356,7 +361,6 @@ describe('Users', () => {
             res.body.should.have.deep.property('0').property('firstname').eql('Somto');
             res.body.should.have.deep.property('0').property('lastname').eql('Ikwuoma');
             res.body.should.have.deep.property('0').property('username').eql('sommy');
-            res.body.should.have.deep.property('0').property('password').eql('123');
             res.body.should.have.deep.property('0').property('gender').eql('male');
             res.body.should.have.deep.property('0').property('email').eql('somto@gmail.com');
             res.body.should.have.deep.property('0').property('state').eql('Lagos');
@@ -393,7 +397,7 @@ describe('Users', () => {
               res.body.should.have.property('lastname').eql('Ikwuoma');
               res.body.should.have.property('username').eql('sommy1');
               res.body.should.have.property('email').eql('somto1@gmail.com');
-              res.body.should.have.property('password').eql('123');
+              res.body.should.have.property('password').eql(res.body.password);
               res.body.should.have.property('userImage').eql('usersUploads/testFile.png');
 
               done();
@@ -473,7 +477,7 @@ describe('Users', () => {
             res.body.should.have.property('title').eql('mr');
             res.body.should.have.property('firstname').eql('Justin');
             res.body.should.have.property('lastname').eql('Ikwuoma');
-            res.body.should.have.property('password').eql('abcd');
+            res.body.should.have.property('password').eql(res.body.password);
             res.body.should.have.property('username').eql('sojust');
             res.body.should.have.property('email').eql('justin@gmail.com');
             res.body.should.have.property('userImage').eql(res.body.userImage);
@@ -504,31 +508,30 @@ describe('Users', () => {
         dob: new Date('2015-11-04'),
         phone: '669764985',
         userImage: ''
+      }).then(() => {
+        request
+          .put('/api/v1/users/14')
+          .field('title', 'mr')
+          .field('firstname', 'Justin')
+          .field('lastname', 'Ikwuoma')
+          .field('username', 'sojust')
+          .field('password', 'abcd')
+          .field('email', 'sojust@gmail.com')
+          .field('gender', 'male')
+          .field('street', 'ljan terrasse 346')
+          .field('city', 'ikotun')
+          .field('state', 'lagos')
+          .field('country', 'Nigeria')
+          .field('dob', '2015-11-04')
+          .field('phone', '66976498')
+          .attach('userImage', './testFile.png')
+          .end((err, res) => {
+            res.should.have.status(404);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message').eql('User not found');
+            done();
+          });
       });
-
-
-      request
-        .put('/api/v1/users/14')
-        .field('title', 'mr')
-        .field('firstname', 'Justin')
-        .field('lastname', 'Ikwuoma')
-        .field('username', 'sojust')
-        .field('password', 'abcd')
-        .field('email', 'sojust@gmail.com')
-        .field('gender', 'male')
-        .field('street', 'ljan terrasse 346')
-        .field('city', 'ikotun')
-        .field('state', 'lagos')
-        .field('country', 'Nigeria')
-        .field('dob', '2015-11-04')
-        .field('phone', '66976498')
-        .attach('userImage', './testFile.png')
-        .end((err, res) => {
-          res.should.have.status(404);
-          res.body.should.be.a('object');
-          res.body.should.have.property('message').eql('User not found');
-          done();
-        });
     });
 
     it(`it should UPDATE a user given the id and
@@ -571,7 +574,7 @@ describe('Users', () => {
             res.body.should.have.property('title').eql('mr');
             res.body.should.have.property('firstname').eql('somto');
             res.body.should.have.property('lastname').eql('Ikwuoma');
-            res.body.should.have.property('password').eql('123');
+            res.body.should.have.property('password').eql(res.body.password);
             res.body.should.have.property('username').eql('sommy');
             res.body.should.have.property('email').eql('somto@gmail.com');
             res.body.should.have.property('userImage').eql('usersUploads/2018-07-23T16:04:36.226Zpassport.resized.JPG');
@@ -629,7 +632,7 @@ describe('Users', () => {
             res.body.should.have.property('title').eql('mr');
             res.body.should.have.property('firstname').eql('Justin');
             res.body.should.have.property('lastname').eql('Ikwuoma');
-            res.body.should.have.property('password').eql('abcd');
+            res.body.should.have.property('password').eql(res.body.password);
             res.body.should.have.property('username').eql('sojust');
             res.body.should.have.property('email').eql('justin@gmail.com');
             res.body.should.have.property('userImage').eql(res.body.userImage);

@@ -1,6 +1,8 @@
 import multer from 'multer';
 import fs from 'file-system';
+import jwt from 'jsonwebtoken';
 import model from '../models';
+import app from '../../app';
 
 const [Business, Review] = [model.Business, model.Review];
 
@@ -43,31 +45,96 @@ const fileSizeHandleError = (res) => {
   res.status(403).json({ message: 'file should not be more than 2mb!', error: true });
 };
 
+/* File filter handle method */
+const fileFilterMethod = (req) => {
+  const fileErrorArray = [];
+  let fileSizeError = false;
+  let fileTypeError = false;
+  let filePath = '';
+
+  if (req.file) {
+    const tempPath = `./${req.file.path}`;
+    const targetPath = `./businessesUploads/${new Date().toISOString() + req.file.originalname}`;
+    if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
+      if (req.file.size <= fileSizeLimit) {
+        renameFile(tempPath, targetPath);
+        // remove the dot in targetPath
+        filePath = targetPath.substring(1, targetPath.length);
+      } else {
+        deleteFile(tempPath);
+        fileSizeError = true;
+      }
+    } else {
+      deleteFile(tempPath);
+      fileTypeError = true;
+    }
+  }
+  fileErrorArray[0] = fileSizeError;
+  fileErrorArray[1] = fileTypeError;
+  fileErrorArray[2] = filePath;
+
+  return fileErrorArray;
+};
+
+/* Authentication handle method */
+const authMethod = (req) => {
+  const authMethodArray = [];
+  let noTokenProviderError = false;
+  let failedAuth = false;
+  let decodedID;
+
+  // check header or url parameters or post parameters for token
+  const token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (!token) {
+    if (req.file) deleteFile(`./${req.file.path}`);
+    noTokenProviderError = true;
+  }
+
+  // verifies secret and checks exp
+  jwt.verify(token, app.get('superSecret'), (err, decoded) => {
+    if (err) {
+      if (!noTokenProviderError) {
+        if (req.file) deleteFile(`./${req.file.path}`);
+        failedAuth = true;
+      }
+    } else decodedID = decoded.id;
+  });
+
+  authMethodArray[0] = noTokenProviderError;
+  authMethodArray[1] = failedAuth;
+  authMethodArray[2] = decodedID;
+
+  return authMethodArray;
+};
+
 const businessesController = {
   // image upload
   upload: upload.single('companyImage'),
   // create a business
   create(req, res) {
-    let filePath = '';
-    if (req.file) {
-      const tempPath = req.file.path;
-      const targetPath = `./businessesUploads/${new Date().toISOString() + req.file.originalname}`;
-      if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
-        if (req.file.size <= fileSizeLimit) {
-          renameFile(tempPath, targetPath);
-          // remove the dot in targetPath
-          filePath = targetPath.substring(1, targetPath.length);
-        } else {
-          deleteFile(tempPath);
-          return fileSizeHandleError(res);
-        }
-      } else {
-        deleteFile(tempPath);
-        return fileTypeHandleError(res);
-      }
-    }
+    let decodedID;
+    const authValues = authMethod(req, res);
+    const noTokenProviderError = authValues[0];
+    const failedAuthError = authValues[1];
+    const decodedIDFromMethod = authValues[2];
 
-    if (!req.body.businessName || !req.body.userId || !req.body.description ||
+    if (noTokenProviderError) return res.status(401).send({ auth: false, message: 'No token provided.' });
+
+    if (failedAuthError) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+
+    if (decodedIDFromMethod) decodedID = decodedIDFromMethod;
+
+    // implementing the file filter method
+    const fileFilterValues = fileFilterMethod(req, res);
+    const fileSizeError = fileFilterValues[0];
+    const fileTypeError = fileFilterValues[1];
+    const filePath = fileFilterValues[2];
+
+    if (fileSizeError) return fileSizeHandleError(res);
+    if (fileTypeError) return fileTypeHandleError(res);
+
+    /* Required feilds */
+    if (!req.body.businessName || !req.body.description ||
       !req.body.email || !req.body.phone || !req.body.category) {
       if (filePath) { deleteFile(`./${filePath}`); }
       return res.status(206).send({ message: 'Incomplete fields' });
@@ -86,7 +153,7 @@ const businessesController = {
         phone: req.body.phone,
         category: req.body.category,
         companyImage: filePath,
-        userId: req.body.userId,
+        userId: decodedID,
       })
       .then(business => res.status(201).send(business))
       .catch((error) => {
@@ -96,42 +163,48 @@ const businessesController = {
   },
   // update business
   update(req, res) {
-    let filePath = '';
-    if (req.file) {
-      const tempPath = req.file.path;
-      const targetPath = `./businessesUploads/${new Date().toISOString() + req.file.originalname}`;
-      if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
-        if (req.file.size <= fileSizeLimit) {
-          renameFile(tempPath, targetPath);
-          // remove the dot in targetPath
-          filePath = targetPath.substring(1, targetPath.length);
-        } else {
-          deleteFile(tempPath);
-          return fileSizeHandleError(res);
-        }
-      } else {
-        deleteFile(tempPath);
-        return fileTypeHandleError(res);
-      }
-    }
+    let decodedID;
+
+    // implementing the file authentication method
+    const authValues = authMethod(req, res);
+    const noTokenProviderError = authValues[0];
+    const failedAuthError = authValues[1];
+    const decodedIDFromMethod = authValues[2];
+
+    if (noTokenProviderError) return res.status(401).send({ auth: false, message: 'No token provided.' });
+    if (failedAuthError) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+    if (decodedIDFromMethod) decodedID = decodedIDFromMethod;
+
+    // implementing the file filter method
+    const fileFilterValues = fileFilterMethod(req, res);
+    const fileSizeError = fileFilterValues[0];
+    const fileTypeError = fileFilterValues[1];
+    const filePath = fileFilterValues[2];
+
+    if (fileSizeError) return fileSizeHandleError(res);
+    if (fileTypeError) return fileTypeHandleError(res);
 
     return Business
       .findById(req.params.businessId, {
-        include: [{
-          model: Review,
-          as: 'reviews'
-        }]
+        include: [{ model: Review, as: 'reviews' }]
       })
       .then((business) => {
         if (!business) {
           // if file and url is not empty delete img for updation
-          if (filePath) {
-            deleteFile(`./${filePath}`);
-          }
+          if (filePath) { deleteFile(`./${filePath}`); }
           return res.status(404).send({ message: 'Business not found' });
         }
+
+        // Compare user id
+        if (decodedID !== business.userId) {
+          if (filePath) deleteFile(`./${filePath}`);
+          return res.status(403).send({ auth: false, message: 'User not allowed' });
+        }
+
+
         // holds the url of the image before update in other not to loose it
         const previousImage = business.companyImage;
+
         return business
           .update({
             businessName: req.body.businessName || business.businessName,
@@ -145,9 +218,8 @@ const businessesController = {
             phone: req.body.phone || business.phone,
             category: req.body.category || business.category,
             companyImage: filePath || business.companyImage,
-            userId: req.body.userId || business.userId,
-          })
-          .then((businessForUpdate) => {
+            userId: business.userId,
+          }).then((businessForUpdate) => {
             // if file and url is not empty delete img for updation
             if (filePath) {
               if (previousImage) {
@@ -155,8 +227,7 @@ const businessesController = {
               }
             }
             return res.status(200).send(businessForUpdate);
-          })
-          .catch((error) => {
+          }).catch((error) => {
             if (filePath) { deleteFile(`./${filePath}`); }
             return res.status(400).send(error);
           });
@@ -164,12 +235,27 @@ const businessesController = {
   },
   // delete business
   destroy(req, res) {
+    let decodedID;
+    const authValues = authMethod(req, res);
+    const noTokenProviderError = authValues[0];
+    const failedAuthError = authValues[1];
+    const decodedIDFromMethod = authValues[2];
+
+    if (noTokenProviderError) return res.status(401).send({ auth: false, message: 'No token provided.' });
+
+    if (failedAuthError) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+
+    if (decodedIDFromMethod) decodedID = decodedIDFromMethod;
+
     return Business
       .findById(req.params.businessId)
       .then((business) => {
         if (!business) {
           return res.status(404).send({ message: 'Business not found' });
         }
+
+        if (decodedID !== business.userId) { return res.status(403).send({ auth: false, message: 'User not allowed' }); }
+
         return business
           .destroy()
           .then(() => {
@@ -177,35 +263,28 @@ const businessesController = {
               deleteFile(`./${business.companyImage}`);
             }
             return res.status(204).send();
-          })
-          .catch(error => res.status(400).send(error));
+          }).catch(error => res.status(400).send(error));
       }).catch(error => res.status(400).send(error));
   },
   // get a business
   retrieve(req, res) {
     return Business
       .findById(req.params.businessId, {
-        include: [{
-          model: Review,
-          as: 'reviews'
-        }]
+        include: [{ model: Review, as: 'reviews' }]
       })
       .then((business) => {
         if (!business) {
           return res.status(404).send({ message: 'Business not found' });
         }
         return res.status(200).send(business);
-      })
-      .catch(error => res.status(400).send(error));
+      }).catch(error => res.status(400).send(error));
   },
   // get businesses
   list(req, res) {
     let selectionType;
     if (!req.query.location && !req.query.category) {
       selectionType = Business
-        .findAll({
-          include: [{ model: Review, as: 'reviews' }]
-        });
+        .findAll({ include: [{ model: Review, as: 'reviews' }] });
     }
     if (req.query.location && !req.query.category) {
       selectionType = Business
@@ -234,8 +313,7 @@ const businessesController = {
           return res.status(404).send({ message: 'Businesses not found' });
         }
         return res.status(200).send(business);
-      })
-      .catch(error => res.status(400).send(error));
+      }).catch(error => res.status(400).send(error));
   },
 };
 
