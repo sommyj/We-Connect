@@ -91,11 +91,13 @@ const usersController = {
   upload: upload.single('userImage'), // image upload
   // create a user
   create(req, res) {
+    let filePath = '';
+
     // implementing the file filter method
     const fileFilterValues = fileFilterMethod(req, res);
     const fileSizeError = fileFilterValues[0];
     const fileTypeError = fileFilterValues[1];
-    const filePath = fileFilterValues[2];
+    if(fileFilterValues[2]) filePath = fileFilterValues[2];
 
     if (fileSizeError) return fileSizeHandleError(res);
     if (fileTypeError) return fileTypeHandleError(res);
@@ -157,11 +159,13 @@ const usersController = {
   },
   // update user
   update(req, res) {
+    let filePath = '';
+
     // implementing the file filter method
     const fileFilterValues = fileFilterMethod(req, res);
     const fileSizeError = fileFilterValues[0];
     const fileTypeError = fileFilterValues[1];
-    const filePath = fileFilterValues[2];
+    if(fileFilterValues[2]) filePath = fileFilterValues[2];
 
     if (fileSizeError) return fileSizeHandleError(res);
     if (fileTypeError) return fileTypeHandleError(res);

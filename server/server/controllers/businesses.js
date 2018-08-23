@@ -124,11 +124,12 @@ const businessesController = {
 
     if (decodedIDFromMethod) decodedID = decodedIDFromMethod;
 
+    let filePath = '';
     // implementing the file filter method
     const fileFilterValues = fileFilterMethod(req, res);
     const fileSizeError = fileFilterValues[0];
     const fileTypeError = fileFilterValues[1];
-    const filePath = fileFilterValues[2];
+    if(fileFilterValues[2]) filePath = fileFilterValues[2];
 
     if (fileSizeError) return fileSizeHandleError(res);
     if (fileTypeError) return fileTypeHandleError(res);
@@ -175,11 +176,12 @@ const businessesController = {
     if (failedAuthError) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
     if (decodedIDFromMethod) decodedID = decodedIDFromMethod;
 
+    let filePath = '';
     // implementing the file filter method
     const fileFilterValues = fileFilterMethod(req, res);
     const fileSizeError = fileFilterValues[0];
     const fileTypeError = fileFilterValues[1];
-    const filePath = fileFilterValues[2];
+    if(fileFilterValues[2]) filePath = fileFilterValues[2];
 
     if (fileSizeError) return fileSizeHandleError(res);
     if (fileTypeError) return fileTypeHandleError(res);

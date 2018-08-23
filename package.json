@@ -6,7 +6,7 @@
   "scripts": {
     "start:dev": "nodemon -r dotenv/config ./lib/bin/www",
     "start": "node -r dotenv/config -r babel-core/register ./server/bin/www",
-    "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 -r dotenv/config lib/test/ --exit",
+    "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 --require babel-core/register -r dotenv/config server/test/ --exit",
     "build": "babel server -d lib",
     "cover": "nyc report --reporter=text-lcov | coveralls",
     "coveralls": "nyc --reporter=lcov --reporter=text-lcov npm test"
