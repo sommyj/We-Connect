@@ -9,6 +9,8 @@ const app = express();
 // Log requests to the console.
 app.use(logger('dev'));
 
+app.set('superSecret', process.env.SUPER_SECRET); // secret variable
+
 app.use('/usersUploads', express.static('usersUploads'));
 app.use('/businessesUploads', express.static('businessesUploads'));
 

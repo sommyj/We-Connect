@@ -39,3 +39,7 @@ Thumbs.db
 # COVERALLS_REPO_TOKEN #
 ########################
 .coveralls.yml
+
+# Enviroment variable #
+########################
+#.env

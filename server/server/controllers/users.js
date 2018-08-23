@@ -1,6 +1,9 @@
 import multer from 'multer';
 import fs from 'file-system';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import model from '../models';
+import app from '../../app';
 
 const [User, Business] = [model.User, model.Business];
 
@@ -43,30 +46,61 @@ const fileSizeHandleError = (res) => {
   res.status(403).json({ message: 'file should not be more than 2mb!', error: true });
 };
 
-const usersController = {
-  // image upload
-  upload: upload.single('userImage'),
-  // create a user
-  create(req, res) {
-    let filePath = '';
-    if (req.file) {
-      const tempPath = req.file.path;
-      const targetPath = `./usersUploads/${new Date().toISOString() + req.file.originalname}`;
-      if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
-        if (req.file.size <= fileSizeLimit) {
-          renameFile(tempPath, targetPath);
-          // remove the dot in targetPath
-          filePath = targetPath.substring(1, targetPath.length);
-        } else {
-          deleteFile(tempPath);
-          return fileSizeHandleError(res);
-        }
+// Token creation hanlder method
+const tokenMethod = (userId) => {
+  const token = jwt.sign(
+    { id: userId }, app.get('superSecret'),
+    { expiresIn: 86400 }// expires in 24 hours
+  );
+  return token;
+};
+
+/* File filter handle method */
+const fileFilterMethod = (req) => {
+  const fileErrorArray = [];
+  let fileSizeError = false;
+  let fileTypeError = false;
+  let filePath = '';
+
+  if (req.file) {
+    const tempPath = `./${req.file.path}`;
+    const targetPath = `./usersUploads/${new Date().toISOString() + req.file.originalname}`;
+    if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
+      if (req.file.size <= fileSizeLimit) {
+        renameFile(tempPath, targetPath);
+        // remove the dot in targetPath
+        filePath = targetPath.substring(1, targetPath.length);
       } else {
         deleteFile(tempPath);
-        return fileTypeHandleError(res);
+        fileSizeError = true;
       }
+    } else {
+      deleteFile(tempPath);
+      fileTypeError = true;
     }
+  }
+  fileErrorArray[0] = fileSizeError;
+  fileErrorArray[1] = fileTypeError;
+  fileErrorArray[2] = filePath;
 
+  return fileErrorArray;
+};
+
+
+const usersController = {
+  upload: upload.single('userImage'), // image upload
+  // create a user
+  create(req, res) {
+    // implementing the file filter method
+    const fileFilterValues = fileFilterMethod(req, res);
+    const fileSizeError = fileFilterValues[0];
+    const fileTypeError = fileFilterValues[1];
+    const filePath = fileFilterValues[2];
+
+    if (fileSizeError) return fileSizeHandleError(res);
+    if (fileTypeError) return fileTypeHandleError(res);
+
+    /* Required feilds */
     if (!req.body.title || !req.body.firstname || !req.body.lastname ||
       !req.body.username || !req.body.password || !req.body.email ||
       !req.body.gender || !req.body.dob || !req.body.phone) {
@@ -74,13 +108,15 @@ const usersController = {
       return res.status(206).send({ message: 'Incomplete field' });
     }
 
+    const hashedPassword = bcrypt.hashSync(req.body.password, 8);
+
     return User
       .create({
         title: req.body.title,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         username: req.body.username,
-        password: req.body.password,
+        password: hashedPassword,
         email: req.body.email,
         gender: req.body.gender,
         street: req.body.street,
@@ -91,11 +127,12 @@ const usersController = {
         phone: req.body.phone,
         userImage: filePath
       })
-      .then(user => res.status(201).send(user))
+      .then((user) => {
+        const token = tokenMethod(user.id); // Generate token
+        if (token) return res.status(201).send({ user, auth: true, token });
+      })
       .catch((error) => {
-        if (filePath) {
-          deleteFile(`./${filePath}`);
-        }
+        if (filePath) deleteFile(`./${filePath}`);
         return res.status(400).send(error);
       });
   },
@@ -104,59 +141,39 @@ const usersController = {
     return User
       .findOne({ where: { username: req.body.username, password: req.body.password } })
       .then((user) => {
-        if (!user) {
-          return res.status(404).send({ message: 'User not found' });
-        }
-        return res.status(200).send(user);
+        if (!user) return res.status(404).send({ message: 'User not found' });
+        const token = tokenMethod(user.id); // Generate token
+        if (token) return res.status(200).send({ user, auth: true, token });
       })
       .catch(error => res.status(400).send(error));
   },
   list(req, res) {
     return User
       .findAll({
-        include: [{
-          model: Business,
-          as: 'businesses',
-        }],
+        include: [{ model: Business, as: 'businesses' }]
       })
       .then(users => res.status(200).send(users))
       .catch(error => res.status(400).send(error));
   },
   // update user
   update(req, res) {
-    let filePath = '';
-    if (req.file) {
-      const tempPath = req.file.path;
-      const targetPath = `./usersUploads/${new Date().toISOString() + req.file.originalname}`;
+    // implementing the file filter method
+    const fileFilterValues = fileFilterMethod(req, res);
+    const fileSizeError = fileFilterValues[0];
+    const fileTypeError = fileFilterValues[1];
+    const filePath = fileFilterValues[2];
 
-      if (req.file.mimetype === 'image/jpeg' || req.file.mimetype === 'image/png') {
-        if (req.file.size <= fileSizeLimit) {
-          renameFile(tempPath, targetPath);
-          // remove the dot in targetPath
-          filePath = targetPath.substring(1, targetPath.length);
-        } else {
-          deleteFile(tempPath);
-          return fileSizeHandleError(res);
-        }
-      } else {
-        deleteFile(tempPath);
-        return fileTypeHandleError(res);
-      }
-    }
+    if (fileSizeError) return fileSizeHandleError(res);
+    if (fileTypeError) return fileTypeHandleError(res);
 
     return User
       .findById(req.params.userId, {
-        include: [{
-          model: Business,
-          as: 'businesses'
-        }]
+        include: [{ model: Business, as: 'businesses' }]
       })
       .then((user) => {
         if (!user) {
           // if file and url is not empty delete img for updation
-          if (filePath) {
-            deleteFile(`./${filePath}`);
-          }
+          if (filePath) deleteFile(`./${filePath}`);
           return res.status(404).send({ message: 'User not found' });
         }
         // holds the url of the image before update in other not to loose it
@@ -181,16 +198,12 @@ const usersController = {
           .then((userUpdate) => {
             // if file and url is not empty delete img for updation
             if (filePath) {
-              if (previousImage) {
-                deleteFile(`./${previousImage}`);
-              }
+              if (previousImage) deleteFile(`./${previousImage}`);
             }
             return res.status(200).send(userUpdate);
           }) // Send back the updated user
           .catch((error) => {
-            if (filePath) {
-              deleteFile(`./${filePath}`);
-            }
+            if (filePath) deleteFile(`./${filePath}`);
             return res.status(400).send(error);
           });
       }).catch(error => res.status(400).send(error));
@@ -200,16 +213,12 @@ const usersController = {
     return User
       .findById(req.params.userId)
       .then((user) => {
-        if (!user) {
-          return res.status(404).send({ message: 'User not found' });
-        }
+        if (!user) return res.status(404).send({ message: 'User not found' });
 
         return user
           .destroy()
           .then(() => {
-            if (user.userImage) {
-              deleteFile(`./${user.userImage}`);
-            }
+            if (user.userImage) deleteFile(`./${user.userImage}`);
             return res.status(204).send();
           })
           .catch(error => res.status(400).send(error));
@@ -219,15 +228,10 @@ const usersController = {
   retrieve(req, res) {
     return User
       .findById(req.params.userId, {
-        include: [{
-          model: Business,
-          as: 'businesses'
-        }]
+        include: [{ model: Business, as: 'businesses' }]
       })
       .then((user) => {
-        if (!user) {
-          return res.status(404).send({ message: 'User not found' });
-        }
+        if (!user) return res.status(404).send({ message: 'User not found' });
         return res.status(200).send(user);
       })
       .catch(error => res.status(400).send(error));
