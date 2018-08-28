@@ -27,7 +27,17 @@ This is a profile page for a particular business. it gives all the infromation a
 
 ## Built With
 
+### Front-End
+
 * [Bootstrap 4 Theme - Latest Beta Version](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
+
+### Back-End
+
+* Nodejs, Expressjs.
+
+### database
+
+* PosgreSQL, ElephantSQL.
 
 ## Authors
 

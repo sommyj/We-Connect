@@ -1,11 +1,10 @@
 // During the test the env variable is set to test
+process.env.NODE_ENV = 'test';
 // Require the dev-dependencies
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 
 import app from '../app';
-
-process.env.NODE_ENV = 'test';
 
 chai.should();
 chai.use(chaiHttp);
